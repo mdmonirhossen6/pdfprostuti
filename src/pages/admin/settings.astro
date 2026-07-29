@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { verifyAuth, getAdminCredentials } from '../../utils/auth';
+import { APP_CTA_ORIGIN } from '../../utils/cta';
+
+const runtime = Astro.locals.runtime;
+const isAuthed = await verifyAuth(Astro.cookies, runtime);
+
+if (!isAuthed) {
+  return Astro.redirect('/admin/login');
+}
+
+const { dbUrl, dbWriteKey, dbReadKey } = getAdminCredentials(runtime);
+
+let errorMessage = '';
+let successMessage = '';
+
+// Fetch current settings
+let settings = { app_url: APP_CTA_ORIGIN };
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/site_settings`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (res.ok) {
+    const rows = await res.json();
+    if (rows && rows.length > 0) {
+      rows.forEach(row => {
+        settings[row.key] = row.value;
+      });
+    }
+  }
+} catch (e) {
+  console.error("Could not fetch settings:", e);
+}
+
+// Handle form submission
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const appUrl = data.get('app_url')?.toString().trim() || APP_CTA_ORIGIN;
+
+    // Upsert app_url setting
+    const upsertRes = await fetch(`${dbUrl}/rest/v1/site_settings?key=eq.app_url`, {
+      method: 'PUT',
+      headers: {
+        'apikey': dbWriteKey,
+        'Authorization': `Bearer ${dbWriteKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ key: 'app_url', value: appUrl })
+    });
+
+    if (upsertRes.ok) {
+      successMessage = 'সেটিংস সফলভাবে আপডেট করা হয়েছে।';
+      settings.app_url = appUrl;
+    } else {
+      const errJson = await upsertRes.json().catch(() => ({}));
+      errorMessage = `সেটিংস আপডেট করতে ব্যর্থ: ${errJson.message || 'চেষ্টা করুন / Prefer: resolution=merge-duplicates headers ব্যবহার করুন।'}`;
+    }
+  } catch (e) {
+    errorMessage = 'সেটিংস সেভ করার সময় একটি ইরর হয়েছে।';
+  }
+}
+---
+
+<BaseLayout title="সেটিংস - এডমিন প্যানেল">
+  <nav class="admin-nav">
+    <div class="nav-container">
+      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Settings</span></a>
+      <div class="nav-actions">
+        <a href="/admin" class="back-link">← ড্যাশবোর্ডে ফিরুন</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container form-container">
+    <header class="form-header">
+      <h2>সাইট সেটিংস</h2>
+      <p>হোম পেজ, নেভিগেশন এবং অন্যান্য গ্লোবাল সেটিংস এখানে কনফিগার করুন।</p>
+    </header>
+
+    {successMessage && <div class="alert alert-success">{successMessage}</div>}
+    {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
+
+    <form method="POST" class="glass-card editor-form">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="app_url">অ্যাপ লিংক (App URL)</label>
+          <input type="url" id="app_url" name="app_url" value={settings.app_url} required placeholder={APP_CTA_ORIGIN} />
+          <small class="helper-text">Production CTA domain: {APP_CTA_ORIGIN} — Navbar, Footer ও হিরোতে ব্যবহৃত। Resource CTA স্বয়ংক্রিয়ভাবে এই domain-এ UTM সহ যায়।</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin" class="btn-cancel">বাতিল করুন</a>
+        <button type="submit" class="btn-save">সেভ সেটিংস</button>
+      </div>
+    </form>
+  </main>
+</BaseLayout>
+
+<style>
+  .admin-nav { background: rgba(11, 15, 25, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .admin-logo { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem; }
+  .badge-admin { font-size: 0.7rem; background: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; }
+  .back-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .back-link:hover { color: white; }
+  .form-container { max-width: 640px; margin-top: 2rem; padding-bottom: 5rem; }
+  .form-header { text-align: left; margin-bottom: 2rem; }
+  .form-header h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .form-header p { color: var(--text-secondary); }
+  .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
+  .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--color-success); color: #a7f3d0; }
+  .alert-danger { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; }
+  .editor-form { padding: 2.5rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .full-width { grid-column: span 2; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+  .form-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+  .form-group input { background: rgba(19, 26, 46, 0.8) !important; border: 1px solid rgba(99, 102, 241, 0.2); color: white; padding: 0.75rem; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+  .form-group input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+  .helper-text { font-size: 0.75rem; color: var(--text-muted); margin-top: -0.25rem; }
+  .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1.5rem; }
+  .btn-cancel { background: none; border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary); padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
+  .btn-cancel:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+  .btn-save { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: transform 0.2s; }
+  .btn-save:hover { transform: translateY(-1px); }
+</style>

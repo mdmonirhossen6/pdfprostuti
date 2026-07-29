@@ -1,0 +1,2881 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+astro.config.mjs
+package.json
+public/favicon.ico
+public/favicon.svg
+public/robots.txt
+README.md
+src/assets/astro.svg
+src/assets/background.svg
+src/components/Welcome.astro
+src/layouts/BaseLayout.astro
+src/layouts/Layout.astro
+src/pages/[exam]/[subject]/[slug].astro
+src/pages/admin/edit.astro
+src/pages/admin/index.astro
+src/pages/admin/login.astro
+src/pages/admin/settings.astro
+src/pages/download.astro
+src/pages/index.astro
+src/pages/sitemap.xml.js
+src/styles/global.css
+src/utils/auth.js
+src/utils/db.js
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="public/favicon.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128">
+    <path d="M50.4 78.5a75.1 75.1 0 0 0-28.5 6.9l24.2-65.7c.7-2 1.9-3.2 3.4-3.2h29c1.5 0 2.7 1.2 3.4 3.2l24.2 65.7s-11.6-7-28.5-7L67 45.5c-.4-1.7-1.6-2.8-2.9-2.8-1.3 0-2.5 1.1-2.9 2.7L50.4 78.5Zm-1.1 28.2Zm-4.2-20.2c-2 6.6-.6 15.8 4.2 20.2a17.5 17.5 0 0 1 .2-.7 5.5 5.5 0 0 1 5.7-4.5c2.8.1 4.3 1.5 4.7 4.7.2 1.1.2 2.3.2 3.5v.4c0 2.7.7 5.2 2.2 7.4a13 13 0 0 0 5.7 4.9v-.3l-.2-.3c-1.8-5.6-.5-9.5 4.4-12.8l1.5-1a73 73 0 0 0 3.2-2.2 16 16 0 0 0 6.8-11.4c.3-2 .1-4-.6-6l-.8.6-1.6 1a37 37 0 0 1-22.4 2.7c-5-.7-9.7-2-13.2-6.2Z" />
+    <style>
+        path { fill: #000; }
+        @media (prefers-color-scheme: dark) {
+            path { fill: #FFF; }
+        }
+    </style>
+</svg>
+</file>
+
+<file path="README.md">
+# Astro Starter Kit: Basics
+
+```sh
+npm create astro@latest -- --template basics
+```
+
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+
+## 🚀 Project Structure
+
+Inside of your Astro project, you'll see the following folders and files:
+
+```text
+/
+├── public/
+│   └── favicon.svg
+├── src
+│   ├── assets
+│   │   └── astro.svg
+│   ├── components
+│   │   └── Welcome.astro
+│   ├── layouts
+│   │   └── Layout.astro
+│   └── pages
+│       └── index.astro
+└── package.json
+```
+
+To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+</file>
+
+<file path="src/assets/astro.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="115" height="48"><path fill="#17191E" d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"/><path fill="url(#a)" d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"/><path fill="#17191E" d="M.02 30.31s4.02-1.95 8.05-1.95l3.04-9.4c.11-.45.44-.76.82-.76.37 0 .7.31.82.76l3.04 9.4c4.77 0 8.05 1.95 8.05 1.95L17 11.71c-.2-.56-.53-.91-.98-.91H7.83c-.44 0-.76.35-.97.9L.02 30.31Zm42.37-5.97c0 1.64-2.05 2.62-4.88 2.62-1.85 0-2.5-.45-2.5-1.41 0-1 .8-1.49 2.65-1.49 1.67 0 3.09.03 4.73.23v.05Zm.03-2.04a21.37 21.37 0 0 0-4.37-.36c-5.32 0-7.82 1.25-7.82 4.18 0 3.04 1.71 4.2 5.68 4.2 3.35 0 5.63-.84 6.46-2.92h.14c-.03.5-.05 1-.05 1.4 0 1.07.18 1.16 1.06 1.16h4.15a16.9 16.9 0 0 1-.36-4c0-1.67.06-2.93.06-4.62 0-3.45-2.07-5.64-8.56-5.64-2.8 0-5.9.48-8.26 1.19.22.93.54 2.83.7 4.06 2.04-.96 4.95-1.37 7.2-1.37 3.11 0 3.97.71 3.97 2.15v.57Zm11.37 3c-.56.07-1.33.07-2.12.07-.83 0-1.6-.03-2.12-.1l-.02.58c0 2.85 1.87 4.52 8.45 4.52 6.2 0 8.2-1.64 8.2-4.55 0-2.74-1.33-4.09-7.2-4.39-4.58-.2-4.99-.7-4.99-1.28 0-.66.59-1 3.65-1 3.18 0 4.03.43 4.03 1.35v.2a46.13 46.13 0 0 1 4.24.03l.02-.55c0-3.36-2.8-4.46-8.2-4.46-6.08 0-8.13 1.49-8.13 4.39 0 2.6 1.64 4.23 7.48 4.48 4.3.14 4.77.62 4.77 1.28 0 .7-.7 1.03-3.71 1.03-3.47 0-4.35-.48-4.35-1.47v-.13Zm19.82-12.05a17.5 17.5 0 0 1-6.24 3.48c.03.84.03 2.4.03 3.24l1.5.02c-.02 1.63-.04 3.6-.04 4.9 0 3.04 1.6 5.32 6.58 5.32 2.1 0 3.5-.23 5.23-.6a43.77 43.77 0 0 1-.46-4.13c-1.03.34-2.34.53-3.78.53-2 0-2.82-.55-2.82-2.13 0-1.37 0-2.65.03-3.84 2.57.02 5.13.07 6.64.11-.02-1.18.03-2.9.1-4.04-2.2.04-4.65.07-6.68.07l.07-2.93h-.16Zm13.46 6.04a767.33 767.33 0 0 1 .07-3.18H82.6c.07 1.96.07 3.98.07 6.92 0 2.95-.03 4.99-.07 6.93h5.18c-.09-1.37-.11-3.68-.11-5.65 0-3.1 1.26-4 4.12-4 1.33 0 2.28.16 3.1.46.03-1.16.26-3.43.4-4.43-.86-.25-1.81-.41-2.96-.41-2.46-.03-4.26.98-5.1 3.38l-.17-.02Zm22.55 3.65c0 2.5-1.8 3.66-4.64 3.66-2.81 0-4.61-1.1-4.61-3.66s1.82-3.52 4.61-3.52c2.82 0 4.64 1.03 4.64 3.52Zm4.71-.11c0-4.96-3.87-7.18-9.35-7.18-5.5 0-9.23 2.22-9.23 7.18 0 4.94 3.49 7.59 9.21 7.59 5.77 0 9.37-2.65 9.37-7.6Z"/><defs><linearGradient id="a" x1="6.33" x2="19.43" y1="40.8" y2="34.6" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient></defs></svg>
+</file>
+
+<file path="src/assets/background.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" fill="none"><path fill="url(#a)" fill-rule="evenodd" d="M-217.58 475.75c91.82-72.02 225.52-29.38 341.2-44.74C240 415.56 372.33 315.14 466.77 384.9c102.9 76.02 44.74 246.76 90.31 366.31 29.83 78.24 90.48 136.14 129.48 210.23 57.92 109.99 169.67 208.23 155.9 331.77-13.52 121.26-103.42 264.33-224.23 281.37-141.96 20.03-232.72-220.96-374.06-196.99-151.7 25.73-172.68 330.24-325.85 315.72-128.6-12.2-110.9-230.73-128.15-358.76-12.16-90.14 65.87-176.25 44.1-264.57-26.42-107.2-167.12-163.46-176.72-273.45-10.15-116.29 33.01-248.75 124.87-320.79Z" clip-rule="evenodd" style="opacity:.154"/><path fill="url(#b)" fill-rule="evenodd" d="M1103.43 115.43c146.42-19.45 275.33-155.84 413.5-103.59 188.09 71.13 409 212.64 407.06 413.88-1.94 201.25-259.28 278.6-414.96 405.96-130 106.35-240.24 294.39-405.6 265.3-163.7-28.8-161.93-274.12-284.34-386.66-134.95-124.06-436-101.46-445.82-284.6-9.68-180.38 247.41-246.3 413.54-316.9 101.01-42.93 207.83 21.06 316.62 6.61Z" clip-rule="evenodd" style="opacity:.154"/><defs><linearGradient id="b" x1="373" x2="1995.44" y1="1100" y2="118.03" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient><linearGradient id="a" x1="107.37" x2="1130.66" y1="1993.35" y2="1026.31" gradientUnits="userSpaceOnUse"><stop stop-color="#3245FF"/><stop offset="1" stop-color="#BC52EE"/></linearGradient></defs></svg>
+</file>
+
+<file path="src/components/Welcome.astro">
+---
+import astroLogo from '../assets/astro.svg';
+import background from '../assets/background.svg';
+---
+
+<div id="container">
+	<img id="background" src={background.src} alt="" fetchpriority="high" />
+	<main>
+		<section id="hero">
+			<a href="https://astro.build"
+				><img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" /></a
+			>
+			<h1>
+				To get started, open the <code><pre>src/pages</pre></code> directory in your project.
+			</h1>
+			<section id="links">
+				<a class="button" href="https://docs.astro.build">Read our docs</a>
+				<a href="https://astro.build/chat"
+					>Join our Discord <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36"
+						><path
+							fill="currentColor"
+							d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"
+						></path></svg
+					>
+				</a>
+			</section>
+		</section>
+	</main>
+
+	<a href="https://astro.build/blog/astro-6-beta/" id="news" class="box">
+		<svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg"
+			><path
+				d="M24.667 12c1.333 1.414 2 3.192 2 5.334 0 4.62-4.934 5.7-7.334 12C18.444 28.567 18 27.456 18 26c0-4.642 6.667-7.053 6.667-14Zm-5.334-5.333c1.6 1.65 2.4 3.43 2.4 5.333 0 6.602-8.06 7.59-6.4 17.334C13.111 27.787 12 25.564 12 22.666c0-4.434 7.333-8 7.333-16Zm-6-5.333C15.111 3.555 16 5.556 16 7.333c0 8.333-11.333 10.962-5.333 22-3.488-.774-6-4-6-8 0-8.667 8.666-10 8.666-20Z"
+				fill="#111827"></path></svg
+		>
+		<h2>What's New in Astro 6.0?</h2>
+		<p>
+			Redesigned dev server, fonts, live collections, built-in CSP support, and more! Click to
+			explore Astro 6.0's new features.
+		</p>
+	</a>
+</div>
+
+<style>
+	#background {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+		filter: blur(100px);
+	}
+
+	#container {
+		font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+		height: 100%;
+	}
+
+	main {
+		height: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	#hero {
+		display: flex;
+		align-items: start;
+		flex-direction: column;
+		justify-content: center;
+		padding: 16px;
+	}
+
+	h1 {
+		font-size: 22px;
+		margin-top: 0.25em;
+	}
+
+	#links {
+		display: flex;
+		gap: 16px;
+	}
+
+	#links a {
+		display: flex;
+		align-items: center;
+		padding: 10px 12px;
+		color: #111827;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	#links a:hover {
+		color: rgb(78, 80, 86);
+	}
+
+	#links a svg {
+		height: 1em;
+		margin-left: 8px;
+	}
+
+	#links a.button {
+		color: white;
+		background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+			inset 0 -2px 0 rgba(0, 0, 0, 0.24);
+		border-radius: 10px;
+	}
+
+	#links a.button:hover {
+		color: rgb(230, 230, 230);
+		box-shadow: none;
+	}
+
+	pre {
+		font-family:
+			ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+			monospace;
+		font-weight: normal;
+		background: linear-gradient(14deg, #d83333 0%, #f041ff 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin: 0;
+	}
+
+	h2 {
+		margin: 0 0 1em;
+		font-weight: normal;
+		color: #111827;
+		font-size: 20px;
+	}
+
+	p {
+		color: #4b5563;
+		font-size: 16px;
+		line-height: 24px;
+		letter-spacing: -0.006em;
+		margin: 0;
+	}
+
+	code {
+		display: inline-block;
+		background:
+			linear-gradient(66.77deg, #f3cddd 0%, #f5cee7 100%) padding-box,
+			linear-gradient(155deg, #d83333 0%, #f041ff 18%, #f5cee7 45%) border-box;
+		border-radius: 8px;
+		border: 1px solid transparent;
+		padding: 6px 8px;
+	}
+
+	.box {
+		padding: 16px;
+		background: rgba(255, 255, 255, 1);
+		border-radius: 16px;
+		border: 1px solid white;
+	}
+
+	#news {
+		position: absolute;
+		bottom: 16px;
+		right: 16px;
+		max-width: 300px;
+		text-decoration: none;
+		transition: background 0.2s;
+		backdrop-filter: blur(50px);
+	}
+
+	#news:hover {
+		background: rgba(255, 255, 255, 0.55);
+	}
+
+	@media screen and (max-height: 368px) {
+		#news {
+			display: none;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		#container {
+			display: flex;
+			flex-direction: column;
+		}
+
+		#hero {
+			display: block;
+			padding-top: 10%;
+		}
+
+		#links {
+			flex-wrap: wrap;
+		}
+
+		#links a.button {
+			padding: 14px 18px;
+		}
+
+		#news {
+			right: 16px;
+			left: 16px;
+			bottom: 2.5rem;
+			max-width: 100%;
+		}
+
+		h1 {
+			line-height: 1.5;
+		}
+	}
+</style>
+</file>
+
+<file path="src/layouts/Layout.astro">
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Basics</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+</file>
+
+<file path="tsconfig.json">
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*",
+    "./worker-configuration.d.ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}
+</file>
+
+<file path=".gitignore">
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# wrangler directory
+.wrangler/
+</file>
+
+<file path="public/robots.txt">
+User-agent: *
+Allow: /
+Disallow: /download*
+Disallow: /admin/
+Disallow: /admin*
+Sitemap: https://prostutibd.app/sitemap.xml
+</file>
+
+<file path="src/pages/[exam]/[subject]/[slug].astro">
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getDbCredentials } from '../../../utils/db';
+
+const { exam, subject, slug } = Astro.params;
+
+const runtime = Astro.locals.runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+
+let post = null;
+
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/posts?slug=eq.${slug}&exam=eq.${exam ? exam.toUpperCase() : ''}&subject=eq.${subject}`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (res.ok) {
+    const data = await res.json();
+    if (data && data.length > 0) {
+      post = data[0];
+    }
+  }
+} catch (e) {
+  console.error("Error querying post details:", e);
+}
+
+// Fallback logic for mock preview testing
+if (!post) {
+  const isMock = slug === 'physics-1st-paper-suggestion' || slug === 'bcs-46-bangla-literature';
+  if (isMock && exam && subject) {
+    post = {
+      id: `mock-${slug}`,
+      title: slug === 'physics-1st-paper-suggestion' 
+        ? "HSC 2026 পদার্থবিজ্ঞান প্রথম পত্র ১০০% কমন সাজেশন ও সমাধান" 
+        : "৪৬তম বিসিএস প্রিলিমিনারি বাংলা ভাষা ও সাহিত্য মডেল টেস্ট ও ব্যাখ্যা",
+      slug: slug,
+      exam: exam.toUpperCase(),
+      subject: subject,
+      content: `পরীক্ষার জন্য প্রয়োজনীয় সাজেশনের বিস্তারিত তালিকা এবং শর্ট সিলেবাস নিচে দেওয়া হলো। সম্পূর্ণ সমাধান সহ ফাইলটি পেতে নিচের বাটনে ক্লিক করুন।`,
+      ad_text: "সবচেয়ে দ্রুত সকল বিষয়ের আপডেট ও ফ্রি পিডিএফ ফাইল পেতে এখনই আমাদের প্রস্তুতি টেলিগ্রাম চ্যানেলে জয়েন করুন!",
+      image_url: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=900&q=80",
+      file_url: "https://t.me/yourchannel",
+      drive_url: "https://drive.google.com/open?id=mock",
+      link_type: "download",
+      show_app_opener: true,
+      app_link: null,
+      app_title: null,
+      app_description: null,
+      app_button_text: null,
+      created_at: new Date().toISOString()
+    };
+  } else {
+    return new Response(null, { status: 404, statusText: 'Not Found' });
+  }
+}
+
+const displayContent = post.content?.trim() || "পরীক্ষার জন্য প্রয়োজনীয় সাজেশনের বিস্তারিত তালিকা নিচে দেওয়া হলো। সম্পূর্ণ ফাইলটি সংগ্রহ করতে ডাউনলোড বাটনে ক্লিক করুন।";
+const displayAdText = post.ad_text?.trim() || "সবচেয়ে দ্রুত সকল বিষয়ের আপডেট ও ফ্রি পিডিএফ ফাইল পেতে এখনই আমাদের প্রস্তুতি টেলিগ্রাম চ্যানেলে জয়েন করুন!";
+const displayImageUrl = post.image_url?.trim();
+const pageDescription = `${post.title} PDF ডাউনলোড করুন। ${post.exam} ${post.subject} পরীক্ষার জন্য প্রয়োজনীয় সাজেশন, নোট, মডেল টেস্ট ও উত্তরসহ সম্পূর্ণ তথ্য।`;
+const pageKeywords = `${post.title}, ${post.exam} ${post.subject}, pdf download, suggestion, notes, model test, ${post.slug}`;
+
+// App opener settings
+const showAppOpener = post.show_app_opener !== false;
+const appLinkUrl = post.app_link?.trim() || `https://web.prostutibd.app/practice/${post.subject?.toLowerCase() || 'physics'}`;
+const appTitle = post.app_title?.trim() || "📱 প্রস্তুতি অ্যাপে পরীক্ষা দাও!";
+const appDescription = post.app_description?.trim() || "এই অধ্যায়ের গুরুত্বপূর্ণ প্রশ্নগুলোর ওপর রিয়েল-টাইম পরীক্ষা দিতে আমাদের অ্যাপে প্রবেশ করো।";
+const appButtonText = post.app_button_text?.trim() || "অ্যাপে যাও";
+
+const primaryDownloadUrl = post.file_url?.trim() || post.drive_url?.trim();
+const hasDownloadUrl = Boolean(primaryDownloadUrl);
+const actionUrl = hasDownloadUrl
+  ? (post.link_type === 'direct' ? primaryDownloadUrl : `/download?id=${post.id}`)
+  : '';
+const mainButtonLabel = post.link_type === 'direct'
+  ? "🔗 সরাসরি ফাইল লিংকে যান"
+  : "📥 ফাইলটি ডাউনলোড করুন";
+
+Astro.response.headers.set(
+  'Cache-Control',
+  'public, max-age=0, s-maxage=86400, stale-while-revalidate=3600'
+);
+---
+
+<BaseLayout 
+  title={post.title}
+  description={pageDescription}
+  exam={post.exam}
+  subject={post.subject}
+  slug={post.slug}
+  publishDate={post.created_at}
+  keywords={pageKeywords}
+>
+  <nav class="nav-bar">
+    <div class="nav-container">
+      <a href="/" class="logo">
+        <span class="logo-icon">🎯</span>
+        <span class="logo-text">প্রস্তুতি <span class="accent-text">BD</span></span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="back-link">← হোমপেজে ফিরুন</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="breadcrumb-container">
+      <ol class="breadcrumbs" aria-label="Breadcrumb">
+        <li><a href="/">প্রচ্ছদ</a></li>
+        <li class="separator">/</li>
+        <li><a href={`/?category=${post.exam?.toLowerCase()}`}>{post.exam}</a></li>
+        <li class="separator">/</li>
+        <li><a href={`/?subject=${post.subject?.toLowerCase()}`}>{post.subject}</a></li>
+        <li class="separator">/</li>
+        <li class="active-crumb" aria-current="page">{post.title}</li>
+      </ol>
+    </div>
+
+    <article class="glass-card article-card">
+      <header class="article-header">
+        <span class="category-tag">{post.exam} • {post.subject}</span>
+        <h1 class="article-title">{post.title}</h1>
+        <p class="publish-date">পাবলিশড হয়েছে: {new Date(post.created_at || Date.now()).toLocaleDateString('bn-BD')}</p>
+      </header>
+
+      {displayImageUrl && (
+        <img src={displayImageUrl} alt={post.title} class="featured-image" />
+      )}
+
+      <section class="content">
+        <div class="content-intro">
+          <span class="content-pill">📘 {post.exam} • {post.subject}</span>
+          <p>{displayContent}</p>
+        </div>
+      </section>
+
+      {showAppOpener && (
+        <section class="app-promo-banner">
+          <div class="promo-text">
+            <h3>{appTitle}</h3>
+            <p>{appDescription}</p>
+          </div>
+          <a href={appLinkUrl} class="btn btn-promo" target="_blank">{appButtonText}</a>
+        </section>
+      )}
+
+      <section class="telegram-promo">
+        <div class="tg-icon">📢</div>
+        <div class="tg-info">
+          <p>{displayAdText}</p>
+          <a href="https://t.me/yourchannel" target="_blank" class="tg-btn">টেলিগ্রাম চ্যানেলে জয়েন করুন →</a>
+        </div>
+      </section>
+
+      {hasDownloadUrl && (
+        <section class="download-block">
+          <h2>ডাউনলোড লিংকসমূহ</h2>
+          <p class="download-note">নিরাপদে ও দ্রুত গতিতে ফাইলটি ডাউনলোড করতে নিচের লিংকে ক্লিক করুন।</p>
+          <div class="download-actions">
+            <a href={actionUrl} class="btn btn-download pulse-success-animation" target={post.link_type === 'direct' ? "_blank" : "_self"}>
+              {mainButtonLabel}
+            </a>
+            <a href={`/?search=${encodeURIComponent(post.subject || '')}`} class="btn btn-secondary-link">🔎 একই বিষয়-এর PDF দেখুন</a>
+          </div>
+        </section>
+      )}
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .nav-bar { background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(99, 102, 241, 0.1); }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; font-weight: 800; font-size: 1.35rem; color: var(--text-primary); }
+  .accent-text { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .back-link { color: var(--text-secondary); text-decoration: none; font-size: 0.95rem; transition: color 0.2s ease; }
+  .back-link:hover { color: var(--color-primary); }
+  .article-card { margin-top: 1rem; padding: 3rem 2.5rem; }
+  .article-header { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+  .article-title { font-size: 2.25rem; line-height: 1.35; margin-top: 0.5rem; }
+  .publish-date { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.75rem; }
+  .featured-image { width: 100%; max-height: 420px; object-fit: cover; display: block; border-radius: 18px; margin-bottom: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.08); }
+  .content-intro { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 1.25rem; }
+  .content-pill { display: inline-block; background: rgba(99, 102, 241, 0.1); color: #c7d2fe; padding: 0.35rem 0.6rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.75rem; }
+  .content p { color: var(--text-secondary); font-size: 1rem; line-height: 1.8; margin: 0; }
+  .app-promo-banner { background: linear-gradient(135deg, rgba(30, 27, 75, 0.6) 0%, rgba(49, 46, 129, 0.6) 100%); border: 1px solid rgba(99, 102, 241, 0.3); padding: 1.75rem; border-radius: 14px; margin: 3rem 0; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.1); }
+  .promo-text h3 { font-size: 1.25rem; color: var(--text-primary); margin-bottom: 0.35rem; }
+  .promo-text p { color: var(--text-secondary); font-size: 0.95rem; margin: 0; }
+  .btn-promo { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: var(--text-primary); padding: 0.75rem 1.5rem; flex-shrink: 0; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+  .btn-promo:hover { box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5); transform: translateY(-1px); }
+  .telegram-promo { background: rgba(0, 136, 204, 0.08); border-left: 4px solid var(--color-telegram); border-radius: 4px 12px 12px 4px; padding: 1.5rem; margin: 2.5rem 0; display: flex; gap: 1rem; align-items: flex-start; }
+  .tg-icon { font-size: 2rem; line-height: 1; }
+  .tg-info p { color: var(--text-primary); font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .tg-btn { display: inline-block; color: var(--color-telegram); font-weight: 700; text-decoration: none; font-size: 0.95rem; transition: color 0.2s ease, transform 0.2s ease; }
+  .tg-btn:hover { color: #33b3ff; transform: translateX(4px); }
+  .download-block { text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 2.5rem; margin-top: 3rem; }
+  .download-block h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+  .download-note { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; }
+  .download-actions { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+  .btn-download { background: linear-gradient(135deg, var(--color-success), #059669); color: var(--text-primary); padding: 1.125rem 2.5rem; font-size: 1.15rem; font-weight: 700; border-radius: 14px; display: inline-flex; width: 100%; max-width: 420px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3); }
+  .btn-download:hover { box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5); background: linear-gradient(135deg, var(--color-success-hover), #047857); }
+  .btn-secondary-link { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-primary); padding: 0.9rem 1.5rem; border-radius: 12px; font-weight: 600; text-decoration: none; }
+  @media (max-width: 768px) { .app-promo-banner { flex-direction: column; align-items: flex-start; padding: 1.5rem; } .btn-promo { width: 100%; text-align: center; } .article-card { padding: 2rem 1.5rem; } .article-title { font-size: 1.75rem; } }
+</style>
+</file>
+
+<file path="src/pages/admin/login.astro">
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAdminCredentials, generateToken } from '../../utils/auth';
+
+const runtime = Astro.locals.runtime;
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const inputUser = data.get('username')?.toString().trim();
+    const inputPass = data.get('password')?.toString();
+
+    const { username, password, sessionSecret } = getAdminCredentials(runtime);
+
+    if (inputUser === username && inputPass === password) {
+      const token = await generateToken(username, password, sessionSecret);
+      
+      Astro.cookies.set('admin_token', token, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24 // 24 hours
+      });
+
+      return Astro.redirect('/admin');
+    } else {
+      errorMessage = 'ভুল ইউজারনেম অথবা পাসওয়ার্ড দেওয়া হয়েছে।';
+    }
+  } catch (e) {
+    errorMessage = 'লগইন করার সময় একটি সমস্যা হয়েছে।';
+  }
+}
+---
+
+<BaseLayout title="এডমিন লগইন - প্রস্তুতি BD">
+  <main class="login-container">
+    <div class="glass-card login-card">
+      <header class="login-header">
+        <span class="lock-icon">🔒</span>
+        <h2>এডমিন প্যানেল লগইন</h2>
+        <p>প্রস্তুতি BD ওয়েবসাইটে কনটেন্ট পরিচালনা করতে লগইন করুন</p>
+      </header>
+
+      {errorMessage && <div class="error-banner">{errorMessage}</div>}
+
+      <form method="POST" class="login-form">
+        <div class="input-group">
+          <label for="username">ইউজারনেম</label>
+          <input type="text" id="username" name="username" required autocomplete="username" />
+        </div>
+
+        <div class="input-group">
+          <label for="password">পাসওয়ার্ড</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn btn-login">প্রবেশ করুন</button>
+      </form>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .login-card { max-width: 420px; width: 100%; padding: 2.5rem; border-radius: 16px; }
+  .login-header { text-align: center; margin-bottom: 2rem; }
+  .lock-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+  .login-header h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .login-header p { font-size: 0.9rem; color: var(--text-secondary); }
+  .error-banner { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center; }
+  .login-form { display: flex; flex-direction: column; gap: 1.25rem; }
+  .input-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+  .input-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+  .input-group input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: var(--color-primary); }
+  .btn-login { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; font-weight: 700; margin-top: 0.5rem; padding: 0.85rem; border-radius: 8px; cursor: pointer; border: none; }
+</style>
+</file>
+
+<file path="src/pages/admin/settings.astro">
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { verifyAuth, getAdminCredentials } from '../../utils/auth';
+
+const runtime = Astro.locals.runtime;
+const isAuthed = await verifyAuth(Astro.cookies, runtime);
+
+if (!isAuthed) {
+  return Astro.redirect('/admin/login');
+}
+
+const { dbUrl, dbWriteKey, dbReadKey } = getAdminCredentials(runtime);
+
+let errorMessage = '';
+let successMessage = '';
+
+// Fetch current settings
+let settings = { app_url: 'https://web.prostutibd.app' };
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/site_settings`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (res.ok) {
+    const rows = await res.json();
+    if (rows && rows.length > 0) {
+      rows.forEach(row => {
+        settings[row.key] = row.value;
+      });
+    }
+  }
+} catch (e) {
+  console.error("Could not fetch settings:", e);
+}
+
+// Handle form submission
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const appUrl = data.get('app_url')?.toString().trim() || 'https://web.prostutibd.app';
+
+    // Upsert app_url setting
+    const upsertRes = await fetch(`${dbUrl}/rest/v1/site_settings?key=eq.app_url`, {
+      method: 'PUT',
+      headers: {
+        'apikey': dbWriteKey,
+        'Authorization': `Bearer ${dbWriteKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ key: 'app_url', value: appUrl })
+    });
+
+    if (upsertRes.ok) {
+      successMessage = 'সেটিংস সফলভাবে আপডেট করা হয়েছে।';
+      settings.app_url = appUrl;
+    } else {
+      const errJson = await upsertRes.json().catch(() => ({}));
+      errorMessage = `সেটিংস আপডেট করতে ব্যর্থ: ${errJson.message || 'চেষ্টা করুন / Prefer: resolution=merge-duplicates headers ব্যবহার করুন।'}`;
+    }
+  } catch (e) {
+    errorMessage = 'সেটিংস সেভ করার সময় একটি ইরর হয়েছে।';
+  }
+}
+---
+
+<BaseLayout title="সেটিংস - এডমিন প্যানেল">
+  <nav class="admin-nav">
+    <div class="nav-container">
+      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Settings</span></a>
+      <div class="nav-actions">
+        <a href="/admin" class="back-link">← ড্যাশবোর্ডে ফিরুন</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container form-container">
+    <header class="form-header">
+      <h2>সাইট সেটিংস</h2>
+      <p>হোম পেজ, নেভিগেশন এবং অন্যান্য গ্লোবাল সেটিংস এখানে কনফিগার করুন।</p>
+    </header>
+
+    {successMessage && <div class="alert alert-success">{successMessage}</div>}
+    {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
+
+    <form method="POST" class="glass-card editor-form">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="app_url">অ্যাপ লিংক (App URL)</label>
+          <input type="url" id="app_url" name="app_url" value={settings.app_url} required placeholder="https://web.prostutibd.app" />
+          <small class="helper-text">এই লিংকটি হোম পেজের নেভবার, হিরো সেকশন ও ফুটারে "অ্যাপ ওপেন করুন" বাটনে ব্যবহার হবে।</small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin" class="btn-cancel">বাতিল করুন</a>
+        <button type="submit" class="btn-save">সেভ সেটিংস</button>
+      </div>
+    </form>
+  </main>
+</BaseLayout>
+
+<style>
+  .admin-nav { background: rgba(11, 15, 25, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .admin-logo { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem; }
+  .badge-admin { font-size: 0.7rem; background: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; }
+  .back-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .back-link:hover { color: white; }
+  .form-container { max-width: 640px; margin-top: 2rem; padding-bottom: 5rem; }
+  .form-header { text-align: left; margin-bottom: 2rem; }
+  .form-header h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .form-header p { color: var(--text-secondary); }
+  .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
+  .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--color-success); color: #a7f3d0; }
+  .alert-danger { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; }
+  .editor-form { padding: 2.5rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .full-width { grid-column: span 2; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+  .form-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+  .form-group input { background: rgba(19, 26, 46, 0.8) !important; border: 1px solid rgba(99, 102, 241, 0.2); color: white; padding: 0.75rem; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+  .form-group input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+  .helper-text { font-size: 0.75rem; color: var(--text-muted); margin-top: -0.25rem; }
+  .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1.5rem; }
+  .btn-cancel { background: none; border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary); padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
+  .btn-cancel:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+  .btn-save { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: transform 0.2s; }
+  .btn-save:hover { transform: translateY(-1px); }
+</style>
+</file>
+
+<file path="src/styles/global.css">
+/* Font imports removed from here to prevent render-blocking. They are now preconnected and loaded in BaseLayout. */
+
+:root {
+  /* Color Tokens */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #131a2e;
+  --bg-tertiary: #1e294b;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --color-primary: #6366f1; /* Indigo */
+  --color-primary-hover: #4f46e5;
+  --color-secondary: #a855f7; /* Violet */
+  --color-accent: #f43f5e; /* Rose */
+  --color-success: #10b981; /* Emerald */
+  --color-success-hover: #059669;
+  --color-telegram: #0088cc;
+  --color-telegram-hover: #0077b3;
+  --color-direct: #f59e0b; /* Amber */
+  --color-direct-hover: #d97706;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(19, 26, 46, 0.6);
+  --glass-border: rgba(99, 102, 241, 0.15);
+  --glass-border-hover: rgba(168, 85, 247, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  
+  /* Fonts */
+  --font-sans: 'Outfit', 'Hind Siliguri', system-ui, -apple-system, sans-serif;
+  
+  /* Container sizes */
+  --container-max-width: 840px;
+}
+
+/* Base resets and defaults */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Layout Container */
+.container {
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb-container {
+  margin-bottom: 1rem;
+}
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  gap: 0.5rem;
+}
+.breadcrumbs li a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.breadcrumbs li a:hover {
+  color: var(--color-primary);
+}
+.breadcrumbs .separator {
+  color: var(--text-muted);
+  user-select: none;
+}
+.breadcrumbs .active-crumb {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Markdown and Post Content Typography */
+.content {
+  font-size: 1.1rem;
+  color: #e2e8f0;
+}
+.content p {
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+}
+.content h2 {
+  font-size: 1.6rem;
+  margin: 2.5rem 0 1.2rem 0;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dynamic Cards / Glassmorphism */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(168, 85, 247, 0.15);
+}
+
+/* Primary Button Template */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.875rem 1.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  gap: 0.5rem;
+}
+
+/* Header styling */
+header {
+  margin-bottom: 2.5rem;
+}
+
+.category-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+/* Title styles */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Form inputs styling for Theme Friendliness */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f8fafc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25em;
+  padding-right: 2.5rem !important;
+}
+
+/* Ensuring select option elements remain readable in dark mode across browsers */
+select option {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Micro-animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 16px 8px rgba(99, 102, 241, 0.2);
+  }
+}
+
+@keyframes pulse-success {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 16px 8px rgba(16, 185, 129, 0.2);
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.pulse-success-animation {
+  animation: pulse-success 2s infinite ease-in-out;
+}
+</file>
+
+<file path="src/utils/auth.js">
+// filepath: src/utils/auth.js
+import { getDbCredentials } from './db';
+
+export function getAdminCredentials(runtime) {
+  const username = runtime?.env?.ADMIN_USERNAME || import.meta.env.ADMIN_USERNAME;
+  const password = runtime?.env?.ADMIN_PASSWORD || import.meta.env.ADMIN_PASSWORD;
+  
+  // A fallback secret is defined here, but you should set a unique SESSION_SECRET in your production env variables.
+  const sessionSecret = runtime?.env?.SESSION_SECRET || import.meta.env.SESSION_SECRET || 'fallback-random-string-min-32-chars-long';
+  
+  const db = getDbCredentials(runtime);
+
+  return { username, password, sessionSecret, ...db };
+}
+
+/**
+ * Generates a one-way SHA-256 hash token using the Web Crypto API.
+ */
+export async function generateToken(username, password, secret) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${username}:${password}:${secret}`);
+  
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  return hashHex;
+}
+
+/**
+ * Verifies the admin token in cookies asynchronously.
+ */
+export async function verifyAuth(cookies, runtime) {
+  const { username, password, sessionSecret } = getAdminCredentials(runtime);
+  if (!username || !password) return false;
+
+  const token = cookies.get('admin_token')?.value;
+  if (!token) return false;
+
+  try {
+    const expectedToken = await generateToken(username, password, sessionSecret);
+    return token === expectedToken;
+  } catch (e) {
+    return false;
+  }
+}
+</file>
+
+<file path="src/utils/db.js">
+// filepath: src/utils/db.js
+export function getDbCredentials(runtime) {
+  const dbUrl = runtime?.env?.SUPABASE_URL || import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL || 'https://your-supabase-project.supabase.co';
+  
+  // Strict separation: write operations require the private service role key.
+  // Never fall back to PUBLIC_ prefixed keys.
+  const dbWriteKey = runtime?.env?.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  // Read operations use the anonymous key.
+  const dbReadKey = runtime?.env?.SUPABASE_ANON_KEY || import.meta.env.SUPABASE_ANON_KEY || import.meta.env.PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+
+  return { dbUrl, dbWriteKey, dbReadKey };
+}
+</file>
+
+<file path="astro.config.mjs">
+import { defineConfig } from 'astro/config';
+import cloudflare from '@astrojs/cloudflare';
+
+// https://astro.build/config
+export default defineConfig({
+  output: 'server',
+  adapter: cloudflare({
+    imageService: 'passthrough'
+  })
+});
+</file>
+
+<file path="package.json">
+{
+  "name": "prostutibd",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "generate-types": "wrangler types"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.2.0",
+    "astro": "^6.4.6",
+    "wrangler": "^4.100.0"
+  },
+  "overrides": {
+    "vite": "^7",
+    "@astrojs/cloudflare": {
+      "astro": "$astro"
+    }
+  }
+}
+</file>
+
+<file path="src/layouts/BaseLayout.astro">
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  exam?: string;
+  subject?: string;
+  slug?: string;
+  publishDate?: string;
+  keywords?: string;
+}
+
+const { title, description, exam, subject, slug, publishDate, keywords } = Astro.props;
+
+const baseUrl = "https://prostutibd.app";
+const normalizedExam = exam?.trim();
+const normalizedSubject = subject?.trim();
+const encodedSubject = normalizedSubject ? normalizedSubject.toLowerCase().replace(/\s+/g, '-') : '';
+const canonicalUrl = normalizedExam && encodedSubject && slug
+  ? `${baseUrl}/${normalizedExam.toLowerCase()}/${encodedSubject}/${slug}`
+  : normalizedExam && slug
+    ? `${baseUrl}/${normalizedExam.toLowerCase()}/${slug}`
+    : baseUrl;
+const siteName = "Prostuti BD";
+const ogTitle = normalizedExam
+  ? `${title} | ${normalizedExam} ${normalizedSubject || ''} | ${siteName}`
+  : `${title} | ${siteName}`;
+const ogDescription = description || (normalizedExam && normalizedSubject
+  ? `Download ${title} PDF suggestion and notes for the ${normalizedExam} ${normalizedSubject} examination. Join our Telegram channel for the fastest updates.`
+  : `Prostuti BD (প্রস্তুতি) - The ultimate preparation platform in Bangladesh. Download suggestions, model tests, resources and practice exams.`);
+const pageKeywords = keywords || (normalizedExam && normalizedSubject
+  ? `${title}, ${normalizedExam} ${normalizedSubject}, pdf download, suggestion, notes, model test`
+  : `${title}, pdf download, preparation, Bangladesh, suggestion notes`);
+
+// Define Schema.org Structured Data
+const breadcrumbSchema = normalizedExam && slug ? {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": baseUrl
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": normalizedExam.toUpperCase(),
+      "item": `${baseUrl}/${normalizedExam.toLowerCase()}`
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": title,
+      "item": canonicalUrl
+    }
+  ]
+} : null;
+
+const articleSchema = normalizedExam && slug ? {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  },
+  "headline": ogTitle,
+  "description": ogDescription,
+  "image": "https://prostutibd.app/og-default.png",
+  "datePublished": publishDate || new Date().toISOString(),
+  "author": {
+    "@type": "Organization",
+    "name": "Prostuti BD",
+    "url": baseUrl
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Prostuti BD",
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${baseUrl}/favicon.svg`
+    }
+  }
+} : {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": baseUrl,
+  "name": siteName,
+  "description": ogDescription,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${baseUrl}/?search={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+};
+---
+
+<!DOCTYPE html>
+<html lang="bn" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{ogTitle}</title>
+  <meta name="description" content={ogDescription} />
+  <meta name="keywords" content={pageKeywords} />
+  <link rel="canonical" href={canonicalUrl} />
+  <meta name="theme-color" content="#0b0f19" />
+
+  <!-- Preconnect and Load Google Fonts efficiently to satisfy Core Web Vitals -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content={normalizedExam && slug ? "article" : "website"} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:title" content={ogTitle} />
+  <meta property="og:description" content={ogDescription} />
+  <meta property="og:image" content="https://prostutibd.app/og-default.png" />
+  <meta property="og:site_name" content={siteName} />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={ogTitle} />
+  <meta name="twitter:description" content={ogDescription} />
+  <meta name="twitter:image" content="https://prostutibd.app/og-default.png" />
+  
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="author" content="Prostuti BD" />
+  <meta property="article:publisher" content="https://www.facebook.com" />
+
+  {articleSchema && (
+    <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+  )}
+  {breadcrumbSchema && (
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  )}
+</head>
+<body>
+  <slot />
+</body>
+</html>
+</file>
+
+<file path="src/pages/admin/index.astro">
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { verifyAuth, getAdminCredentials } from '../../utils/auth';
+
+const runtime = Astro.locals.runtime;
+const isAuthed = await verifyAuth(Astro.cookies, runtime);
+
+if (!isAuthed) {
+  return Astro.redirect('/admin/login');
+}
+
+const { dbUrl, dbWriteKey, dbReadKey } = getAdminCredentials(runtime);
+let errorMessage = '';
+let successMessage = '';
+
+const url = new URL(Astro.request.url);
+if (url.searchParams.get('success') === 'true') {
+  successMessage = 'পোস্টটি সফলভাবে তৈরি করা হয়েছে।';
+}
+
+if (Astro.request.method === 'POST') {
+  const data = await Astro.request.formData();
+  const action = data.get('action')?.toString();
+
+  if (action === 'logout') {
+    Astro.cookies.delete('admin_token', { path: '/' });
+    return Astro.redirect('/admin/login');
+  }
+
+  if (action === 'delete') {
+    const postId = data.get('postId')?.toString();
+    try {
+      const deleteRes = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`
+        }
+      });
+      if (deleteRes.ok) {
+        successMessage = 'পোস্টটি সফলভাবে মুছে ফেলা হয়েছে।';
+      } else {
+        errorMessage = 'পোস্টটি মুছতে ব্যর্থ হয়েছে। ডাটাবেজ পারমিশন ও RLS চেক করুন।';
+      }
+    } catch (e) {
+      errorMessage = 'পোস্টটি মোছার সময় একটি ইরর হয়েছে।';
+    }
+  }
+}
+
+let posts = [];
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/posts?order=created_at.desc`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (res.ok) {
+    posts = await res.json();
+  }
+} catch (e) {
+  errorMessage = 'ডাটাবেজ থেকে ডাটা লোড করতে সমস্যা হচ্ছে।';
+}
+---
+
+<BaseLayout title="এডমিন ড্যাশবোর্ড - প্রস্তুতি BD">
+  <nav class="admin-nav">
+    <div class="nav-container">
+      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Admin Dashboard</span></a>
+      <div class="nav-actions">
+        <a href="/" target="_blank" class="view-site-link">ভিউ সাইট ↗</a>
+        <form method="POST" style="display: inline;">
+          <input type="hidden" name="action" value="logout" />
+          <button type="submit" class="logout-btn">লগআউট</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container admin-container">
+    <header class="dashboard-header">
+      <div>
+        <h2>পোস্ট ও কনটেন্ট ম্যানেজমেন্ট</h2>
+        <p>মোট পোস্ট সংখ্যা: {posts.length}টি</p>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/settings" class="btn btn-settings">⚙️ সেটিংস</a>
+        <a href="/admin/edit" class="btn btn-add">+ নতুন পোস্ট যুক্ত করুন</a>
+      </div>
+    </header>
+
+    {successMessage && <div class="alert alert-success">{successMessage}</div>}
+    {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
+
+    <div class="glass-card table-card">
+      {posts.length === 0 ? (
+        <div class="no-posts">কোনো পোস্ট পাওয়া যায়নি। নতুন পোস্ট যুক্ত করুন।</div>
+      ) : (
+        <div class="table-wrapper">
+          <table class="posts-table">
+            <thead>
+              <tr>
+                <th>শিরোনাম</th>
+                <th>ক্যাটাগরি</th>
+                <th>বিষয়</th>
+                <th>স্ট্যাটাস</th>
+                <th>তারিখ</th>
+                <th>অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody>
+              {posts.map((post) => (
+                <tr>
+                  <td class="post-title-col">{post.title}</td>
+                  <td><span class="badge-exam">{post.exam}</span></td>
+                  <td>{post.subject}</td>
+                  <td>
+                    <span class={post.is_published ? "status-published" : "status-draft"}>
+                      {post.is_published ? "পাবলিশড" : "ড্রাফট"}
+                    </span>
+                  </td>
+                  <td>{new Date(post.created_at).toLocaleDateString('bn-BD')}</td>
+                  <td class="action-buttons-cell">
+                    <a href={`/admin/edit?id=${post.id}`} class="action-btn edit-btn">সম্পাদনা</a>
+                    <form method="POST" class="delete-form" onsubmit="return confirm('আপনি কি নিশ্চিত যে এই পোস্টটি ডিলিট করতে চান?');">
+                      <input type="hidden" name="action" value="delete" />
+                      <input type="hidden" name="postId" value={post.id} />
+                      <button type="submit" class="action-btn delete-btn">ডিলিট</button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .admin-nav { background: rgba(11, 15, 25, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .admin-logo { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem; }
+  .badge-admin { font-size: 0.7rem; background: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; }
+  .view-site-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; margin-right: 1.5rem; transition: color 0.2s; }
+  .view-site-link:hover { color: white; }
+  .logout-btn { background: none; border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-secondary); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+  .logout-btn:hover { background: rgba(244, 63, 94, 0.1); color: #fda4af; border-color: rgba(244, 63, 94, 0.3); }
+  .admin-container { max-width: 1200px; margin-top: 2rem; }
+  .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .dashboard-header h2 { font-size: 1.75rem; font-weight: 700; }
+  .dashboard-header p { color: var(--text-secondary); }
+  .header-actions { display: flex; gap: 0.75rem; }
+  .btn-add { background: linear-gradient(135deg, var(--color-success), #059669); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+  .btn-add:hover { transform: translateY(-1px); }
+  .btn-settings { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #c7d2fe; text-decoration: none; padding: 0.75rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+  .btn-settings:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+  .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
+  .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--color-success); color: #a7f3d0; }
+  .alert-danger { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; }
+  .table-card { padding: 0; overflow: hidden; }
+  .no-posts { padding: 3rem; text-align: center; color: var(--text-secondary); }
+  .table-wrapper { overflow-x: auto; }
+  .posts-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .posts-table th, .posts-table td { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem; }
+  .posts-table th { background: rgba(255, 255, 255, 0.02); color: var(--text-secondary); font-weight: 600; }
+  .post-title-col { font-weight: 600; color: white; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge-exam { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+  .status-published { color: var(--color-success); font-weight: 600; }
+  .status-draft { color: var(--text-muted); }
+  .action-buttons-cell { display: flex; gap: 0.5rem; }
+  .action-btn { padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+  .edit-btn { background: rgba(99, 102, 241, 0.15); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.3); }
+  .edit-btn:hover { background: var(--color-primary); color: white; }
+  .delete-form { display: inline; }
+  .delete-btn { background: rgba(244, 63, 94, 0.15); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.3); }
+  .delete-btn:hover { background: var(--color-accent); color: white; }
+</style>
+</file>
+
+<file path="src/pages/sitemap.xml.js">
+// filepath: src/pages/sitemap.xml.js
+import { getDbCredentials } from '../utils/db';
+
+export async function GET({ locals }) {
+  const runtime = locals.runtime;
+  const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+
+  let posts = [];
+  try {
+    const res = await fetch(`${dbUrl}/rest/v1/posts?select=slug,exam,subject,updated_at&is_published=eq.true`, {
+      headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+    });
+    if (res.ok) {
+      posts = await res.json();
+    }
+  } catch (e) {
+    console.error("Error generating sitemap:", e);
+  }
+
+  if (!posts || posts.length === 0) {
+    posts = [
+      { slug: 'physics-1st-paper-suggestion', exam: 'HSC', subject: 'physics', updated_at: new Date().toISOString() },
+      { slug: 'bcs-46-bangla-literature', exam: 'BCS', subject: 'bangla', updated_at: new Date().toISOString() }
+    ];
+  }
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://prostutibd.app/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  ${posts.map(post => `
+  <url>
+    <loc>https://prostutibd.app/${post.exam.toLowerCase()}/${post.subject.toLowerCase()}/${post.slug}</loc>
+    <lastmod>${new Date(post.updated_at).toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join('')}
+</urlset>`.trim();
+
+  return new Response(xml, {
+    headers: {
+      'Content-Type': 'application/xml',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate'
+    }
+  });
+}
+</file>
+
+<file path="src/pages/download.astro">
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const { searchParams } = Astro.url;
+const fileId = searchParams.get('id');
+
+const dbUrl = import.meta.env.PUBLIC_SUPABASE_URL || 'https://your-supabase-project.supabase.co';
+const apiKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+
+let fileInfo = null;
+
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${fileId}`, {
+    headers: { 'apikey': apiKey, 'Authorization': `Bearer ${apiKey}` }
+  });
+  if (res.ok) {
+    const data = await res.json();
+    fileInfo = data[0];
+  }
+} catch (e) {
+  console.error("Error querying download file details:", e);
+}
+
+if (!fileInfo && fileId && fileId.startsWith('mock-')) {
+  fileInfo = {
+    id: fileId,
+    title: "পদার্থবিজ্ঞান ১ম পত্র ১০০% কমন সাজেশন্স",
+    file_url: "https://t.me/yourchannel",
+    drive_url: "https://drive.google.com/open?id=mock",
+    show_app_opener: true,
+    app_link: null
+  };
+}
+
+if (!fileInfo) {
+  return Astro.redirect('/');
+}
+
+// Utility function to identify resource domains and labels
+const getLinkDetails = (url) => {
+  if (!url) return null;
+  const isTelegram = url.includes('t.me') || url.includes('telegram.org');
+  const isDrive = url.includes('drive.google.com') || url.includes('docs.google.com');
+  const isDirectPdf = url.endsWith('.pdf');
+
+  return {
+    url,
+    isTelegram,
+    isDrive,
+    isDirectPdf,
+    label: isTelegram 
+      ? "💬 টেলিগ্রাম থেকে ডাউনলোড করুন (প্রস্তাবিত)" 
+      : isDrive 
+      ? "📂 গুগল ড্রাইভ থেকে ডাউনলোড করুন" 
+      : isDirectPdf 
+      ? "📥 সরাসরি পিডিএফ ডাউনলোড করুন" 
+      : "🔗 ডাউনলোড লিংক (এক্সটার্নাল সার্ভার)"
+  };
+};
+
+const primaryLink = getLinkDetails(fileInfo.file_url);
+const secondaryLink = getLinkDetails(fileInfo.drive_url);
+
+// App opener settings
+const showAppOpener = fileInfo.show_app_opener !== false;
+const appLinkUrl = fileInfo.app_link?.trim() || 'https://web.prostutibd.app';
+---
+
+<BaseLayout
+  title={`${fileInfo?.title || 'ফাইল'} ডাউনলোড - Prostuti BD`}
+  description="ব turvall ও দ্রুত ডাউনলোড লিংক। PDF, সাজেশন ও নোট সংগ্রহ করুন।"
+>
+  <main class="download-container">
+    <div class="glass-card download-card">
+      <header class="header">
+        <span class="file-icon">📄</span>
+        <h2 class="title">আপনার ফাইলটি প্রস্তুত হচ্ছে...</h2>
+        <p class="timer-desc">অনুগ্রহ করে <span id="countdown">5</span> সেকেন্ড অপেক্ষা করুন।</p>
+      </header>
+
+      <!-- Circular Progress Ring Timer -->
+      <div class="timer-circle-container">
+        <svg class="timer-svg" viewBox="0 0 100 100">
+          <circle class="timer-bg-circle" cx="50" cy="50" r="45"></circle>
+          <circle class="timer-progress-circle" id="timer-progress" cx="50" cy="50" r="45"></circle>
+        </svg>
+        <span class="timer-text" id="countdown-text">5</span>
+      </div>
+
+      <!-- App Promotion Area -->
+      {showAppOpener && (
+        <div class="app-advertisement">
+          <h4>⚡ প্রস্তুতি ওয়েব অ্যাপে আপনি পাচ্ছেন:</h4>
+          <ul class="features-list">
+            <li>
+              <span class="check-icon">✓</span>
+              <span class="feature-text">অধ্যায় ভিত্তিক আনলিমিটেড মক টেস্ট</span>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <span class="feature-text">ভুল উত্তরের ব্যাখ্যা এবং বিশ্লেষণ</span>
+            </li>
+            <li>
+              <span class="check-icon">✓</span>
+              <span class="feature-text">পূর্ণাঙ্গ সমাধান ও ট্র্যাকিং ড্যাশবোর্ড</span>
+            </li>
+          </ul>
+          <a href={appLinkUrl} class="btn btn-app-link pulse-animation" target="_blank">
+            🚀 প্রস্তুতি অ্যাপ ওপেন করুন
+          </a>
+        </div>
+      )}
+
+      <!-- Dynamic, versatile download buttons -->
+      <div id="download-actions" class="hidden">
+        {primaryLink && (
+          <a 
+            href={primaryLink.url} 
+            class={`btn btn-main ${primaryLink.isTelegram ? 'tg-theme' : primaryLink.isDirectPdf ? 'direct-theme' : 'generic-theme'}`} 
+            id="primary-download-link"
+          >
+            {primaryLink.label}
+          </a>
+        )}
+        {secondaryLink && (
+          <a 
+            href={secondaryLink.url} 
+            class="btn btn-sub" 
+            id="secondary-download-link" 
+            target="_blank"
+          >
+            {secondaryLink.label}
+          </a>
+        )}
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  let seconds = 5;
+  const countdownEl = document.getElementById('countdown');
+  const countdownTextEl = document.getElementById('countdown-text');
+  const actionDiv = document.getElementById('download-actions');
+  const progressCircle = document.getElementById('timer-progress') as unknown as SVGElement;
+
+  const circumference = 282.74;
+  
+  if (progressCircle) {
+    progressCircle.style.strokeDasharray = circumference.toString();
+    progressCircle.style.strokeDashoffset = '0';
+  }
+
+  const timer = setInterval(() => {
+    seconds--;
+    if (countdownEl) countdownEl.innerText = seconds.toString();
+    if (countdownTextEl) countdownTextEl.innerText = seconds.toString();
+    
+    if (progressCircle) {
+      const offset = circumference - (seconds / 5) * circumference;
+      progressCircle.style.strokeDashoffset = offset.toString();
+    }
+    
+    if (seconds <= 0) {
+      clearInterval(timer);
+      if (actionDiv) {
+        actionDiv.classList.remove('hidden');
+        actionDiv.classList.add('fade-in');
+      }
+      
+      // Auto redirect to primary link upon timer completion
+      const primaryUrl = (document.getElementById('primary-download-link') as HTMLAnchorElement | null)?.href;
+      if (primaryUrl) {
+        window.location.href = primaryUrl;
+      }
+    }
+  }, 1000);
+</script>
+
+<style>
+  .download-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem; }
+  .download-card { max-width: 520px; width: 100%; text-align: center; padding: 3rem 2.5rem; border-radius: 20px; }
+  .header { margin-bottom: 2rem; }
+  .file-icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+  .title { font-size: 1.65rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary); }
+  .timer-desc { font-size: 1rem; color: var(--text-secondary); }
+  #countdown { font-weight: 700; color: var(--color-accent); }
+  .timer-circle-container { position: relative; width: 100px; height: 100px; margin: 0 auto 2.5rem auto; }
+  .timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+  .timer-bg-circle { fill: none; stroke: rgba(255, 255, 255, 0.05); stroke-width: 8; }
+  .timer-progress-circle { fill: none; stroke: var(--color-accent); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+  .app-advertisement { background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 1.5rem; border-radius: 14px; margin-bottom: 2rem; text-align: left; }
+  .app-advertisement h4 { font-size: 1.05rem; color: var(--text-primary); margin-bottom: 1rem; font-weight: 700; }
+  .features-list { list-style: none; margin-bottom: 1.5rem; }
+  .features-list li { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.95rem; color: var(--text-secondary); line-height: 1.4; }
+  .check-icon { color: var(--color-success); font-weight: bold; flex-shrink: 0; }
+  .btn-app-link { display: flex; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: var(--text-primary); font-weight: 600; width: 100%; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+  .btn-app-link:hover { box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5); }
+  .hidden { display: none !important; }
+  .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  
+  /* Versatile Button Theme classes */
+  .btn-main { display: flex; padding: 1rem; width: 100%; margin-bottom: 0.75rem; font-weight: 700; transition: background 0.2s, box-shadow 0.2s, transform 0.2s; }
+  .tg-theme { background: var(--color-telegram); color: var(--text-primary); box-shadow: 0 4px 15px rgba(0, 136, 204, 0.2); }
+  .tg-theme:hover { background: var(--color-telegram-hover); box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4); transform: translateY(-1px); }
+  .direct-theme { background: var(--color-direct); color: var(--text-primary); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); }
+  .direct-theme:hover { background: var(--color-direct-hover); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4); transform: translateY(-1px); }
+  .generic-theme { background: var(--color-success); color: var(--text-primary); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); }
+  .generic-theme:hover { background: var(--color-success-hover); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); transform: translateY(-1px); }
+
+  .btn-sub { display: flex; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary); padding: 0.875rem; width: 100%; font-size: 0.95rem; font-weight: 600; }
+  .btn-sub:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); transform: translateY(-1px); }
+  @media (max-width: 480px) { .download-card { padding: 2rem 1.5rem; } .title { font-size: 1.4rem; } }
+</style>
+</file>
+
+<file path="src/pages/admin/edit.astro">
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { verifyAuth, getAdminCredentials } from '../../utils/auth';
+
+const runtime = Astro.locals.runtime;
+const isAuthed = await verifyAuth(Astro.cookies, runtime);
+
+if (!isAuthed) {
+  return Astro.redirect('/admin/login');
+}
+
+const { dbUrl, dbWriteKey, dbReadKey } = getAdminCredentials(runtime);
+const { searchParams } = Astro.url;
+const editId = searchParams.get('id');
+
+let errorMessage = '';
+let successMessage = '';
+
+// Default structure
+let postData = {
+  title: '',
+  slug: '',
+  exam: 'HSC',
+  subject: '',
+  content: '',
+  ad_text: '',
+  image_url: '',
+  file_url: '',
+  drive_url: '',
+  link_type: 'download',
+  is_published: true,
+  show_app_opener: true,
+  app_link: '',
+  app_title: '',
+  app_description: '',
+  app_button_text: ''
+};
+
+// Handle preset-save/delete actions sent via JSON POST
+if (Astro.request.method === 'POST' && Astro.request.headers.get('content-type')?.includes('application/json')) {
+  try {
+    const jsonBody = await Astro.request.json();
+    const { action, field_type, label, body, presetId } = jsonBody;
+
+    if (action === 'save_preset') {
+      const response = await fetch(`${dbUrl}/rest/v1/presets`, {
+        method: 'POST',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ field_type, label, body })
+      });
+      if (response.ok) {
+        const added = await response.json();
+        return new Response(JSON.stringify({ success: true, preset: added[0] }), { status: 200 });
+      }
+    }
+
+    if (action === 'delete_preset') {
+      const response = await fetch(`${dbUrl}/rest/v1/presets?id=eq.${presetId}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`
+        }
+      });
+      if (response.ok) {
+        return new Response(JSON.stringify({ success: true }), { status: 200 });
+      }
+    }
+
+    if (action === 'update_preset') {
+      const response = await fetch(`${dbUrl}/rest/v1/presets?id=eq.${presetId}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ field_type, label, body })
+      });
+      if (response.ok) {
+        const updated = await response.json();
+        return new Response(JSON.stringify({ success: true, preset: updated[0] }), { status: 200 });
+      }
+    }
+  } catch (e) {
+    return new Response(JSON.stringify({ success: false, message: 'Preset operation failed' }), { status: 500 });
+  }
+}
+
+// Fetch existing post data if in Edit mode
+if (editId) {
+  try {
+    const res = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${editId}`, {
+      headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.length > 0) {
+        postData = data[0];
+      }
+    }
+  } catch (e) {
+    errorMessage = 'সংশ্লিষ্ট পোস্ট লোড করতে সমস্যা হয়েছে।';
+  }
+}
+
+// Handle traditional Form submissions (Saving/Updating Posts)
+if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type')?.includes('application/json')) {
+  try {
+    const data = await Astro.request.formData();
+    
+    const slugify = (value = '') => value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    const payload = {
+      title: data.get('title')?.toString().trim(),
+      slug: slugify(data.get('slug')?.toString() || data.get('title')?.toString() || ''),
+      exam: data.get('exam')?.toString().trim(),
+      subject: slugify(data.get('subject')?.toString() || ''),
+      content: data.get('content')?.toString(),
+      ad_text: data.get('ad_text')?.toString(),
+      image_url: data.get('image_url')?.toString().trim() || null,
+      file_url: data.get('file_url')?.toString().trim() || null,
+      drive_url: data.get('drive_url')?.toString().trim() || null,
+      link_type: data.get('link_type')?.toString() || 'download',
+      is_published: data.get('is_published') === 'true',
+      show_app_opener: data.get('show_app_opener') === 'true',
+      app_link: data.get('app_link')?.toString().trim() || null,
+      app_title: data.get('app_title')?.toString().trim() || null,
+      app_description: data.get('app_description')?.toString().trim() || null,
+      app_button_text: data.get('app_button_text')?.toString().trim() || null
+    };
+
+    if (editId) {
+      const updateRes = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${editId}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (updateRes.ok) {
+        successMessage = 'পোস্টটি সফলভাবে আপডেট করা হয়েছে।';
+        postData = payload;
+      } else {
+        const errJson = await updateRes.json().catch(() => ({}));
+        errorMessage = `পোস্টটি আপডেট করতে ব্যর্থ হয়েছে: ${errJson.message || 'ডাটাবেজ কানেকশন সমস্যা'}`;
+      }
+    } else {
+      const createRes = await fetch(`${dbUrl}/rest/v1/posts`, {
+        method: 'POST',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (createRes.ok) {
+        return Astro.redirect('/admin?success=true');
+      } else {
+        const errJson = await createRes.json().catch(() => ({}));
+        errorMessage = `নতুন পোস্ট সংরক্ষণ করতে ব্যর্থ হয়েছে: ${errJson.message || 'সম্ভবত এই স্ল্যাগটি (slug) ইতিমধ্যে ব্যবহার করা হয়েছে।'}`;
+      }
+    }
+  } catch (e) {
+    errorMessage = 'পোস্টটি সেভ করার সময় একটি ইরর হয়েছে।';
+  }
+}
+
+// Fetch dynamic presets from Supabase
+let databasePresets = [];
+try {
+  const presetRes = await fetch(`${dbUrl}/rest/v1/presets?order=created_at.asc`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (presetRes.ok) {
+    databasePresets = await presetRes.json();
+  }
+} catch (e) {
+  console.error("Could not fetch database presets:", e);
+}
+---
+
+<BaseLayout title={editId ? "পোস্ট সম্পাদনা - এডমিন প্যানেল" : "নতুন পোস্ট যুক্ত করুন - এডমিন প্যানেল"}>
+  <nav class="admin-nav">
+    <div class="nav-container">
+      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Editor</span></a>
+      <div class="nav-actions">
+        <a href="/admin" class="back-link">← ড্যাশবোর্ডে ফিরুন</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container form-container">
+    <header class="form-header">
+      <h2>{editId ? "পোস্ট সম্পাদনা করুন" : "নতুন পোস্ট যুক্ত করুন"}</h2>
+      <p>নতুন সাজেশন্স বা গাইড ফাইলের পরিবর্তনসমূহ এখানে করুন ও কনটেন্ট মডিউল নির্ধারণ করুন।</p>
+    </header>
+
+    {successMessage && <div class="alert alert-success">{successMessage}</div>}
+    {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
+
+    <form method="POST" class="glass-card editor-form">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="title">পোস্ট শিরোনাম *</label>
+          <input type="text" id="title" name="title" value={postData.title} required placeholder="উদাঃ HSC 2026 পদার্থবিজ্ঞান প্রথম পত্র সাজেশন্স" />
+        </div>
+
+        <div class="form-group">
+          <label for="slug">স্লাগ URL (Slug) *</label>
+          <input type="text" id="slug" name="slug" value={postData.slug} required placeholder="উদাঃ physics-1st-paper-suggestion" />
+          <small class="helper-text">ইউআরএল-এর জন্য অটোমেটিক্যালি ইংরেজি slug তৈরি হবে।</small>
+        </div>
+
+        <div class="form-group">
+          <label for="exam">পরীক্ষার ক্যাটাগরি *</label>
+          <select id="exam" name="exam" class="theme-select" required>
+            <option value="HSC" selected={postData.exam === 'HSC'}>HSC</option>
+            <option value="SSC" selected={postData.exam === 'SSC'}>SSC</option>
+            <option value="BCS" selected={postData.exam === 'BCS'}>BCS</option>
+            <option value="Admission" selected={postData.exam === 'Admission'}>Admission</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="subject">বিষয় (Subject) *</label>
+          <input type="text" id="subject" name="subject" value={postData.subject} required placeholder="উদাঃ physics, bangla, math" />
+          <small class="helper-text">এখানে লিখা বিষয়গুলো URL-এ সঠিকভাবে দেখা হবে।</small>
+        </div>
+
+        <div class="form-group">
+          <label for="is_published">পাবলিশ স্ট্যাটাস</label>
+          <select id="is_published" name="is_published" class="theme-select">
+            <option value="true" selected={postData.is_published === true}>পাবলিশড (সরাসরি সাইটে দেখাবে)</option>
+            <option value="false" selected={postData.is_published === false}>ড্রাফট (লুকানো থাকবে)</option>
+          </select>
+        </div>
+
+        <!-- App Opener Settings -->
+        <div class="form-group full-width app-settings-card">
+          <label class="section-sub-label">📱 অ্যাপ ব্যানার সেটিংস</label>
+          <div class="app-settings-grid">
+            <label class="toggle-option">
+              <input type="hidden" name="show_app_opener" value="false" />
+              <input type="checkbox" name="show_app_opener" value="true" checked={postData.show_app_opener !== false} />
+              <div class="toggle-content">
+                <strong>অ্যাপ ব্যানার দেখান</strong>
+                <span>পোস্ট ও ডাউনলোড পেজে অ্যাপ প্রমোশন ব্যানার দেখানো হবে কিনা</span>
+              </div>
+            </label>
+
+            <div class="form-group">
+              <label for="app_link">অ্যাপ লিংক (ঐচ্ছিক)</label>
+              <input type="url" id="app_link" name="app_link" value={postData.app_link || ''} placeholder="https://web.prostutibd.app/practice/..." />
+              <small class="helper-text">ফাঁকা রাখলে ডিফল্ট লিংক ব্যবহার হবে।</small>
+            </div>
+
+            <div class="form-group">
+              <label for="app_title">ব্যানার শিরোনাম</label>
+              <input type="text" id="app_title" name="app_title" value={postData.app_title || ''} placeholder="📱 প্রস্তুতি অ্যাপে পরীক্ষা দাও!" />
+            </div>
+
+            <div class="form-group">
+              <label for="app_description">ব্যানার বিবরণ</label>
+              <textarea id="app_description" name="app_description" rows="2" placeholder="এই অধ্যায়ের গুরুত্বপূর্ণ প্রশ্নগুলোর ওপর রিয়েল-টাইম পরীক্ষা দিতে আমাদের অ্যাপে প্রবেশ করো।">{postData.app_description || ''}</textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="app_button_text">বাটনের টেক্সট</label>
+              <input type="text" id="app_button_text" name="app_button_text" value={postData.app_button_text || ''} placeholder="অ্যাপে যাও" />
+            </div>
+
+            <div class="form-group">
+              <div class="field-header-row">
+                <label>📦 ব্যানার প্রিসেট</label>
+                <div class="preset-controls-wrapper">
+                  <div class="preset-chips" id="app_banner-presets-container">
+                    <!-- Javascript will inject app_banner preset chips here -->
+                  </div>
+                  <button type="button" class="btn-create-preset" data-field="app_banner">+ নতুন প্রিসেট</button>
+                </div>
+              </div>
+              <small class="helper-text">প্রিসেট ক্লিক করলে ব্যানারের শিরোনাম, বিবরণ ও বাটন টেক্সট অটো বসে যাবে।</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Target Link Toggle Option (Direct Link VS Download Timer Counter) -->
+        <div class="form-group full-width action-link-type-card">
+          <label class="section-sub-label">ডাউনলোড বাটনের কার্যকারিতা (Action Type) *</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="link_type" value="download" checked={postData.link_type === 'download'} />
+              <div class="option-content">
+                <strong>⏳ ডাউনলোড কাউন্টডাউন পেজ (Default)</strong>
+                <span>বাটনে চাপ দিলে ব্যবহারকারী ৫ সেকেন্ডের টাইমার পেজে যাবে।</span>
+              </div>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="link_type" value="direct" checked={postData.link_type === 'direct'} />
+              <div class="option-content">
+                <strong>⚡ সরাসরি রিডিরেক্ট (Direct Go Link)</strong>
+                <span>বাটনে চাপ দিলে সরাসরি মেইন ফাইলে নিয়ে চলে যাবে (কোনো টাইমার থাকবে না)।</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- content with Custom DB Presets dynamic system -->
+        <div class="form-group full-width">
+          <div class="field-header-row">
+            <label for="content">বিস্তারিত কন্টেন্ট ও সিলেবাস বিবরণ</label>
+            <div class="preset-controls-wrapper">
+              <div class="preset-chips" id="content-presets-container">
+                <!-- Javascript will inject custom presets database rows here -->
+              </div>
+              <button type="button" class="btn-create-preset" data-field="content">+ নতুন প্রিসেট</button>
+            </div>
+          </div>
+          <textarea id="content" name="content" rows="8" placeholder="পরীক্ষার জন্য সাজেশনের বিবরণ ও শর্ট সিলেবাস এখানে লিখুন...">{postData.content}</textarea>
+        </div>
+
+        <!-- ad_text with Custom DB Presets dynamic system -->
+        <div class="form-group full-width">
+          <div class="field-header-row">
+            <label for="ad_text">বিজ্ঞাপন টেক্সট</label>
+            <div class="preset-controls-wrapper">
+              <div class="preset-chips" id="ad_text-presets-container">
+                <!-- Javascript will inject custom presets database rows here -->
+              </div>
+              <button type="button" class="btn-create-preset" data-field="ad_text">+ নতুন প্রিসেট</button>
+            </div>
+          </div>
+          <textarea id="ad_text" name="ad_text" rows="3" placeholder="বিজ্ঞাপন টেক্সট...">{postData.ad_text}</textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="image_url">কভার ইমেজ URL (ঐচ্ছিক)</label>
+          <input type="url" id="image_url" name="image_url" value={postData.image_url || ''} placeholder="https://example.com/book-cover.jpg" />
+          <small class="helper-text">এই URL টি পোস্টের শিরোনামের নিচে শো হবে।</small>
+        </div>
+
+        <div class="form-group">
+          <label for="file_url">ডাউনলোড লিংক ১ (প্রাইমারি লিংক)</label>
+          <input type="url" id="file_url" name="file_url" value={postData.file_url || ''} placeholder="টেলিগ্রাম, ড্রাইভ বা পিডিএফ CDN লিংক" />
+        </div>
+
+        <div class="form-group">
+          <label for="drive_url">ডাউনলোড লিংক ২ (বিকল্প/সেকেন্ডারি লিংক)</label>
+          <input type="url" id="drive_url" name="drive_url" value={postData.drive_url || ''} placeholder="বিকল্প ডাউনলোড বা গুগল ড্রাইভ লিংক" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/admin" class="btn-cancel">বাতিল করুন</a>
+        <button type="submit" class="btn-save">সংরক্ষণ করুন</button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Modal window interface for dynamic Preset insertion/management -->
+  <div class="modal" id="preset-modal">
+    <div class="modal-card">
+      <h3 id="modal-title">নতুন প্রিসেট তৈরি করুন</h3>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="preset-label">প্রিসেট নাম (Label)</label>
+          <input type="text" id="preset-label" placeholder="উদাঃ সাজেশন্স বিবরণ, বাংলা অ্যাড..." />
+        </div>
+        <!-- app_banner-specific fields (hidden by default) -->
+        <div class="form-group banner-preset-field" style="display:none">
+          <label for="preset-app-title">ব্যানার শিরোনাম</label>
+          <input type="text" id="preset-app-title" placeholder="📱 প্রস্তুতি অ্যাপে পরীক্ষা দাও!" />
+        </div>
+        <div class="form-group banner-preset-field" style="display:none">
+          <label for="preset-app-desc">ব্যানার বিবরণ</label>
+          <textarea id="preset-app-desc" rows="2" placeholder="এই অধ্যায়ের গুরুত্বপূর্ণ প্রশ্নগুলোর ওপর..."></textarea>
+        </div>
+        <div class="form-group banner-preset-field" style="display:none">
+          <label for="preset-app-btn">বাটনের টেক্সট</label>
+          <input type="text" id="preset-app-btn" placeholder="অ্যাপে যাও" />
+        </div>
+        <div class="form-group">
+          <label for="preset-body">প্রিসেট বিবরণ (Text Body)</label>
+          <textarea id="preset-body" rows="6" placeholder="যে কন্টেন্ট বা অ্যাড লেখাটি অটোমেটিকলি বক্সে বসাতে চান..."></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="btn-close-modal" class="btn-cancel">বন্ধ করুন</button>
+        <button type="button" id="btn-save-modal" class="btn-save">সেভ প্রিসেট</button>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script is:inline define:vars={{ databasePresets }}>
+  // Initialize dynamic database-connected presets
+  let currentPresets = databasePresets || [];
+  let editingPresetId = null;
+
+  const titleInput = document.getElementById('title');
+  const slugInput = document.getElementById('slug');
+
+  function slugify(value) {
+    return value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  // Automatically formulate clean URL slugs
+  if (titleInput && slugInput) {
+    const syncSlug = () => {
+      const titleValue = titleInput.value.trim();
+      if (!slugInput.value || slugInput.value === slugify(titleInput.value)) {
+        slugInput.value = slugify(titleValue);
+      }
+    };
+
+    titleInput.addEventListener('input', syncSlug);
+    titleInput.addEventListener('blur', syncSlug);
+  }
+
+  // Show/hide app_banner extra fields in modal
+  function toggleBannerFields(show) {
+    document.querySelectorAll('.banner-preset-field').forEach(el => {
+      el.style.display = show ? 'block' : 'none';
+    });
+    const bodyField = document.getElementById('preset-body').parentElement;
+    bodyField.style.display = show ? 'none' : 'block';
+  }
+
+  // Manage rendering, editing, and deletion of dynamic presets
+  function renderPresets() {
+    const containers = {
+      content: document.getElementById('content-presets-container'),
+      ad_text: document.getElementById('ad_text-presets-container'),
+      app_banner: document.getElementById('app_banner-presets-container')
+    };
+
+    Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
+
+    currentPresets.forEach(preset => {
+      const parent = containers[preset.field_type];
+      if (parent) {
+        const chip = document.createElement('div');
+        chip.className = 'preset-chip-item';
+        
+        const labelBtn = document.createElement('button');
+        labelBtn.type = 'button';
+        labelBtn.className = 'preset-label-btn';
+        labelBtn.innerText = `🎯 ${preset.label}`;
+        labelBtn.addEventListener('click', () => {
+          if (preset.field_type === 'app_banner') {
+            try {
+              const data = JSON.parse(preset.body);
+              document.getElementById('app_title').value = data.title || '';
+              document.getElementById('app_description').value = data.description || '';
+              document.getElementById('app_button_text').value = data.button_text || '';
+            } catch (e) {
+              alert('ব্যানার প্রিসেট ডাটা পড়তে সমস্যা হয়েছে।');
+            }
+          } else {
+            const field = document.getElementById(preset.field_type);
+            if (field) field.value = preset.body;
+          }
+        });
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'preset-edit-btn';
+        editBtn.innerHTML = '✏️';
+        editBtn.title = 'প্রিসেট সম্পাদনা';
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editingPresetId = preset.id;
+          targetFieldType = preset.field_type;
+          document.getElementById('preset-label').value = preset.label;
+          
+          if (preset.field_type === 'app_banner') {
+            toggleBannerFields(true);
+            try {
+              const data = JSON.parse(preset.body);
+              document.getElementById('preset-app-title').value = data.title || '';
+              document.getElementById('preset-app-desc').value = data.description || '';
+              document.getElementById('preset-app-btn').value = data.button_text || '';
+            } catch (e) {}
+            document.getElementById('preset-body').value = '';
+          } else {
+            toggleBannerFields(false);
+            document.getElementById('preset-body').value = preset.body;
+          }
+          
+          document.getElementById('modal-title').innerText = `"${preset.label}" সম্পাদনা করুন`;
+          modal.classList.add('open');
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'preset-delete-btn';
+        deleteBtn.innerHTML = '×';
+        deleteBtn.title = 'প্রিসেট মুছুন';
+        deleteBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (confirm(`আপনি কি "${preset.label}" প্রিসেটটি ডিলিট করতে চান?`)) {
+            const res = await fetch(window.location.href, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'delete_preset', presetId: preset.id })
+            });
+            const data = await res.json();
+            if (data.success) {
+              currentPresets = currentPresets.filter(p => p.id !== preset.id);
+              renderPresets();
+            }
+          }
+        });
+
+        chip.appendChild(labelBtn);
+        chip.appendChild(editBtn);
+        chip.appendChild(deleteBtn);
+        parent.appendChild(chip);
+      }
+    });
+  }
+
+  // Handle Preset creation/editing actions
+  const modal = document.getElementById('preset-modal');
+  const btnCreatePreset = document.querySelectorAll('.btn-create-preset');
+  const btnCloseModal = document.getElementById('btn-close-modal');
+  const btnSaveModal = document.getElementById('btn-save-modal');
+  
+  let targetFieldType = 'content';
+
+  function getFieldTypeLabel(type) {
+    const labels = {
+      content: 'ডিটেইলস কন্টেন্ট',
+      ad_text: 'অ্যাড টেক্সট',
+      app_banner: 'অ্যাপ ব্যানার'
+    };
+    return labels[type] || type;
+  }
+
+  btnCreatePreset.forEach(btn => {
+    btn.addEventListener('click', () => {
+      editingPresetId = null;
+      targetFieldType = btn.getAttribute('data-field') || 'content';
+      document.getElementById('modal-title').innerText = `${getFieldTypeLabel(targetFieldType)} এর জন্য নতুন প্রিসেট`;
+      document.getElementById('preset-label').value = '';
+      document.getElementById('preset-body').value = '';
+      document.getElementById('preset-app-title').value = '';
+      document.getElementById('preset-app-desc').value = '';
+      document.getElementById('preset-app-btn').value = '';
+      
+      toggleBannerFields(targetFieldType === 'app_banner');
+      modal.classList.add('open');
+    });
+  });
+
+  if (btnCloseModal) {
+    btnCloseModal.addEventListener('click', () => {
+      modal.classList.remove('open');
+      editingPresetId = null;
+    });
+  }
+
+  if (btnSaveModal) {
+    btnSaveModal.addEventListener('click', async () => {
+      const label = document.getElementById('preset-label').value.trim();
+      
+      let body;
+      if (targetFieldType === 'app_banner') {
+        const title = document.getElementById('preset-app-title').value.trim();
+        const description = document.getElementById('preset-app-desc').value.trim();
+        const button_text = document.getElementById('preset-app-btn').value.trim();
+        if (!label) {
+          alert('দয়া করে প্রিসেটের নাম লিখুন।');
+          return;
+        }
+        body = JSON.stringify({ title, description, button_text });
+      } else {
+        body = document.getElementById('preset-body').value;
+        if (!label || !body) {
+          alert('দয়া করে প্রিসেটের নাম ও কন্টেন্ট পূরণ করুন।');
+          return;
+        }
+      }
+
+      const action = editingPresetId ? 'update_preset' : 'save_preset';
+      const payload = {
+        action,
+        field_type: targetFieldType,
+        label,
+        body
+      };
+      if (editingPresetId) payload.presetId = editingPresetId;
+
+      const res = await fetch(window.location.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        if (editingPresetId) {
+          const idx = currentPresets.findIndex(p => p.id === editingPresetId);
+          if (idx !== -1) currentPresets[idx] = data.preset;
+        } else {
+          currentPresets.push(data.preset);
+        }
+        renderPresets();
+        modal.classList.remove('open');
+        editingPresetId = null;
+      } else {
+        alert('প্রিসেট সংরক্ষণ করতে সমস্যা হয়েছে।');
+      }
+    });
+  }
+
+  // Initial load
+  renderPresets();
+</script>
+
+<style>
+  .admin-nav { background: rgba(11, 15, 25, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .admin-logo { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem; }
+  .badge-admin { font-size: 0.7rem; background: var(--color-secondary); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; }
+  .back-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .back-link:hover { color: white; }
+  .form-container { max-width: 840px; margin-top: 2rem; padding-bottom: 5rem; }
+  .form-header { text-align: left; margin-bottom: 2rem; }
+  .form-header h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .form-header p { color: var(--text-secondary); }
+  .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
+  .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--color-success); color: #a7f3d0; }
+  .alert-danger { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; }
+  .editor-form { padding: 2.5rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+  .full-width { grid-column: span 2; }
+  .form-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+
+  /* Segmented Link Action Layout Switch styles */
+  .action-link-type-card { background: rgba(255, 255, 255, 0.02); padding: 1.25rem; border-radius: 12px; border: 1px dashed rgba(99, 102, 241, 0.2); }
+  .app-settings-card { background: rgba(16, 185, 129, 0.05); padding: 1.25rem; border-radius: 12px; border: 1px dashed rgba(16, 185, 129, 0.2); }
+  .app-settings-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .toggle-option { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; background: rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; transition: all 0.2s; }
+  .toggle-option:hover { border-color: rgba(16, 185, 129, 0.3); }
+  .toggle-option input[type="checkbox"] { width: 1.1rem; height: 1.1rem; margin-top: 0.2rem; cursor: pointer; accent-color: var(--color-success); }
+  .toggle-content { display: flex; flex-direction: column; }
+  .toggle-content strong { font-size: 0.9rem; color: white; }
+  .toggle-content span { font-size: 0.8rem; color: var(--text-secondary); }
+  .section-sub-label { display: block; margin-bottom: 0.75rem !important; color: #c7d2fe !important; }
+  .radio-group { display: flex; flex-direction: column; gap: 0.75rem; }
+  .radio-option { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; background: rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; transition: all 0.2s; }
+  .radio-option:hover { border-color: rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.03); }
+  .radio-option input { width: auto; margin-top: 0.25rem; cursor: pointer; }
+  .option-content { display: flex; flex-direction: column; }
+  .option-content strong { font-size: 0.9rem; color: white; }
+  .option-content span { font-size: 0.8rem; color: var(--text-secondary); }
+
+  /* Preset components dynamic layout design */
+  .field-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+  .preset-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .preset-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .preset-chip-item { display: inline-flex; align-items: center; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: 4px; overflow: hidden; }
+  .preset-label-btn { background: none; border: none; color: #c7d2fe; padding: 0.2rem 0.5rem; font-size: 0.75rem; cursor: pointer; font-weight: 500; transition: background 0.2s; }
+  .preset-label-btn:hover { background: rgba(99, 102, 241, 0.2); color: white; }
+  .preset-delete-btn { background: rgba(244, 63, 94, 0.1); border: none; border-left: 1px solid rgba(99, 102, 241, 0.25); color: #fca5a5; padding: 0.2rem 0.4rem; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
+  .preset-delete-btn:hover { background: var(--color-accent); color: white; }
+  .preset-edit-btn { background: rgba(251, 191, 36, 0.1); border: none; border-left: 1px solid rgba(99, 102, 241, 0.25); color: #fbbf24; padding: 0.2rem 0.4rem; font-size: 0.7rem; cursor: pointer; transition: background 0.2s; }
+  .preset-edit-btn:hover { background: rgba(251, 191, 36, 0.25); }
+  .btn-create-preset { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+  .btn-create-preset:hover { background: var(--color-success); color: white; border-color: var(--color-success); }
+
+  .theme-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.25em;
+    padding-right: 2.5rem !important;
+  }
+  .form-group input, .form-group select, .form-group textarea { background: rgba(19, 26, 46, 0.8) !important; border: 1px solid rgba(99, 102, 241, 0.2); color: white; padding: 0.75rem; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+  .helper-text { font-size: 0.75rem; color: var(--text-muted); margin-top: -0.25rem; }
+  .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1.5rem; }
+  .btn-cancel { background: none; border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-secondary); padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
+  .btn-cancel:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+  .btn-save { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: transform 0.2s; }
+  .btn-save:hover { transform: translateY(-1px); }
+
+  /* Preset Creation Modal Layout styling */
+  .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 999; }
+  .modal.open { display: flex; }
+  .modal-card { background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: 16px; max-width: 480px; width: 100%; padding: 2rem; box-shadow: var(--glass-shadow); }
+  .modal-card h3 { font-size: 1.25rem; margin-bottom: 1.5rem; color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 0.5rem; }
+  .modal-body { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
+
+  @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+</style>
+</file>
+
+<file path="src/pages/index.astro">
+---
+// filepath: src/pages/index.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getDbCredentials } from '../utils/db';
+
+const runtime = Astro.locals.runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+const url = Astro.url;
+const searchQuery = (url.searchParams.get('search') || '').trim();
+const selectedCategory = (url.searchParams.get('category') || '').trim();
+const selectedSubject = (url.searchParams.get('subject') || '').trim();
+
+let posts = [];
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/posts?is_published=eq.true&order=created_at.desc&limit=1000`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (res.ok) {
+    posts = await res.json();
+  }
+} catch (e) {
+  console.error("Error fetching posts:", e);
+}
+
+const mockPosts = [
+  {
+    id: "mock-hsc-physics",
+    title: "HSC 2026 পদার্থবিজ্ঞান প্রথম পত্র ১০০% কমন সাজেশন ও সমাধান",
+    slug: "physics-1st-paper-suggestion",
+    exam: "HSC",
+    subject: "physics",
+    content: "পরীক্ষার জন্য প্রয়োজনীয় সাজেশন, প্রশ্নব্যাংক, এবং গুরুত্বপূর্ণ অধ্যায়ের ডাউনলোড লিংক।",
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "mock-bcs-bangla",
+    title: "৪৬তম বিসিএস প্রিলিমিনারি বাংলা ভাষা ও সাহিত্য মডেল টেস্ট ও ব্যাখ্যা",
+    slug: "bcs-46-bangla-literature",
+    exam: "BCS",
+    subject: "bangla",
+    content: "বিসিএস প্রিলিমিনারি বাংলা ভাষা ও সাহিত্য থেকে গুরুত্বপূর্ণ প্রশ্ন ও ব্যাখ্যা।",
+    created_at: new Date().toISOString()
+  }
+];
+
+// Fetch site settings
+let appUrl = 'https://web.prostutibd.app';
+try {
+  const settingsRes = await fetch(`${dbUrl}/rest/v1/site_settings?key=eq.app_url`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (settingsRes.ok) {
+    const rows = await settingsRes.json();
+    if (rows && rows.length > 0 && rows[0].value) {
+      appUrl = rows[0].value;
+    }
+  }
+} catch (e) {
+  console.error("Could not fetch app_url setting:", e);
+}
+
+const allPosts = posts && posts.length > 0 ? posts : mockPosts;
+const normalizedSearch = searchQuery.toLowerCase();
+const filteredPosts = allPosts.filter((post) => {
+  const title = (post.title || '').toLowerCase();
+  const subject = (post.subject || '').toLowerCase();
+  const exam = (post.exam || '').toLowerCase();
+  const content = (post.content || '').toLowerCase();
+  const slug = (post.slug || '').toLowerCase();
+  const searchMatches = !normalizedSearch || [title, subject, exam, content, slug].some((value) => value.includes(normalizedSearch));
+  const categoryMatches = !selectedCategory || exam === selectedCategory.toLowerCase();
+  const subjectMatches = !selectedSubject || subject === selectedSubject.toLowerCase();
+  return searchMatches && categoryMatches && subjectMatches;
+});
+
+const featuredPosts = filteredPosts.slice(0, 6);
+const recentPosts = filteredPosts.slice(6);
+const categories = ["HSC", "SSC", "BCS", "Admission"];
+const subjectOptions = [...new Set(allPosts.map((post) => post.subject).filter(Boolean))].sort();
+const hasSearchOrFilter = Boolean(searchQuery || selectedCategory || selectedSubject);
+---
+
+<BaseLayout
+  title="সেরা অনলাইন পরীক্ষা ও পিডিএফ সাজেশন"
+  description="বাংলাদেশের সবচেয়ে জনপ্রিয় PDF সাজেশন, নোট, মডেল টেস্ট ও পরীক্ষার রিসোর্স খুঁজুন। HSC, SSC, BCS এবং Admission-এর জন্য ফ্রি ডাউনলোড করুন."
+  keywords="pdf download, suggestion, notes, model test, hsc, ssc, bcs, admission"
+>
+  <div class="landing-page">
+    <nav class="nav-bar">
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <span class="logo-icon">🎯</span>
+          <span class="logo-text">প্রস্তুতি <span class="accent-text">BD</span></span>
+        </a>
+        <form class="nav-search" method="GET" action="/">
+          <input
+            type="search"
+            name="search"
+            value={searchQuery}
+            placeholder="পিডিএফ, সাজেশন, বিষয় লিখুন..."
+            aria-label="Search PDFs"
+          />
+          <button type="submit">🔎</button>
+        </form>
+        <div class="nav-links">
+          <a href={appUrl} class="app-btn-nav" target="_blank">অ্যাপ ওপেন করুন</a>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-container">
+        <h1 class="hero-title">বাংলাদেশের সেরা পরীক্ষা প্রস্তুতি ও সাজেশন প্ল্যাটফর্ম</h1>
+        <p class="hero-subtitle">
+          এইচএসসি, এসএসসি, বিসিএস এবং বিশ্ববিদ্যালয় ভর্তি পরীক্ষার জন্য প্রয়োজনীয় সকল সাজেশন্স, নোট এবং অধ্যায়ভিত্তিক মক টেস্ট দিন সম্পূর্ণ ফ্রিতে।
+        </p>
+        <div class="hero-ctas">
+          <a href={appUrl} class="btn btn-primary pulse-animation" target="_blank">
+            ⚡ লাইভ পরীক্ষা দিন (অ্যাপ)
+          </a>
+          <a href="#suggestions" class="btn btn-secondary">
+            📚 পিডিএফ ডাউনলোড করুন
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <section class="search-panel">
+      <div class="section-container search-panel-inner">
+        <div>
+          <p class="search-panel-label">PDF খুঁজুন</p>
+          <h2>{hasSearchOrFilter ? 'ফিল্টার করা ফলাফল' : 'আপনার প্রয়োজনীয় PDF দ্রুত খুঁজুন'}</h2>
+        </div>
+        <form class="search-controls" method="GET" action="/">
+          <input type="search" name="search" value={searchQuery} placeholder="পিডিএফ শিরোনাম বা বিষয় লিখুন" />
+          <select name="category" aria-label="Filter by category">
+            <option value="">সব ক্যাটাগরি</option>
+            {categories.map((cat) => (
+              <option value={cat.toLowerCase()} selected={selectedCategory === cat.toLowerCase()}>{cat}</option>
+            ))}
+          </select>
+          <select name="subject" aria-label="Filter by subject">
+            <option value="">সব বিষয়</option>
+            {subjectOptions.map((subject) => (
+              <option value={subject} selected={selectedSubject === subject}>{subject}</option>
+            ))}
+          </select>
+          <button type="submit">ফিল্টার</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="suggestions" class="suggestions-sec">
+      <div class="section-container">
+        <div class="sec-header">
+          <h2 class="section-title">{hasSearchOrFilter ? 'ফিল্টার করা PDF ফলাফল' : 'সাম্প্রতিক সাজেশন ও পড়াশোনা ফাইলসমূহ'}</h2>
+          <p class="sec-subtitle">
+            {hasSearchOrFilter
+              ? 'আপনার অনুসন্ধান ও ফিল্টার অনুযায়ী PDF গুলো এখানে দেখানো হচ্ছে।'
+              : 'আপনার পরীক্ষার সিলেবাসের আলোকে সর্বশেষ পাবলিশ হওয়া ফাইলসমূহ ডাউনলোড করুন।'}
+          </p>
+        </div>
+
+        {featuredPosts.length > 0 ? (
+          <div class="suggestions-grid">
+            {featuredPosts.map((post) => (
+              <article class="glass-card suggestion-card">
+                <div class="card-meta">
+                  <span class="exam-tag">{post.exam}</span>
+                  <span class="subject-tag">{post.subject}</span>
+                </div>
+                <h3 class="card-title">
+                  <a href={`/${post.exam.toLowerCase()}/${post.subject.toLowerCase()}/${post.slug}`}>{post.title}</a>
+                </h3>
+                <p class="card-desc">
+                  {(post.content || '').slice(0, 140)}{(post.content || '').length > 140 ? '...' : ''}
+                </p>
+                <div class="card-action">
+                  <a href={`/${post.exam.toLowerCase()}/${post.subject.toLowerCase()}/${post.slug}`} class="card-btn">
+                    বিস্তারিত দেখুন →
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="no-results">এই অনুসন্ধানে কোনো PDF পাওয়া যায়নি। অন্য কীওয়ার্ড বা ক্যাটাগরি ব্যবহার করে দেখুন।</div>
+        )}
+
+        {recentPosts.length > 0 && (
+          <div class="more-results">
+            <h3 class="section-title small-title">আরও PDF</h3>
+            <div class="recent-list">
+              {recentPosts.map((post) => (
+                <a href={`/${post.exam.toLowerCase()}/${post.subject.toLowerCase()}/${post.slug}`} class="recent-item">
+                  <span>{post.title}</span>
+                  <span class="recent-meta">{post.exam} • {post.subject}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="section-container">
+        <div class="features-grid">
+          <div class="glass-card feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>গতিশীল ডাউনলোড</h3>
+            <p>টেলিগ্রাম এবং গুগল ড্রাইভের মাধ্যমে কোনো ঝামেলা ছাড়াই সরাসরি হাই-স্পিড পিডিএফ ডাউনলোড করুন।</p>
+          </div>
+          <div class="glass-card feature-card">
+            <div class="feature-icon">📝</div>
+            <h3>অধ্যায়ভিত্তিক পরীক্ষা</h3>
+            <p>আমাদের ইন্টারেক্টিভ ওয়েব অ্যাপে অধ্যায়ভিত্তিক কুইজ এবং রিয়েল-টাইম মক টেস্ট দেওয়ার সুবিধা।</p>
+          </div>
+          <div class="glass-card feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>স্মার্ট ট্র্যাকিং</h3>
+            <p>ভুল উত্তরের নিখুঁত ব্যাখ্যা এবং আপনার প্রস্তুতির অগ্রগতি ট্র্যাকিংয়ের জন্য ড্যাশবোর্ড সুবিধা।</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="categories-sec">
+      <div class="section-container">
+        <h2 class="section-title">পরীক্ষা ক্যাটাগরি</h2>
+        <div class="category-cards">
+          {categories.map((cat) => (
+            <div class="glass-card cat-card">
+              <span class="cat-badge">{cat}</span>
+              <h3>{cat === "BCS" ? "বিসিএস প্রিলিমিনারি" : cat === "Admission" ? "বিশ্ববিদ্যালয় ভর্তি" : cat + " পরীক্ষা"}</h3>
+              <p>সকল বিষয়ের গুরুত্বপূর্ণ গাইডবুক, নোট ও সাজেশন্স পিডিএফ।</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-info">
+          <span class="logo">🎯 প্রস্তুতি BD</span>
+          <p>কম খরচে ও দ্রুত গতিতে বাংলাদেশের প্রতিটি শিক্ষার্থীর কাছে মানসম্মত পরীক্ষা এবং সাজেশন্স পৌঁছে দেওয়ার লক্ষ্যে কাজ করছে প্রস্তুতি বিডি।</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://t.me/yourchannel" target="_blank">টেলিগ্রাম চ্যানেল</a>
+          <a href={appUrl} target="_blank">ওয়েব অ্যাপ</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; {new Date().getFullYear()} Prostuti BD. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+  .landing-page { display: flex; flex-direction: column; min-height: 100vh; }
+  .nav-bar { background: rgba(11, 15, 25, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(99, 102, 241, 0.1); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; font-weight: 800; font-size: 1.5rem; color: var(--text-primary); }
+  .accent-text { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-search { display: flex; align-items: center; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 9999px; overflow: hidden; flex: 1; max-width: 500px; }
+  .nav-search input { width: 100%; background: transparent; border: none; outline: none; color: var(--text-primary); padding: 0.8rem 1rem; font-size: 0.95rem; }
+  .nav-search button { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; border: none; padding: 0.8rem 1rem; font-size: 1rem; cursor: pointer; }
+  .app-btn-nav { text-decoration: none; color: var(--text-primary); background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); padding: 0.5rem 1.25rem; border-radius: 9999px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+  .app-btn-nav:hover { box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4); transform: translateY(-1px); }
+  .hero { padding: 5rem 1.5rem; text-align: center; position: relative; overflow: hidden; }
+  .hero-container { max-width: 900px; margin: 0 auto; z-index: 1; position: relative; }
+  .hero-title { font-size: 3rem; margin-bottom: 1.5rem; line-height: 1.25; }
+  .hero-subtitle { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2.5rem; line-height: 1.7; max-width: 700px; margin-left: auto; margin-right: auto; }
+  .hero-ctas { display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap; }
+  .btn-primary { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: var(--text-primary); box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3); }
+  .btn-primary:hover { box-shadow: 0 6px 24px rgba(168, 85, 247, 0.5); }
+  .btn-secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+  .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+  .search-panel { margin-top: -2rem; padding: 0 1.5rem; }
+  .search-panel-inner { background: linear-gradient(90deg, rgba(15, 23, 42, 0.92), rgba(17, 24, 39, 0.92)); border: 1px solid rgba(99, 102, 241, 0.18); border-radius: 18px; padding: 1.5rem; display: flex; justify-content: space-between; gap: 1rem; align-items: center; }
+  .search-panel-label { color: var(--color-primary); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+  .search-panel h2 { font-size: 1.45rem; margin: 0; }
+  .search-controls { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .search-controls input, .search-controls select { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); color: var(--text-primary); padding: 0.8rem 0.9rem; border-radius: 10px; outline: none; min-width: 180px; }
+  .search-controls button { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; border: none; border-radius: 10px; padding: 0.8rem 1rem; font-weight: 700; cursor: pointer; }
+  .section-container { max-width: 1200px; margin: 0 auto; padding: 4rem 1.5rem; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .feature-card { text-align: left; }
+  .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .feature-card h3 { font-size: 1.35rem; margin-bottom: 0.75rem; color: var(--text-primary); }
+  .feature-card p { color: var(--text-secondary); font-size: 0.95rem; }
+  .section-title { font-size: 2rem; text-align: center; margin-bottom: 2.5rem; background: linear-gradient(135deg, #ffffff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .category-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+  .cat-card { text-align: center; position: relative; padding: 2.5rem 1.5rem; }
+  .cat-badge { position: absolute; top: 1rem; right: 1rem; background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+  .cat-card h3 { font-size: 1.25rem; margin: 0.5rem 0; }
+  .cat-card p { color: var(--text-secondary); font-size: 0.9rem; }
+  .suggestions-sec { background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 80%); }
+  .sec-header { text-align: center; margin-bottom: 3rem; }
+  .sec-subtitle { color: var(--text-secondary); font-size: 1.05rem; max-width: 600px; margin: -1.5rem auto 2rem auto; }
+  .suggestions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+  .suggestion-card { display: flex; flex-direction: column; justify-content: space-between; }
+  .card-meta { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .exam-tag { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #c7d2fe; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600; }
+  .subject-tag { background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); color: #e9d5ff; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 600; }
+  .card-title { font-size: 1.25rem; line-height: 1.4; margin-bottom: 0.75rem; }
+  .card-title a { color: var(--text-primary); text-decoration: none; transition: color 0.2s ease; }
+  .card-title a:hover { color: var(--color-primary); }
+  .card-desc { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.5rem; }
+  .card-action { border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1rem; }
+  .card-btn { text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.95rem; transition: color 0.2s ease, transform 0.2s ease; display: inline-block; }
+  .card-btn:hover { color: var(--color-secondary); transform: translateX(4px); }
+  .no-results { text-align: center; color: var(--text-secondary); background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 2rem; }
+  .more-results { margin-top: 2.5rem; }
+  .small-title { font-size: 1.4rem; text-align: left; margin-bottom: 1rem; }
+  .recent-list { display: grid; gap: 0.75rem; }
+  .recent-item { display: flex; justify-content: space-between; gap: 1rem; align-items: center; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 0.9rem 1rem; color: var(--text-primary); text-decoration: none; }
+  .recent-item:hover { background: rgba(99, 102, 241, 0.08); }
+  .recent-meta { color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; }
+  .footer { background: #070a12; border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 4rem 1.5rem 2rem 1.5rem; margin-top: 5rem; }
+  .footer-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 3rem; }
+  .footer-info { max-width: 450px; }
+  .footer-info p { color: var(--text-secondary); font-size: 0.95rem; margin-top: 1rem; }
+  .footer-links { display: flex; flex-direction: column; gap: 0.75rem; }
+  .footer-links a { color: var(--text-secondary); text-decoration: none; transition: color 0.2s ease; font-weight: 500; }
+  .footer-links a:hover { color: var(--color-primary); }
+  .footer-bottom { max-width: 1200px; margin: 3rem auto 0 auto; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+  @media (max-width: 768px) {
+    .nav-container { flex-wrap: wrap; }
+    .nav-search { max-width: 100%; order: 3; }
+    .hero-title { font-size: 2.2rem; }
+    .hero { padding: 3rem 1.5rem; }
+    .search-panel-inner { flex-direction: column; align-items: flex-start; }
+    .search-controls { width: 100%; }
+    .search-controls input, .search-controls select { width: 100%; min-width: 0; }
+    .footer-container { flex-direction: column; gap: 2rem; }
+    .recent-item { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</file>
+
+</files>

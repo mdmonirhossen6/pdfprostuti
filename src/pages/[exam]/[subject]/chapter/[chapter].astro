@@ -1,0 +1,155 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import Navbar from "../../../../components/Navbar.astro";
+import Footer from "../../../../components/Footer.astro";
+import ResourceList from "../../../../components/ResourceList.astro";
+import TrackingScript from "../../../../components/TrackingScript.astro";
+import { getDbCredentials } from "../../../../utils/db";
+import {
+  resolveExam,
+  fetchPublishedPosts,
+  examPath,
+  subjectPath,
+  chapterPath,
+  displayLabel,
+  SITE_ORIGIN,
+} from "../../../../utils/hubs";
+import { buildAppCtaUrl } from "../../../../utils/cta";
+
+const { exam: examParam, subject: subjectParam, chapter: chapterParam } = Astro.params;
+const examMeta = resolveExam(examParam);
+const subject = (subjectParam || "").toLowerCase();
+const chapter = (chapterParam || "").toLowerCase();
+
+if (!examMeta || !subject || !chapter) {
+  return new Response(null, { status: 404, statusText: "Not Found" });
+}
+
+const runtime = (Astro.locals as { runtime?: { env?: Record<string, string> } }).runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+
+let posts = [];
+try {
+  posts = await fetchPublishedPosts(dbUrl, dbReadKey, {
+    exam: examMeta.key,
+    subject,
+    chapter,
+  });
+} catch (e) {
+  console.error("Chapter hub fetch failed:", e);
+}
+
+const subjectLabel = displayLabel(subject);
+const chapterLabel = displayLabel(chapter);
+const canonicalPath = chapterPath(examMeta.key, subject, chapter);
+const pageTitle = `${examMeta.key} ${subjectLabel} — ${chapterLabel} PDF | Prostuti BD`;
+const pageDescription = `${examMeta.key} ${subjectLabel}-এর ${chapterLabel} অধ্যায়ের নোট, সাজেশন ও প্রশ্নপত্র PDF ডাউনলোড করুন।`;
+const appCta = buildAppCtaUrl({
+  exam: examMeta.key,
+  subject,
+  chapter,
+  contentPlacement: "chapter-hub",
+  medium: "hub",
+});
+
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: pageTitle,
+  description: pageDescription,
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: posts.length,
+    itemListElement: posts.slice(0, 40).map((post, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: post.title,
+      url: `${SITE_ORIGIN}${subjectPath(post.exam, post.subject)}/${post.slug}`,
+    })),
+  },
+};
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+);
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  exam={examMeta.key}
+  subject={subject}
+  keywords={`${examMeta.key}, ${subjectLabel}, ${chapterLabel}, pdf, chapter notes`}
+  seoTitle={pageTitle}
+  metaDescription={pageDescription}
+  canonicalPath={canonicalPath}
+  pageType="collection"
+  extraSchemas={[collectionSchema]}
+>
+  <TrackingScript />
+  <Navbar showSearch={true} />
+  <main class="container hub-page">
+    <nav class="hub-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">প্রচ্ছদ</a>
+      <span>/</span>
+      <a href={examPath(examMeta.key)}>{examMeta.key}</a>
+      <span>/</span>
+      <a href={subjectPath(examMeta.key, subject)}>{subjectLabel}</a>
+      <span>/</span>
+      <span aria-current="page">{chapterLabel}</span>
+    </nav>
+
+    <header class="hub-hero glass-card">
+      <p class="hub-eyebrow">অধ্যায় / টপিক হাব</p>
+      <h1>{chapterLabel}</h1>
+      <p>{pageDescription}</p>
+      <div class="hub-hero-actions">
+        <a
+          class="btn btn-primary"
+          href={appCta}
+          target="_blank"
+          rel="noopener"
+          data-track="cta"
+          data-exam={examMeta.key}
+          data-subject={subject}
+          data-chapter={chapter}
+          data-placement="chapter-hub"
+        >অ্যাপে এই টপিক প্র্যাকটিস</a>
+        <a class="btn btn-secondary" href={subjectPath(examMeta.key, subject)}>বিষয় হাবে ফিরুন</a>
+      </div>
+    </header>
+
+    <section class="hub-section">
+      <h2>এই অধ্যায়ের PDF ({posts.length})</h2>
+      <ResourceList
+        posts={posts}
+        emptyMessage={`${chapterLabel} অধ্যায়ে এখনো পাবলিশড PDF নেই।`}
+      />
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .hub-page { padding-bottom: 3rem; }
+  .hub-breadcrumb {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    color: var(--text-muted); font-size: 0.9rem; margin: 1.25rem 0 1rem;
+  }
+  .hub-breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+  .hub-breadcrumb a:hover { color: var(--text-primary); }
+  .hub-hero {
+    padding: 1.6rem 1.4rem; margin-bottom: 2rem;
+    background:
+      linear-gradient(135deg, rgba(217, 119, 6, 0.12), transparent 55%),
+      var(--surface);
+  }
+  .hub-eyebrow { color: var(--color-direct); font-weight: 600; margin-bottom: 0.4rem; }
+  .hub-hero h1 { font-size: clamp(1.55rem, 3vw, 2.1rem); margin-bottom: 0.6rem; }
+  .hub-hero p { color: var(--text-secondary); max-width: 46rem; }
+  .hub-hero-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1rem; }
+  .hub-section { margin-bottom: 2.25rem; }
+  .hub-section h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+</style>

@@ -1,0 +1,179 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Navbar from "../../../components/Navbar.astro";
+import Footer from "../../../components/Footer.astro";
+import ResourceList from "../../../components/ResourceList.astro";
+import TrackingScript from "../../../components/TrackingScript.astro";
+import { getDbCredentials } from "../../../utils/db";
+import {
+  resolveExam,
+  fetchPublishedPosts,
+  groupByChapter,
+  examPath,
+  subjectPath,
+  chapterPath,
+  displayLabel,
+  SITE_ORIGIN,
+} from "../../../utils/hubs";
+import { buildAppCtaUrl } from "../../../utils/cta";
+
+const { exam: examParam, subject: subjectParam } = Astro.params;
+const examMeta = resolveExam(examParam);
+const subject = (subjectParam || "").toLowerCase();
+
+if (!examMeta || !subject) {
+  return new Response(null, { status: 404, statusText: "Not Found" });
+}
+
+const runtime = (Astro.locals as { runtime?: { env?: Record<string, string> } }).runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+
+let posts = [];
+try {
+  posts = await fetchPublishedPosts(dbUrl, dbReadKey, {
+    exam: examMeta.key,
+    subject,
+  });
+} catch (e) {
+  console.error("Subject hub fetch failed:", e);
+}
+
+const chapters = groupByChapter(posts);
+const subjectLabel = displayLabel(subject);
+const canonicalPath = subjectPath(examMeta.key, subject);
+const pageTitle = `${examMeta.key} ${subjectLabel} PDF | Prostuti BD`;
+const pageDescription = `${examMeta.key} ${subjectLabel} বিষয়ের নোট, সাজেশন, প্রশ্নপত্র ও মডেল টেস্ট PDF ডাউনলোড করুন। অধ্যায়ভিত্তিক সংগ্রহ।`;
+const appCta = buildAppCtaUrl({
+  exam: examMeta.key,
+  subject,
+  contentPlacement: "subject-hub",
+  medium: "hub",
+});
+
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: pageTitle,
+  description: pageDescription,
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: posts.length,
+    itemListElement: posts.slice(0, 40).map((post, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: post.title,
+      url: `${SITE_ORIGIN}${subjectPath(post.exam, post.subject)}/${post.slug}`,
+    })),
+  },
+};
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+);
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  exam={examMeta.key}
+  subject={subject}
+  keywords={`${examMeta.key}, ${subjectLabel}, pdf, notes, suggestion`}
+  seoTitle={pageTitle}
+  metaDescription={pageDescription}
+  canonicalPath={canonicalPath}
+  pageType="collection"
+  extraSchemas={[collectionSchema]}
+>
+  <TrackingScript />
+  <Navbar showSearch={true} />
+  <main class="container hub-page">
+    <nav class="hub-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">প্রচ্ছদ</a>
+      <span>/</span>
+      <a href={examPath(examMeta.key)}>{examMeta.key}</a>
+      <span>/</span>
+      <span aria-current="page">{subjectLabel}</span>
+    </nav>
+
+    <header class="hub-hero glass-card">
+      <p class="hub-eyebrow">{examMeta.labelBn} · বিষয় হাব</p>
+      <h1>{examMeta.key} {subjectLabel} PDF</h1>
+      <p>{pageDescription}</p>
+      <div class="hub-hero-actions">
+        <a
+          class="btn btn-primary"
+          href={appCta}
+          target="_blank"
+          rel="noopener"
+          data-track="cta"
+          data-exam={examMeta.key}
+          data-subject={subject}
+          data-placement="subject-hub"
+        >অ্যাপে প্র্যাকটিস করুন</a>
+        <a class="btn btn-secondary" href={examPath(examMeta.key)}>সব বিষয় দেখুন</a>
+      </div>
+    </header>
+
+    {
+      chapters.length > 0 && (
+        <section class="hub-section">
+          <h2>অধ্যায় / টপিক</h2>
+          <div class="hub-chip-grid">
+            {chapters.map((item) => (
+              <a
+                class="hub-chip glass-card"
+                href={chapterPath(examMeta.key, subject, item.chapter)}
+              >
+                <strong>{displayLabel(item.chapter)}</strong>
+                <span>{item.count}টি PDF</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="hub-section">
+      <h2>সব PDF ({posts.length})</h2>
+      <ResourceList
+        posts={posts}
+        emptyMessage={`${subjectLabel} বিষয়ে এখনো পাবলিশড PDF নেই।`}
+      />
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .hub-page { padding-bottom: 3rem; }
+  .hub-breadcrumb {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    color: var(--text-muted); font-size: 0.9rem; margin: 1.25rem 0 1rem;
+  }
+  .hub-breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+  .hub-breadcrumb a:hover { color: var(--text-primary); }
+  .hub-hero {
+    padding: 1.6rem 1.4rem; margin-bottom: 2rem;
+    background:
+      linear-gradient(135deg, rgba(15, 118, 110, 0.14), transparent 55%),
+      var(--surface);
+  }
+  .hub-eyebrow { color: var(--color-accent); font-weight: 600; margin-bottom: 0.4rem; }
+  .hub-hero h1 { font-size: clamp(1.55rem, 3vw, 2.1rem); margin-bottom: 0.6rem; }
+  .hub-hero p { color: var(--text-secondary); max-width: 46rem; }
+  .hub-hero-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1rem; }
+  .hub-section { margin-bottom: 2.25rem; }
+  .hub-section h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+  .hub-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+  .hub-chip {
+    padding: 1rem; text-decoration: none; color: inherit;
+    display: grid; gap: 0.35rem;
+  }
+  .hub-chip span { color: var(--text-muted); font-size: 0.85rem; }
+</style>

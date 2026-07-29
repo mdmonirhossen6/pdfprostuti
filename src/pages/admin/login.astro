@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAdminCredentials, generateToken } from '../../utils/auth';
+
+const runtime = Astro.locals.runtime;
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const inputUser = data.get('username')?.toString().trim();
+    const inputPass = data.get('password')?.toString();
+
+    const { username, password, sessionSecret } = getAdminCredentials(runtime);
+
+    if (inputUser === username && inputPass === password) {
+      const token = await generateToken(username, password, sessionSecret);
+      
+      Astro.cookies.set('admin_token', token, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 24 // 24 hours
+      });
+
+      return Astro.redirect('/admin');
+    } else {
+      errorMessage = 'ভুল ইউজারনেম অথবা পাসওয়ার্ড দেওয়া হয়েছে।';
+    }
+  } catch (e) {
+    errorMessage = 'লগইন করার সময় একটি সমস্যা হয়েছে।';
+  }
+}
+---
+
+<BaseLayout title="এডমিন লগইন - প্রস্তুতি BD">
+  <main class="login-container">
+    <div class="glass-card login-card">
+      <header class="login-header">
+        <span class="lock-icon">🔒</span>
+        <h2>এডমিন প্যানেল লগইন</h2>
+        <p>প্রস্তুতি BD ওয়েবসাইটে কনটেন্ট পরিচালনা করতে লগইন করুন</p>
+      </header>
+
+      {errorMessage && <div class="error-banner">{errorMessage}</div>}
+
+      <form method="POST" class="login-form">
+        <div class="input-group">
+          <label for="username">ইউজারনেম</label>
+          <input type="text" id="username" name="username" required autocomplete="username" />
+        </div>
+
+        <div class="input-group">
+          <label for="password">পাসওয়ার্ড</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn btn-login">প্রবেশ করুন</button>
+      </form>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+  .login-card { max-width: 420px; width: 100%; padding: 2.5rem; border-radius: 16px; }
+  .login-header { text-align: center; margin-bottom: 2rem; }
+  .lock-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+  .login-header h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .login-header p { font-size: 0.9rem; color: var(--text-secondary); }
+  .error-banner { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center; }
+  .login-form { display: flex; flex-direction: column; gap: 1.25rem; }
+  .input-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+  .input-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+  .input-group input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: var(--color-primary); }
+  .btn-login { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; font-weight: 700; margin-top: 0.5rem; padding: 0.85rem; border-radius: 8px; cursor: pointer; border: none; }
+</style>

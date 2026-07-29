@@ -1,0 +1,206 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { verifyAuth, getAdminCredentials } from '../../utils/auth';
+
+const runtime = Astro.locals.runtime;
+const isAuthed = await verifyAuth(Astro.cookies, runtime);
+
+if (!isAuthed) {
+  return Astro.redirect('/admin/login');
+}
+
+const { dbUrl, dbWriteKey, dbReadKey } = getAdminCredentials(runtime);
+let errorMessage = '';
+let successMessage = '';
+
+const url = new URL(Astro.request.url);
+if (url.searchParams.get('success') === 'true') {
+  successMessage = 'পোস্টটি সফলভাবে তৈরি করা হয়েছে।';
+}
+
+if (Astro.request.method === 'POST') {
+  const data = await Astro.request.formData();
+  const action = data.get('action')?.toString();
+
+  if (action === 'logout') {
+    Astro.cookies.delete('admin_token', { path: '/' });
+    return Astro.redirect('/admin/login');
+  }
+
+  if (action === 'delete') {
+    const postId = data.get('postId')?.toString();
+    try {
+      const deleteRes = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': dbWriteKey,
+          'Authorization': `Bearer ${dbWriteKey}`
+        }
+      });
+      if (deleteRes.ok) {
+        successMessage = 'পোস্টটি সফলভাবে মুছে ফেলা হয়েছে।';
+      } else {
+        errorMessage = 'পোস্টটি মুছতে ব্যর্থ হয়েছে। ডাটাবেজ পারমিশন ও RLS চেক করুন।';
+      }
+    } catch (e) {
+      errorMessage = 'পোস্টটি মোছার সময় একটি ইরর হয়েছে।';
+    }
+  }
+}
+
+let posts = [];
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/posts?order=created_at.desc`, {
+    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
+  });
+  if (res.ok) {
+    posts = await res.json();
+  }
+} catch (e) {
+  errorMessage = 'ডাটাবেজ থেকে ডাটা লোড করতে সমস্যা হচ্ছে।';
+}
+
+const publishedCount = posts.filter((post) => (post.status || (post.is_published ? 'published' : 'draft')) === 'published').length;
+const archivedCount = posts.filter((post) => post.status === 'archived').length;
+const draftCount = posts.length - publishedCount - archivedCount;
+---
+
+<BaseLayout title="এডমিন ড্যাশবোর্ড - প্রস্তুতি BD">
+  <nav class="admin-nav">
+    <div class="nav-container">
+      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Admin Dashboard</span></a>
+      <div class="nav-actions">
+        <a href="/" target="_blank" class="view-site-link">ভিউ সাইট ↗</a>
+        <form method="POST" style="display: inline;">
+          <input type="hidden" name="action" value="logout" />
+          <button type="submit" class="logout-btn">লগআউট</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container admin-container">
+    <header class="dashboard-header">
+      <div>
+        <h2>পোস্ট ও কনটেন্ট ম্যানেজমেন্ট</h2>
+        <p>মোট পোস্ট সংখ্যা: {posts.length}টি</p>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/uploads" class="btn btn-library">PDF লাইব্রেরি</a>
+        <a href="/admin/analytics" class="btn btn-settings">📊 অ্যানালিটিক্স</a>
+        <a href="/admin/settings" class="btn btn-settings">⚙️ সেটিংস</a>
+        <a href="/admin/edit" class="btn btn-add">+ নতুন পোস্ট লিখুন</a>
+      </div>
+    </header>
+
+    {successMessage && <div class="alert alert-success">{successMessage}</div>}
+    {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
+
+    <section class="metric-grid" aria-label="Content summary">
+      <div class="metric-card"><span>মোট কনটেন্ট</span><strong>{posts.length}</strong><small>পোস্ট ও রিসোর্স</small></div>
+      <div class="metric-card"><span>পাবলিশড</span><strong>{publishedCount}</strong><small>সাইটে দৃশ্যমান</small></div>
+      <div class="metric-card"><span>ড্রাফট</span><strong>{draftCount}</strong><small>প্রকাশের অপেক্ষায়</small></div>
+      <a href="/admin/edit" class="metric-card create-card"><span>দ্রুত শুরু</span><strong>+</strong><small>নতুন ব্লগ বা PDF পোস্ট</small></a>
+    </section>
+
+    <section class="workflow-grid">
+      <a href="/admin/edit" class="workflow-card"><span>✍</span><div><strong>ব্লগ পোস্ট তৈরি করুন</strong><p>কনটেন্ট, SEO, FAQ এবং ড্রাফট একসাথে পরিচালনা করুন।</p></div><b>→</b></a>
+      <a href="/admin/uploads" class="workflow-card"><span>⇧</span><div><strong>PDF আপলোড করুন</strong><p>ফাইল আপলোড করে তাৎক্ষণিক শেয়ারযোগ্য লিংক তৈরি করুন।</p></div><b>→</b></a>
+    </section>
+
+    <div class="glass-card table-card">
+      {posts.length === 0 ? (
+        <div class="no-posts">কোনো পোস্ট পাওয়া যায়নি। নতুন পোস্ট যুক্ত করুন।</div>
+      ) : (
+        <div class="table-wrapper">
+          <table class="posts-table">
+            <thead>
+              <tr>
+                <th>শিরোনাম</th>
+                <th>ক্যাটাগরি</th>
+                <th>বিষয়</th>
+                <th>টাইপ</th>
+                <th>স্ট্যাটাস</th>
+                <th>তারিখ</th>
+                <th>অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody>
+              {posts.map((post) => {
+                const status = post.status || (post.is_published ? 'published' : 'draft');
+                const statusLabel = status === 'published' ? 'পাবলিশড' : status === 'archived' ? 'আর্কাইভড' : 'ড্রাফট';
+                const statusClass = status === 'published' ? 'status-published' : 'status-draft';
+                return (
+                <tr>
+                  <td class="post-title-col">{post.title}</td>
+                  <td><span class="badge-exam">{post.exam}</span></td>
+                  <td>{post.subject}{post.chapter ? ` / ${post.chapter}` : ''}</td>
+                  <td>{post.resource_type || '—'}</td>
+                  <td>
+                    <span class={statusClass}>{statusLabel}</span>
+                  </td>
+                  <td>{new Date(post.created_at).toLocaleDateString('bn-BD')}</td>
+                  <td class="action-buttons-cell">
+                    <a href={`/admin/edit?id=${post.id}`} class="action-btn edit-btn">সম্পাদনা</a>
+                    <form method="POST" class="delete-form" onsubmit="return confirm('আপনি কি নিশ্চিত যে এই পোস্টটি ডিলিট করতে চান?');">
+                      <input type="hidden" name="action" value="delete" />
+                      <input type="hidden" name="postId" value={post.id} />
+                      <button type="submit" class="action-btn delete-btn">ডিলিট</button>
+                    </form>
+                  </td>
+                </tr>
+              )})}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .admin-nav { background: rgba(11, 15, 25, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .admin-logo { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem; }
+  .badge-admin { font-size: 0.7rem; background: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: bold; }
+  .view-site-link { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; margin-right: 1.5rem; transition: color 0.2s; }
+  .view-site-link:hover { color: white; }
+  .logout-btn { background: none; border: 1px solid rgba(255, 255, 255, 0.2); color: var(--text-secondary); padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+  .logout-btn:hover { background: rgba(244, 63, 94, 0.1); color: #fda4af; border-color: rgba(244, 63, 94, 0.3); }
+  .admin-container { max-width: 1200px; margin-top: 2rem; }
+  .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .dashboard-header h2 { font-size: 1.75rem; font-weight: 700; }
+  .dashboard-header p { color: var(--text-secondary); }
+  .header-actions { display: flex; gap: 0.75rem; }
+  .btn-library { background: rgba(15, 118, 110, .18); border: 1px solid rgba(45, 212, 191, .22); color: #ccfbf1; text-decoration: none; padding: 0.75rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
+  .btn-add { background: linear-gradient(135deg, var(--color-success), #059669); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; transition: transform 0.2s; }
+  .btn-add:hover { transform: translateY(-1px); }
+  .btn-settings { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #c7d2fe; text-decoration: none; padding: 0.75rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+  .btn-settings:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+  .alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
+  .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--color-success); color: #a7f3d0; }
+  .alert-danger { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; }
+  .table-card { padding: 0; overflow: hidden; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+  .metric-card { min-height: 130px; display: flex; flex-direction: column; justify-content: center; padding: 1.15rem; border-radius: 14px; border: 1px solid var(--border-soft); background: var(--surface-elevated); text-decoration: none; color: var(--text-primary); }
+  .metric-card span, .metric-card small { color: var(--text-muted); font-size: .82rem; }.metric-card strong { font-size: 2rem; line-height: 1.15; margin: .25rem 0; }.create-card { background: linear-gradient(135deg, rgba(79,119,255,.22), rgba(15,118,110,.17)); }.create-card strong { color: #bfdbfe; }
+  .workflow-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.25rem; }.workflow-card { display: flex; align-items: center; gap: .9rem; padding: 1.1rem 1.2rem; border: 1px solid var(--border-soft); border-radius: 14px; background: var(--surface); color: var(--text-primary); text-decoration: none; }.workflow-card > span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(79,119,255,.16); color: #bfdbfe; font-size: 1.25rem; }.workflow-card p { margin-top: .15rem; color: var(--text-muted); font-size: .84rem; }.workflow-card b { margin-left: auto; color: var(--text-muted); }
+  .no-posts { padding: 3rem; text-align: center; color: var(--text-secondary); }
+  .table-wrapper { overflow-x: auto; }
+  .posts-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .posts-table th, .posts-table td { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.95rem; }
+  .posts-table th { background: rgba(255, 255, 255, 0.02); color: var(--text-secondary); font-weight: 600; }
+  .post-title-col { font-weight: 600; color: white; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge-exam { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #c7d2fe; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+  .status-published { color: var(--color-success); font-weight: 600; }
+  .status-draft { color: var(--text-muted); }
+  .action-buttons-cell { display: flex; gap: 0.5rem; }
+  .action-btn { padding: 0.35rem 0.75rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+  .edit-btn { background: rgba(99, 102, 241, 0.15); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.3); }
+  .edit-btn:hover { background: var(--color-primary); color: white; }
+  .delete-form { display: inline; }
+  .delete-btn { background: rgba(244, 63, 94, 0.15); color: #fca5a5; border: 1px solid rgba(244, 63, 94, 0.3); }
+  .delete-btn:hover { background: var(--color-accent); color: white; }
+  @media (max-width: 800px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } .workflow-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .nav-container, .dashboard-header { align-items: flex-start; flex-direction: column; } .header-actions { flex-wrap: wrap; } .metric-grid { grid-template-columns: 1fr 1fr; } .posts-table th, .posts-table td { padding: .8rem; } }
+</style>

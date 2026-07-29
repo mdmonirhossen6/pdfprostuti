@@ -1,0 +1,154 @@
+---
+interface Props {
+  appUrl?: string;
+  telegramUrl?: string;
+  resourceCount?: number;
+  lastUpdated?: string;
+}
+
+const {
+  appUrl = "https://web.prostuti.bd",
+  telegramUrl = "https://t.me/yourchannel",
+  resourceCount,
+  lastUpdated,
+} = Astro.props;
+
+// Real metadata line — only rendered when there is genuine data to show.
+const showMeta = (resourceCount && resourceCount > 0) || lastUpdated;
+---
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-info">
+      <span class="footer-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 3.5h9l5 5V20a.5.5 0 0 1-.5.5h-13A.5.5 0 0 1 5 20V3.5Z" />
+          <path d="M14 3.5V8.5h5" />
+          <circle cx="9" cy="13" r="0.9" fill="currentColor" stroke="none" />
+          <circle cx="12" cy="13" r="0.9" fill="currentColor" stroke="none" />
+          <circle cx="15" cy="13" r="0.9" fill="currentColor" stroke="none" />
+        </svg>
+        প্রস্তুতি BD
+      </span>
+      <p>
+        বাংলাদেশের শিক্ষার্থীদের জন্য সাজেশন, নোট, মডেল টেস্ট ও পিডিএফ সংগ্রহের
+        একসাথে নির্ভরযোগ্য স্থান।
+      </p>
+    </div>
+    <div class="footer-links">
+      <h4>দ্রুত লিংক</h4>
+      <a href="/#suggestions">পিডিএফ খুঁজুন</a>
+      <a href="/hsc">HSC হাব</a>
+      <a href="/admission">Admission হাব</a>
+      <a href="/bcs">BCS হাব</a>
+      <a href={telegramUrl} target="_blank" rel="noopener">টেলিগ্রাম</a>
+      <a href={appUrl} target="_blank" rel="noopener">ওয়েব অ্যাপ</a>
+    </div>
+    <div class="footer-links">
+      <h4>নীতিমালা</h4>
+      <a href="/terms">শর্তাবলি</a>
+      <a href="/privacy">গোপনীয়তা</a>
+      <a href="/content-policy">কনটেন্ট নীতি</a>
+      <a href="/report">রিপোর্ট / Takedown</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-meta num">
+      {
+        showMeta && (
+          <>
+            {resourceCount && resourceCount > 0 && (
+              <span>{resourceCount} টি রিসোর্স</span>
+            )}
+            {resourceCount && resourceCount > 0 && lastUpdated && (
+              <span class="meta-sep">·</span>
+            )}
+            {lastUpdated && <span>সর্বশেষ আপডেট {lastUpdated}</span>}
+          </>
+        )
+      }
+    </p>
+    <p>
+      © <span class="num">{new Date().getFullYear()}</span> প্রস্তুতি BD · বিনামূল্যে শিক্ষামূলক সম্পদ
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 4rem;
+    border-top: 1px solid var(--border-hairline);
+    background: var(--bg-surface);
+  }
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .footer-info {
+    max-width: 480px;
+  }
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-primary);
+  }
+  .footer-logo svg { color: var(--accent-primary); }
+  .footer-info p {
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .footer-links h4 {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+  }
+  .footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .footer-links a:hover {
+    color: var(--text-primary);
+  }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.25rem 2rem;
+    border-top: 1px solid var(--border-hairline);
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .footer-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .footer-meta:empty { display: none; }
+  .meta-sep { color: var(--text-muted); }
+  @media (max-width: 768px) {
+    .footer-container {
+      flex-direction: column;
+    }
+  }
+</style>

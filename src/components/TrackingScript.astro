@@ -1,0 +1,76 @@
+---
+/**
+ * Client tracking helpers.
+ * Links: data-track="download|cta" + data-resource-* attributes.
+ */
+---
+
+<script is:inline>
+  (function () {
+    function detectDevice() {
+      var ua = navigator.userAgent || "";
+      if (/iPad|Tablet|Kindle|PlayBook|Silk|(Android(?!.*Mobile))/i.test(ua)) return "tablet";
+      if (/Mobi|iPhone|iPod|Android.*Mobile|Windows Phone/i.test(ua)) return "mobile";
+      return "desktop";
+    }
+
+    function sendTrack(payload) {
+      try {
+        var body = JSON.stringify(
+          Object.assign(
+            {
+              referral: document.referrer || "",
+              device: detectDevice(),
+              page_path: location.pathname + location.search,
+              user_agent: navigator.userAgent || "",
+            },
+            payload,
+          ),
+        );
+        if (navigator.sendBeacon) {
+          var blob = new Blob([body], { type: "application/json" });
+          if (navigator.sendBeacon("/api/track", blob)) return Promise.resolve();
+        }
+        return fetch("/api/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body,
+          keepalive: true,
+        }).then(function () {}).catch(function () {});
+      } catch (e) {
+        return Promise.resolve();
+      }
+    }
+
+    window.__prostutiTrack = function (type, data) {
+      return sendTrack(Object.assign({ type: type }, data || {}));
+    };
+
+    function attrsFrom(el) {
+      return {
+        resource_id: el.getAttribute("data-resource-id") || "",
+        exam: el.getAttribute("data-exam") || "",
+        subject: el.getAttribute("data-subject") || "",
+        chapter: el.getAttribute("data-chapter") || "",
+        slug: el.getAttribute("data-slug") || "",
+        link_kind: el.getAttribute("data-link-kind") || "primary",
+        placement: el.getAttribute("data-placement") || "resource",
+        destination_url: el.getAttribute("href") || el.getAttribute("data-destination") || "",
+      };
+    }
+
+    document.addEventListener(
+      "click",
+      function (event) {
+        var el = event.target && event.target.closest
+          ? event.target.closest("[data-track]")
+          : null;
+        if (!el) return;
+        var type = el.getAttribute("data-track");
+        if (type !== "download" && type !== "cta") return;
+        sendTrack(Object.assign({ type: type }, attrsFrom(el)));
+      },
+      true,
+    );
+  })();
+</script>

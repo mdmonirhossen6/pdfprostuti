@@ -1,0 +1,579 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Navbar from "../../../components/Navbar.astro";
+import ScrollToTop from "../../../components/ScrollToTop.astro";
+import { getDbCredentials } from "../../../utils/db";
+import { buildAppCtaUrl } from "../../../utils/cta";
+import { resourceTypeLabel } from "../../../utils/resources";
+import {
+  fetchPublishedPosts,
+  relatedPosts,
+  examPath,
+  subjectPath,
+  chapterPath,
+  displayLabel,
+} from "../../../utils/hubs";
+import ResourceList from "../../../components/ResourceList.astro";
+import Footer from "../../../components/Footer.astro";
+import TrackingScript from "../../../components/TrackingScript.astro";
+
+export async function getStaticPaths() {
+  // Attempt to fetch all posts to prerender dynamic routes at build time.
+  try {
+    const { dbUrl, dbReadKey } = getDbCredentials();
+    const res = await fetch(`${dbUrl}/rest/v1/posts?select=slug,exam,subject`, {
+      headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data.map((p) => ({
+          params: {
+            exam: (p.exam || "").toLowerCase(),
+            subject: p.subject,
+            slug: p.slug,
+          },
+        }));
+      }
+    }
+  } catch (e) {
+    console.warn("getStaticPaths: failed to fetch posts for prerendering", e);
+  }
+
+  // Fallback: prebuild a couple of mock routes so builds don't fail.
+  return [
+    {
+      params: {
+        exam: "hsc",
+        subject: "physics",
+        slug: "physics-1st-paper-suggestion",
+      },
+    },
+    {
+      params: {
+        exam: "bcs",
+        subject: "bangla",
+        slug: "bcs-46-bangla-literature",
+      },
+    },
+  ];
+}
+
+const { exam, subject, slug } = Astro.params;
+const runtime = (Astro.locals as { runtime?: { env?: Record<string, string> } })
+  .runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+
+let post: any = null;
+
+try {
+  const res = await fetch(
+    `${dbUrl}/rest/v1/posts?slug=eq.${slug}&exam=eq.${exam ? exam.toUpperCase() : ""}&subject=eq.${subject}`,
+    {
+      headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },
+    },
+  );
+  if (res.ok) {
+    const data = await res.json();
+    if (data && data.length > 0) {
+      post = data[0];
+    }
+  }
+} catch (e) {
+  console.error("Error querying post details:", e);
+}
+
+// Fallback logic for mock preview testing
+if (!post) {
+  const isMock =
+    slug === "physics-1st-paper-suggestion" ||
+    slug === "bcs-46-bangla-literature";
+  if (isMock && exam && subject) {
+    post = {
+      id: `mock-${slug}`,
+      title:
+        slug === "physics-1st-paper-suggestion"
+          ? "HSC 2026 পদার্থবিজ্ঞান প্রথম পত্র ১০০% কমন সাজেশন ও সমাধান"
+          : "৪৬তম বিসিএস প্রিলিমিনারি বাংলা ভাষা ও সাহিত্য মডেল টেস্ট ও ব্যাখ্যা",
+      slug: slug,
+      exam: exam.toUpperCase(),
+      subject: subject,
+      content: `<p>পরীক্ষার জন্য প্রয়োজনীয় সাজেশনের বিস্তারিত তালিকা এবং শর্ট সিলেবাস নিচে দেওয়া হলো। সম্পূর্ণ সমাধান সহ ফাইলটি পেতে নিচের বাটনে ক্লিক করুন।</p><h2>গুরুত্বपूर्ण অধ্যায়সমূহ:</h2><ul><li>ভৌতজগৎ ও পরিমাপ</li><li>ভেক্টর</li><li>গতিবিদ্যা</li></ul>`,
+      ad_text:
+        "সবচেয়ে দ্রুত সকল বিষয়ের আপডেট ও ফ্রি পিডিএফ ফাইল পেতে এখনই আমাদের প্রস্তুতি টেলিগ্রাম চ্যানেলে জয়েন করুন!",
+      image_url:
+        "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=900&q=80",
+      image_alt: "HSC Physics Suggestion 2026",
+      file_url: "https://t.me/yourchannel",
+      drive_url: "https://drive.google.com/open?id=mock",
+      link_type: "download",
+      show_app_opener: true,
+      app_link: null,
+      app_title: null,
+      app_description: null,
+      app_button_text: null,
+      telegram_url: "https://t.me/yourchannel",
+      telegram_btn_text: "টেলিগ্রাম চ্যানেলে জয়েন করুন →",
+      seo_title: "HSC 2026 Physics 1st Paper Suggestion PDF Download",
+      meta_description:
+        "এইচএসসি ২০২৬ পদার্থবিজ্ঞান ১ম পত্রের ১০০% কমন সাজেশন ও সম্পূর্ণ উত্তরপত্র ডাউনলোড করুন পিডিএফ ফরমেটে।",
+      focus_keyword: "HSC Physics Suggestion",
+      schema_type: "FAQ",
+      schema_faq: [
+        {
+          question: "পরীক্ষায় কি এই সাজেশন থেকে প্রশ্ন কমন পড়বে?",
+          answer:
+            "হ্যাঁ, বিগত পরীক্ষার প্রশ্নাবলি এবং শর্ট সিলেবাসের আলোকে অভিজ্ঞ শিক্ষকদের দ্বারা সাজেশন্সটি প্রণয়ন করা হয়েছে।",
+        },
+        {
+          question: "পিডিএফ ফাইলটি কি সম্পূর্ণ ফ্রি?",
+          answer:
+            "হ্যাঁ, প্রস্তুতি বিডি প্ল্যাটফর্মে সকল সাজেশন ও পিডিএফ ফাইল সম্পূর্ণ ফ্রিতে ডাউনলোড করতে পারবেন।",
+        },
+      ],
+      created_at: new Date().toISOString(),
+    };
+  } else {
+    return new Response(null, { status: 404, statusText: "Not Found" });
+  }
+}
+
+// Format structured inputs
+const displayContent =
+  post.content?.trim() ||
+  "<p>পরীক্ষার জন্য প্রয়োজনীয় সাজেশনের বিস্তারিত তালিকা নিচে দেওয়া হলো। সম্পূর্ণ ফাইলটি সংগ্রহ করতে ডাউনলোড বাটনে ক্লিক করুন।</p>";
+const displayAdText =
+  post.ad_text?.trim() ||
+  "সবচেয়ে দ্রুত সকল বিষয়ের আপডেট ও ফ্রি পিডিএফ ফাইল পেতে এখনই আমাদের প্রস্তুতি টেলিগ্রাম চ্যানেলে জয়েন করুন!";
+const displayImageUrl = post.image_url?.trim();
+const displayImageAlt = post.image_alt?.trim() || post.title;
+const pageDescription =
+  post.meta_description?.trim() ||
+  `${post.title} PDF ডাউনলোড করুন। ${post.exam} ${post.subject}${post.chapter ? ` ${post.chapter}` : ""}${post.academic_year ? ` ${post.academic_year}` : ""} পরীক্ষার জন্য প্রয়োজনীয় সাজেশন, নোট, মডেল টেস্ট ও উত্তরসহ সম্পূর্ণ তথ্য।`;
+const pageKeywords = `${post.title}, ${post.exam} ${post.subject}, ${post.chapter || ""}, ${post.academic_year || ""}, ${resourceTypeLabel(post.resource_type)}, pdf download, suggestion, notes, model test, ${post.slug}`;
+const schemaType = post.schema_type || "Article";
+let parsedFaq: any[] = [];
+if (post.schema_faq) {
+  if (typeof post.schema_faq === "string") {
+    try {
+      parsedFaq = JSON.parse(post.schema_faq);
+    } catch (e) {
+      parsedFaq = [];
+    }
+  } else {
+    parsedFaq = post.schema_faq;
+  }
+}
+const showAppOpener = post.show_app_opener !== false;
+const appLinkUrl = buildAppCtaUrl({
+  exam: post.exam,
+  subject: post.subject,
+  chapter: post.chapter,
+  slug: post.slug,
+  resourceId: post.id,
+  customAppLink: post.app_link,
+  contentPlacement: "resource",
+});
+const appTitle = post.app_title?.trim() || "📱 প্রস্তুতি অ্যাপে পরীক্ষা দাও!";
+const appDescription =
+  post.app_description?.trim() ||
+  "এই অধ্যায়ের গুরুত্বপূর্ণ প্রশ্নগুলোর ওপর রিয়েল-টাইম পরীক্ষা দিতে আমাদের অ্যাপে প্রবেশ করো।";
+const appButtonText = post.app_button_text?.trim() || "অ্যাপে যাও";
+const telegramUrl = post.telegram_url?.trim() || "https://t.me/yourchannel";
+const telegramBtnText =
+  post.telegram_btn_text?.trim() || "টেলিগ্রাম চ্যানেলে জয়েন করুন →";
+const primaryDownloadUrl = post.file_url?.trim() || post.drive_url?.trim();
+const hasDownloadUrl = Boolean(primaryDownloadUrl);
+const actionUrl = hasDownloadUrl
+  ? post.link_type === "direct"
+    ? primaryDownloadUrl
+    : `/download?id=${post.id}`
+  : "";
+const mainButtonLabel =
+  post.link_type === "direct"
+    ? "🔗 সরাসরি ফাইল লিংকে যান"
+    : "📥 ফাইলটি ডাউনলোড করুন";
+const typeLabel = resourceTypeLabel(post.resource_type);
+const metaPills = [
+  post.exam,
+  post.subject,
+  post.chapter,
+  post.academic_year,
+  typeLabel,
+].filter(Boolean);
+
+let related = [];
+try {
+  const pool = await fetchPublishedPosts(dbUrl, dbReadKey, {
+    exam: post.exam,
+    subject: post.subject,
+  });
+  related = relatedPosts(pool, post, 6);
+} catch (e) {
+  console.error("Related posts fetch failed:", e);
+}
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=86400, stale-while-revalidate=3600",
+);
+---
+
+<BaseLayout
+  title={post.title}
+  description={pageDescription}
+  exam={post.exam}
+  subject={post.subject}
+  slug={post.slug}
+  publishDate={post.created_at}
+  keywords={pageKeywords}
+  seoTitle={post.seo_title}
+  metaDescription={post.meta_description}
+  focusKeyword={post.focus_keyword}
+  schemaType={schemaType}
+  schemaFaq={parsedFaq}
+>
+  <TrackingScript />
+  <Navbar showSearch={false} showBackLink={true} />
+
+  <main class="container reader-layout">
+    <div class="breadcrumb-container">
+      <ol class="breadcrumbs" aria-label="Breadcrumb">
+        <li><a href="/">প্রচ্ছদ</a></li>
+        <li class="separator">/</li>
+        <li>
+          <a href={examPath(post.exam)}>{post.exam}</a>
+        </li>
+        <li class="separator">/</li>
+        <li>
+          <a href={subjectPath(post.exam, post.subject)}
+            >{displayLabel(post.subject)}</a
+          >
+        </li>
+        {
+          post.chapter && (
+            <>
+              <li class="separator">/</li>
+              <li>
+                <a href={chapterPath(post.exam, post.subject, post.chapter)}>
+                  {displayLabel(post.chapter)}
+                </a>
+              </li>
+            </>
+          )
+        }
+        <li class="separator">/</li>
+        <li class="active-crumb" aria-current="page">{post.title}</li>
+      </ol>
+    </div>
+
+    <div class="reader-shell">
+      <article class="glass-card article-card">
+        <header class="article-header">
+          <span class="category-tag">{metaPills.join(" • ")}</span>
+          <h1 class="article-title">{post.title}</h1>
+          <p class="publish-date">
+            পাবলিশড হয়েছে: {
+              new Date(post.created_at || Date.now()).toLocaleDateString(
+                "bn-BD",
+              )
+            }
+            {
+              post.source && (
+                <>
+                  {" "}
+                  · সোর্স: {post.source}
+                </>
+              )
+            }
+          </p>
+        </header>
+
+        {
+          displayImageUrl && (
+            <img
+              src={displayImageUrl}
+              alt={displayImageAlt}
+              class="featured-image"
+            />
+          )
+        }
+
+        <section class="content">
+          <div class="content-intro">
+            <div class="reader-toolbar">
+              <span class="content-pill">📘 {metaPills.join(" • ")}</span>
+              {
+                hasDownloadUrl && (
+                  <a
+                    href={actionUrl}
+                    class="btn btn-download-inline"
+                    target={post.link_type === "direct" ? "_blank" : "_self"}
+                  >
+                    {mainButtonLabel}
+                  </a>
+                )
+              }
+            </div>
+            <div class="rich-text-content" set:html={displayContent} />
+          </div>
+        </section>
+
+        {
+          schemaType === "FAQ" && parsedFaq && parsedFaq.length > 0 && (
+            <section class="faq-accordion-section">
+              <h2 class="faq-section-title">
+                💡 প্রায়শই জিজ্ঞাসিত প্রশ্ন ও উত্তর (FAQ)
+              </h2>
+              <div class="faq-accordion-list">
+                {parsedFaq.map((faq: any) => (
+                  <details class="faq-accordion-item">
+                    <summary class="faq-accordion-summary">
+                      <span class="faq-question-text">❓ {faq.question}</span>
+                      <span class="accordion-icon">▾</span>
+                    </summary>
+                    <div class="faq-accordion-content">
+                      <p>{faq.answer}</p>
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )
+        }
+      </article>
+
+      <aside class="side-panel">
+        <div class="glass-card side-card">
+          <h2>সরাসরি কাজ</h2>
+          {
+            hasDownloadUrl && (
+              <a
+                href={actionUrl}
+                class="btn btn-primary btn-block"
+                target={post.link_type === "direct" ? "_blank" : "_self"}
+                data-track={post.link_type === "direct" ? "download" : undefined}
+                data-link-kind="primary"
+                data-resource-id={post.id}
+                data-exam={post.exam || ""}
+                data-subject={post.subject || ""}
+                data-chapter={post.chapter || ""}
+                data-slug={post.slug || ""}
+              >
+                {mainButtonLabel}
+              </a>
+            )
+          }
+          <a
+            href={subjectPath(post.exam, post.subject)}
+            class="btn btn-secondary btn-block">🔎 একই বিষয়-এর PDF</a
+          >
+        </div>
+        {
+          showAppOpener && (
+            <div class="glass-card side-card">
+              <h3>{appTitle}</h3>
+              <p>{appDescription}</p>
+              <a
+                href={appLinkUrl}
+                class="btn btn-accent btn-block"
+                target="_blank"
+                rel="noopener"
+                data-track="cta"
+                data-resource-id={post.id}
+                data-exam={post.exam || ""}
+                data-subject={post.subject || ""}
+                data-chapter={post.chapter || ""}
+                data-slug={post.slug || ""}
+                data-placement="resource"
+              >
+                {appButtonText}
+              </a>
+            </div>
+          )
+        }
+        <div class="glass-card side-card telegram-card">
+          <h3>টেলিগ্রাম আপডেট</h3>
+          <p>{displayAdText}</p>
+          <a href={telegramUrl} class="tg-btn" target="_blank"
+            >{telegramBtnText}</a
+          >
+        </div>
+      </aside>
+    </div>
+
+    {
+      related.length > 0 && (
+        <section class="related-section">
+          <h2>সম্পর্কিত PDF</h2>
+          <p class="related-lead">একই বিষয় বা অধ্যায়ের আরও যাচাইকৃত রিসোর্স</p>
+          <ResourceList posts={related} />
+        </section>
+      )
+    }
+  </main>
+  <Footer />
+  <ScrollToTop />
+</BaseLayout>
+
+<style>
+  .reader-layout {
+    max-width: 1320px;
+  }
+  .reader-shell {
+    display: grid;
+    grid-template-columns: 1.8fr 0.8fr;
+    gap: 1rem;
+    align-items: start;
+  }
+  .article-card {
+    padding: 1.5rem;
+  }
+  .article-header {
+    border-bottom: 1px solid var(--border-soft);
+    padding-bottom: 1rem;
+    margin-bottom: 1.2rem;
+  }
+  .article-title {
+    font-size: clamp(1.55rem, 2.2vw, 2.15rem);
+    line-height: 1.35;
+    margin-top: 0.45rem;
+  }
+  .publish-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.45rem;
+  }
+  .featured-image {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    display: block;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-soft);
+  }
+  .content-intro {
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 1rem;
+    background: var(--surface-muted);
+  }
+  .reader-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.9rem;
+  }
+  .btn-download-inline {
+    background: var(--color-accent);
+    color: white;
+    padding: 0.6rem 0.9rem;
+    border-radius: 999px;
+  }
+  .rich-text-content {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+  .rich-text-content :global(p) {
+    margin-bottom: 1rem;
+  }
+  .rich-text-content :global(h2),
+  .rich-text-content :global(h3) {
+    color: var(--text-primary);
+    margin: 1.4rem 0 0.7rem;
+  }
+  .rich-text-content :global(ul),
+  .rich-text-content :global(ol) {
+    margin-left: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .rich-text-content :global(a) {
+    color: var(--color-primary);
+  }
+  .faq-accordion-section {
+    margin-top: 1rem;
+  }
+  .faq-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-primary);
+  }
+  .faq-accordion-list {
+    display: grid;
+    gap: 0.7rem;
+  }
+  .faq-accordion-item {
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface-muted);
+  }
+  .faq-accordion-summary {
+    padding: 0.8rem 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+  .faq-accordion-content {
+    padding: 0 0.95rem 0.95rem;
+    color: var(--text-secondary);
+  }
+  .side-panel {
+    display: grid;
+    gap: 0.8rem;
+    position: sticky;
+    top: 5rem;
+  }
+  .side-card {
+    padding: 1rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .side-card h2,
+  .side-card h3 {
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  .side-card p {
+    color: var(--text-secondary);
+    font-size: 0.94rem;
+    line-height: 1.6;
+  }
+  .btn-block {
+    width: 100%;
+  }
+  .telegram-card {
+    border-left: 3px solid var(--color-telegram);
+  }
+  .tg-btn {
+    color: var(--color-telegram);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .related-section {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .related-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.35rem;
+  }
+  .related-lead {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  @media (max-width: 900px) {
+    .reader-shell {
+      grid-template-columns: 1fr;
+    }
+    .side-panel {
+      position: static;
+    }
+  }
+</style>

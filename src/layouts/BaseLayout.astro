@@ -1,0 +1,270 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  exam?: string;
+  subject?: string;
+  slug?: string;
+  publishDate?: string;
+  modifiedDate?: string;
+  keywords?: string;
+  seoTitle?: string;
+  metaDescription?: string;
+  focusKeyword?: string;
+  schemaType?: string;
+  schemaFaq?: Array<{ question: string; answer: string }>;
+  ogImage?: string;
+  canonicalPath?: string;
+  pageType?: "website" | "article" | "collection";
+  extraSchemas?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  exam,
+  subject,
+  slug,
+  publishDate,
+  modifiedDate,
+  keywords,
+  seoTitle,
+  metaDescription,
+  focusKeyword,
+  schemaType = "Article",
+  schemaFaq = [],
+  ogImage,
+  canonicalPath,
+  pageType,
+  extraSchemas = [],
+} = Astro.props;
+
+const baseUrl = "https://prostutibd.app";
+const normalizedExam = exam?.trim();
+const normalizedSubject = subject?.trim();
+const encodedSubject = normalizedSubject
+  ? normalizedSubject.toLowerCase().replace(/\s+/g, "-")
+  : "";
+
+const resolvedCanonical = canonicalPath
+  ? `${baseUrl}${canonicalPath.startsWith("/") ? canonicalPath : `/${canonicalPath}`}`
+  : normalizedExam && encodedSubject && slug
+    ? `${baseUrl}/${normalizedExam.toLowerCase()}/${encodedSubject}/${slug}`
+    : normalizedExam && encodedSubject
+      ? `${baseUrl}/${normalizedExam.toLowerCase()}/${encodedSubject}`
+      : normalizedExam
+        ? `${baseUrl}/${normalizedExam.toLowerCase()}`
+        : baseUrl;
+
+const siteName = "Prostuti BD";
+const defaultOgImage = "https://prostutibd.app/og-default.png";
+const resolvedOgImage = ogImage?.trim() || defaultOgImage;
+
+const ogTitle =
+  seoTitle?.trim() ||
+  (normalizedExam
+    ? `${title} | ${normalizedExam} ${normalizedSubject || ""} | ${siteName}`
+    : `${title} | ${siteName}`);
+
+const ogDescription =
+  metaDescription?.trim() ||
+  description ||
+  (normalizedExam && normalizedSubject
+    ? `Download ${title} PDF suggestion and notes for the ${normalizedExam} ${normalizedSubject} examination. Join our Telegram channel for the fastest updates.`
+    : `Prostuti BD (প্রস্তুতি) - The ultimate preparation platform in Bangladesh. Download suggestions, model tests, resources and practice exams.`);
+
+const pageKeywords =
+  keywords ||
+  (normalizedExam && normalizedSubject
+    ? `${title}, ${normalizedExam} ${normalizedSubject}, pdf download, suggestion, notes, model test`
+    : `${title}, pdf download, preparation, Bangladesh, suggestion notes`);
+
+const resolvedPageType =
+  pageType ||
+  (normalizedExam && slug ? "article" : normalizedExam ? "collection" : "website");
+
+const breadcrumbItems = (() => {
+  const items = [{ name: "Home", item: baseUrl }];
+  if (normalizedExam) {
+    items.push({
+      name: normalizedExam.toUpperCase() === "ADMISSION" ? "Admission" : normalizedExam.toUpperCase(),
+      item: `${baseUrl}/${normalizedExam.toLowerCase()}`,
+    });
+  }
+  if (normalizedExam && encodedSubject) {
+    items.push({
+      name: normalizedSubject || encodedSubject,
+      item: `${baseUrl}/${normalizedExam.toLowerCase()}/${encodedSubject}`,
+    });
+  }
+  if (normalizedExam && slug) {
+    items.push({ name: title, item: resolvedCanonical });
+  } else if (canonicalPath && canonicalPath.includes("/chapter/")) {
+    items.push({ name: title, item: resolvedCanonical });
+  }
+  return items.length > 1 ? items : null;
+})();
+
+const breadcrumbSchema = breadcrumbItems
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbItems.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        item: item.item,
+      })),
+    }
+  : null;
+
+const articleSchema =
+  resolvedPageType === "article" && normalizedExam && slug && schemaType === "Article"
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        mainEntityOfPage: { "@type": "WebPage", "@id": resolvedCanonical },
+        headline: ogTitle,
+        description: ogDescription,
+        image: resolvedOgImage,
+        datePublished: publishDate || new Date().toISOString(),
+        dateModified: modifiedDate || publishDate || new Date().toISOString(),
+        author: { "@type": "Organization", name: "Prostuti BD", url: baseUrl },
+        publisher: {
+          "@type": "Organization",
+          name: "Prostuti BD",
+          logo: { "@type": "ImageObject", url: `${baseUrl}/favicon.svg` },
+        },
+      }
+    : null;
+
+const faqSchema =
+  resolvedPageType === "article" &&
+  normalizedExam &&
+  slug &&
+  schemaType === "FAQ" &&
+  schemaFaq &&
+  schemaFaq.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: schemaFaq.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      }
+    : null;
+
+const webSiteSchema =
+  resolvedPageType === "website"
+    ? {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        url: baseUrl,
+        name: siteName,
+        description: ogDescription,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${baseUrl}/?search={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      }
+    : null;
+---
+
+<!doctype html>
+<html lang="bn" dir="ltr" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{ogTitle}</title>
+    <meta name="description" content={ogDescription} />
+    <meta name="keywords" content={pageKeywords} />
+    {focusKeyword && <meta name="focus_keyword" content={focusKeyword} />}
+    <link rel="canonical" href={resolvedCanonical} />
+    <meta name="theme-color" content="#0B0E14" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@600;700&family=Hind+Siliguri:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      property="og:type"
+      content={resolvedPageType === "article" ? "article" : "website"}
+    />
+    <meta property="og:url" content={resolvedCanonical} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content={resolvedOgImage} />
+    <meta property="og:site_name" content={siteName} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={resolvedOgImage} />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1"
+    />
+    <meta name="author" content="Prostuti BD" />
+    <meta
+      property="article:publisher"
+      content="https://www.facebook.com/prostutibd"
+    />
+
+    <script is:inline>
+      const storedTheme = localStorage.getItem("prostuti-theme");
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      const theme = storedTheme || (prefersDark ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+      document.documentElement.style.colorScheme = theme;
+    </script>
+
+    {
+      articleSchema && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(articleSchema)}
+        />
+      )
+    }
+    {
+      faqSchema && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(faqSchema)}
+        />
+      )
+    }
+    {
+      breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(breadcrumbSchema)}
+        />
+      )
+    }
+    {
+      webSiteSchema && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(webSiteSchema)}
+        />
+      )
+    }
+    {
+      extraSchemas.map((schema) => (
+        <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      ))
+    }
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

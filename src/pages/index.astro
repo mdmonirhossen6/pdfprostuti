@@ -1,0 +1,663 @@
+---
+// filepath: src/pages/index.astro
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import PostCard from "../components/PostCard.astro";
+import Footer from "../components/Footer.astro";
+import ScrollToTop from "../components/ScrollToTop.astro";
+import { getDbCredentials } from "../utils/db";
+import { APP_CTA_ORIGIN } from "../utils/cta";
+
+const runtime = (Astro.locals as { runtime?: { env?: Record<string, string> } })
+  .runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+const url = Astro.url;
+const searchQuery = (url.searchParams.get("search") || "").trim();
+const selectedCategory = (url.searchParams.get("category") || "").trim();
+const selectedSubject = (url.searchParams.get("subject") || "").trim();
+
+let posts: any[] = [];
+try {
+  const res = await fetch(
+    `${dbUrl}/rest/v1/posts?is_published=eq.true&order=created_at.desc&limit=1000`,
+    {
+      headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },
+    },
+  );
+  if (res.ok) {
+    posts = await res.json();
+  }
+} catch (e) {
+  console.error("Error fetching posts:", e);
+}
+
+const mockPosts = [
+  {
+    id: "mock-hsc-physics",
+    title: "HSC 2026 পদার্থবিজ্ঞান প্রথম পত্র ১০০% কমন সাজেশন ও সমাধান",
+    slug: "physics-1st-paper-suggestion",
+    exam: "HSC",
+    subject: "physics",
+    chapter: "motion",
+    resource_type: "suggestion",
+    academic_year: "2026",
+    content:
+      "পরীক্ষার জন্য প্রয়োজনীয় সাজেশন, প্রশ্নব্যাংক, এবং গুরুত্বপূর্ণ অধ্যায়ের ডাউনলোড লিংক।",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "mock-bcs-bangla",
+    title:
+      "৪৬তম বিসিএস প্রিলিমিনারি বাংলা ভাষা ও সাহিত্য মডেল টেস্ট ও ব্যাখ্যা",
+    slug: "bcs-46-bangla-literature",
+    exam: "BCS",
+    subject: "bangla",
+    chapter: "literature",
+    resource_type: "model_test",
+    academic_year: "2026",
+    content:
+      "বিসিএস প্রিলিমিনারি বাংলা ভাষা ও সাহিত্য থেকে গুরুত্বপূর্ণ প্রশ্ন ও ব্যাখ্যা।",
+    created_at: new Date().toISOString(),
+  },
+];
+
+let appUrl = APP_CTA_ORIGIN;
+try {
+  const settingsRes = await fetch(
+    `${dbUrl}/rest/v1/site_settings?key=eq.app_url`,
+    {
+      headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },
+    },
+  );
+  if (settingsRes.ok) {
+    const rows = await settingsRes.json();
+    if (rows && rows.length > 0 && rows[0].value) {
+      appUrl = rows[0].value;
+    }
+  }
+} catch (e) {
+  console.error("Could not fetch app_url setting:", e);
+}
+
+const allPosts: any[] = posts && posts.length > 0 ? posts : mockPosts;
+const normalizedSearch = searchQuery.toLowerCase();
+const filteredPosts = allPosts.filter((post: any) => {
+  const title = (post.title || "").toLowerCase();
+  const subject = (post.subject || "").toLowerCase();
+  const exam = (post.exam || "").toLowerCase();
+  const chapter = (post.chapter || "").toLowerCase();
+  const year = (post.academic_year || "").toLowerCase();
+  const resourceType = (post.resource_type || "").toLowerCase();
+  const content = (post.content || "").toLowerCase();
+  const slug = (post.slug || "").toLowerCase();
+  const searchMatches =
+    !normalizedSearch ||
+    [title, subject, exam, chapter, year, resourceType, content, slug].some(
+      (value) => value.includes(normalizedSearch),
+    );
+  const categoryMatches =
+    !selectedCategory || exam === selectedCategory.toLowerCase();
+  const subjectMatches =
+    !selectedSubject || subject === selectedSubject.toLowerCase();
+  return searchMatches && categoryMatches && subjectMatches;
+});
+
+const POSTS_PER_PAGE = 12;
+const initialPosts = filteredPosts.slice(0, POSTS_PER_PAGE);
+const remainingPosts = filteredPosts.slice(POSTS_PER_PAGE);
+const hasMore = remainingPosts.length > 0;
+const totalPosts = filteredPosts.length;
+
+const categories = ["HSC", "SSC", "BCS", "Admission"];
+const subjectOptions = [
+  ...new Set(allPosts.map((post: any) => post.subject).filter(Boolean)),
+].sort();
+const hasSearchOrFilter = Boolean(
+  searchQuery || selectedCategory || selectedSubject,
+);
+const categoryCount = (cat: string) =>
+  allPosts.filter(
+    (p: any) => (p.exam || "").toLowerCase() === cat.toLowerCase(),
+  ).length;
+const quickSubjects = subjectOptions.slice(0, 8);
+
+// Real metadata for the footer line — only shown when data exists.
+const lastUpdatedRaw = allPosts
+  .map((p: any) => p.created_at)
+  .filter(Boolean)
+  .sort()
+  .at(-1);
+const lastUpdated = lastUpdatedRaw
+  ? new Date(lastUpdatedRaw).toLocaleDateString("en-CA")
+  : "";
+const totalResourceCount = allPosts.length;
+
+// Exam hub metadata: label + a single-weight line icon key (consistent stroke).
+const examMeta: Record<string, { label: string; icon: string }> = {
+  HSC: { label: "এইচএসসি", icon: "book" },
+  SSC: { label: "এসএসসি", icon: "doc" },
+  BCS: { label: "বিসিএস", icon: "column" },
+  Admission: { label: "ভর্তি", icon: "arch" },
+};
+---
+
+<BaseLayout
+  title="সেরা অনলাইন পরীক্ষা ও পিডিএফ সাজেশন"
+  description="বাংলাদেশের সবচেয়ে জনপ্রিয় PDF সাজেশন, নোট, মডেল টেস্ট ও পরীক্ষার রিসোর্স খুঁজুন। HSC, SSC, BCS এবং Admission-এর জন্য ফ্রি ডাউনলোড করুন."
+  keywords="pdf download, suggestion, notes, model test, hsc, ssc, bcs, admission"
+>
+  <div class="landing-page">
+    <Navbar appUrl={appUrl} searchQuery={searchQuery} />
+
+    <header class="hero">
+      <div class="hero-card glass-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Academic library · Bangladesh</p>
+          <h1>
+            পরীক্ষার পিডিএফ, সাজেশন ও নোট—দ্রুত খুঁজুন, পড়ুন, ডাউনলোড করুন।
+          </h1>
+          <p class="hero-subtitle">
+            এইচএসসি, এসএসসি, বিসিএস এবং ভর্তি পরীক্ষার জন্য সাজেশন, নোট, মডেল
+            টেস্ট ও অধ্যায়ভিত্তিক রিসোর্স এক জায়গায়।
+          </p>
+          <div class="hero-actions">
+            <a
+              href={appUrl}
+              class="btn btn-primary"
+              target="_blank"
+              rel="noopener">অ্যাপ খুলুন</a
+            >
+            <a href="#suggestions" class="btn btn-ghost">PDF ব্রাউজ করুন</a>
+          </div>
+        </div>
+
+        <div class="hero-search">
+          <p class="section-label">Quick search</p>
+          <form class="search-form" method="GET" action="/">
+            <label class="field">
+              <span>শিরোনাম / বিষয়</span>
+              <input
+                type="search"
+                name="search"
+                value={searchQuery}
+                placeholder="পিডিএফ শিরোনাম বা বিষয় লিখুন"
+              />
+            </label>
+            <label class="field">
+              <span>ক্যাটাগরি</span>
+              <select name="category" aria-label="Filter by category">
+                <option value="">সব ক্যাটাগরি</option>
+                {
+                  categories.map((cat) => (
+                    <option
+                      value={cat.toLowerCase()}
+                      selected={selectedCategory === cat.toLowerCase()}
+                    >
+                      {cat}
+                    </option>
+                  ))
+                }
+              </select>
+            </label>
+            <label class="field">
+              <span>বিষয়</span>
+              <select name="subject" aria-label="Filter by subject">
+                <option value="">সব বিষয়</option>
+                {
+                  subjectOptions.map((subject: string) => (
+                    <option
+                      value={subject}
+                      selected={selectedSubject === subject}
+                    >
+                      {subject}
+                    </option>
+                  ))
+                }
+              </select>
+            </label>
+            <button type="submit" class="btn btn-primary">ফিল্টার</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <section id="categories" class="exams-section">
+      <div class="section-shell">
+        <div class="section-heading">
+          <div>
+            <p class="section-label">Exams</p>
+            <h3>পরীক্ষা অনুযায়ী ব্রাউজ করুন</h3>
+          </div>
+          {
+            quickSubjects.length > 0 && (
+              <div class="subject-bubbles">
+                {quickSubjects.map((subject: string) => (
+                  <a
+                    href={`/?subject=${encodeURIComponent(subject)}`}
+                    class="omr-bubble outline"
+                  >
+                    <span class="bubble-mark" aria-hidden="true" />
+                    <span class="bubble-label">{subject}</span>
+                  </a>
+                ))}
+              </div>
+            )
+          }
+        </div>
+
+        <div class="exam-cards">
+          {
+            categories.map((cat) => {
+              const count = categoryCount(cat);
+              const meta = examMeta[cat] || { label: cat, icon: "doc" };
+              return (
+                <a href={`/${cat.toLowerCase()}`} class="exam-card glass-card">
+                  <span class="exam-card__icon" aria-hidden="true">
+                    {meta.icon === "book" ? (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4H11v15.5H4.5A1.5 1.5 0 0 1 3 18V5.5Z" />
+                        <path d="M21 5.5A1.5 1.5 0 0 0 19.5 4H13v15.5h6.5A1.5 1.5 0 0 0 21 18V5.5Z" />
+                      </svg>
+                    ) : meta.icon === "doc" ? (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 3h7l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
+                        <path d="M13 3v5h5" />
+                        <line x1="8" y1="13" x2="15" y2="13" />
+                        <line x1="8" y1="16" x2="15" y2="16" />
+                      </svg>
+                    ) : meta.icon === "column" ? (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 21h14" />
+                        <path d="M7 21V8" /><path d="M12 21V8" /><path d="M17 21V8" />
+                        <path d="M4 8h16" />
+                        <path d="M8 8V5h8v3" />
+                      </svg>
+                    ) : (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 20V11a8 8 0 0 1 16 0v9" />
+                        <path d="M3 20h18" />
+                        <path d="M9 14v6" /><path d="M15 14v6" />
+                      </svg>
+                    )}
+                  </span>
+                  <div class="exam-card__body">
+                    <h4>
+                      <span class="omr-bubble filled inline" aria-hidden="true">
+                        <span class="bubble-mark" />
+                      </span>
+                      {cat === "BCS"
+                        ? "বিসিএস প্রিলিমিনারি"
+                        : cat === "Admission"
+                          ? "বিশ্ববিদ্যালয় ভর্তি"
+                          : `${meta.label} পরীক্ষা`}
+                    </h4>
+                    <p>গুরুত্বপূর্ণ নোট, সাজেশন ও PDF একসাথে দেখুন।</p>
+                  </div>
+                  {
+                    count > 0 && (
+                      <span class="exam-card__count num">{count} টি</span>
+                    )
+                  }
+                </a>
+              );
+            })
+          }
+        </div>
+      </div>
+    </section>
+
+    <section id="suggestions" class="results-section">
+      <div class="section-shell">
+        <div class="section-heading results-heading">
+          <div>
+            <p class="section-label">Library results</p>
+            <h3>
+              {
+                hasSearchOrFilter
+                  ? "ফিল্টার করা PDF ফলাফল"
+                  : "সাম্প্রতিক সাজেশন ও পড়াশোনা ফাইলসমূহ"
+              }
+            </h3>
+          </div>
+          <p class="results-copy">
+            {
+              hasSearchOrFilter ? (
+                <>
+                  আপনার অনুসন্ধান ও ফিল্টার অনুযায়ী{" "}
+                  <span class="num">{totalPosts}</span>টি PDF পাওয়া গেছে।
+                </>
+              ) : (
+                "আপনার পরীক্ষার প্রস্তুতির জন্য গুরুত্বপূর্ণ ও সাম্প্রতিক ফাইলসমূহ একসাথে দেখুন।"
+              )
+            }
+          </p>
+        </div>
+
+        {
+          initialPosts.length > 0 ? (
+            <div class="results-grid" id="posts-grid">
+              {initialPosts.map((post) => (
+                <PostCard post={post} variant="grid" />
+              ))}
+            </div>
+          ) : (
+            <div class="empty-state">
+              <p>এই অনুসন্ধানে কোনো PDF পাওয়া যায়নি।</p>
+              <span>অন্য কীওয়ার্ড, ক্যাটাগরি বা বিষয় ব্যবহার করে দেখুন।</span>
+            </div>
+          )
+        }
+
+        {
+          remainingPosts.length > 0 && (
+            <div
+              class="hidden-posts"
+              id="remaining-posts"
+              style="display:none;"
+            >
+              <div class="results-grid">
+                {remainingPosts.map((post) => (
+                  <PostCard post={post} variant="grid" />
+                ))}
+              </div>
+            </div>
+          )
+        }
+
+        {
+          hasMore && (
+            <div class="load-more-container">
+              <button
+                class="btn btn-load-more"
+                id="load-more-btn"
+              >
+                আরও <span class="num">{remainingPosts.length}</span>টি দেখুন ↓
+              </button>
+            </div>
+          )
+        }
+      </div>
+    </section>
+
+    <Footer appUrl={appUrl} resourceCount={totalResourceCount} lastUpdated={lastUpdated} />
+    <ScrollToTop />
+  </div>
+</BaseLayout>
+
+<style>
+  .landing-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .hero {
+    padding: 1.75rem 1.25rem 1.25rem;
+  }
+  .hero-card {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.75rem;
+    padding: 1.75rem;
+    align-items: center;
+  }
+  .hero-copy h1 {
+    font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+    line-height: 1.4;
+    margin-bottom: 0.85rem;
+  }
+  .hero-subtitle {
+    color: var(--text-secondary);
+    max-width: 540px;
+    line-height: 1.8;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+  }
+  .btn-primary {
+    background: var(--accent-primary);
+    color: #fff;
+    border-color: var(--accent-primary);
+  }
+  .btn-primary:hover {
+    background: var(--color-primary-strong);
+    border-color: var(--color-primary-strong);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-hairline);
+  }
+  .btn-ghost:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-surface-raised);
+  }
+
+  /* Live quick-search lives inside the hero as the visual anchor */
+  .hero-search {
+    border: 1px solid var(--border-hairline);
+    border-radius: var(--radius);
+    padding: 1rem;
+    background: var(--bg-surface-raised);
+  }
+  .search-form {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .field span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+  .field input,
+  .field select {
+    padding: 0.65rem 0.8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-hairline);
+    background: var(--bg-base);
+    color: var(--text-primary);
+  }
+  .field input:focus,
+  .field select:focus {
+    border-color: var(--accent-primary);
+    outline: none;
+  }
+  .search-form .btn-primary {
+    justify-self: start;
+  }
+
+  .exams-section,
+  .results-section {
+    padding: 0 1.25rem 1.25rem;
+  }
+  .section-shell {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .section-heading h3 {
+    font-size: 1.2rem;
+  }
+
+  /* OMR bubble markers — the signature motif. Used here for subjects (outline)
+     and inside exam cards for the exam-type (filled). */
+  .subject-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    max-width: 60%;
+  }
+  .omr-bubble {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    text-decoration: none;
+    border: 1px solid var(--border-hairline);
+    background: var(--bg-surface);
+    font-size: 0.85rem;
+  }
+  .omr-bubble:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+  }
+  .bubble-mark {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-muted);
+    flex-shrink: 0;
+  }
+  .omr-bubble.outline .bubble-mark { background: transparent; }
+  .omr-bubble.filled .bubble-mark {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+  }
+  .omr-bubble.filled.inline {
+    padding: 0;
+    border: none;
+    background: none;
+  }
+
+  .exam-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .exam-card {
+    text-decoration: none;
+    color: inherit;
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+  }
+  .exam-card__icon {
+    color: var(--accent-primary);
+    display: inline-flex;
+  }
+  .exam-card__body { display: flex; flex-direction: column; gap: 0.35rem; }
+  .exam-card h4 {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .exam-card p {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .exam-card__count {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+
+  .results-heading { align-items: flex-start; }
+  .results-copy {
+    color: var(--text-secondary);
+    max-width: 420px;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+  .results-copy .num { color: var(--text-primary); }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .empty-state {
+    padding: 2rem;
+    border: 1px dashed var(--border-hairline);
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+  }
+  .empty-state p {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .load-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  .btn-load-more {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-hairline);
+  }
+  .btn-load-more:hover { border-color: var(--accent-primary); }
+
+  @media (max-width: 960px) {
+    .hero-card {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .section-heading {
+      flex-direction: column;
+      align-items: start;
+    }
+    .subject-bubbles { max-width: 100%; justify-content: flex-start; }
+  }
+  @media (max-width: 600px) {
+    .hero { padding: 1rem 1rem 0.8rem; }
+    .results-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const loadMoreBtn = document.getElementById("load-more-btn");
+  const remainingPosts = document.getElementById("remaining-posts");
+  if (loadMoreBtn && remainingPosts) {
+    loadMoreBtn.addEventListener("click", () => {
+      remainingPosts.style.display = "block";
+      remainingPosts.classList.add("fade-in");
+      loadMoreBtn.style.display = "none";
+      remainingPosts.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+</script>
+
+<style is:global>
+  .fade-in {
+    animation: fadeInUp 0.35s ease-out;
+  }
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

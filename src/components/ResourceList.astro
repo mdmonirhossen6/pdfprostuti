@@ -1,0 +1,83 @@
+---
+import { resourceTypeLabel } from "../utils/resources";
+import { resourcePath, displayLabel } from "../utils/hubs";
+
+interface Props {
+  posts: Array<Record<string, any>>;
+  emptyMessage?: string;
+}
+
+const { posts = [], emptyMessage = "এই মুহূর্তে কোনো PDF পাওয়া যায়নি।" } = Astro.props;
+---
+
+{
+  posts.length === 0 ? (
+    <p class="hub-empty">{emptyMessage}</p>
+  ) : (
+    <div class="hub-resource-grid">
+      {posts.map((post) => {
+        const href = resourcePath(post.exam, post.subject, post.slug);
+        const meta = [
+          displayLabel(post.subject),
+          post.chapter ? displayLabel(post.chapter) : null,
+          post.academic_year || null,
+          resourceTypeLabel(post.resource_type),
+        ].filter(Boolean);
+        return (
+          <article class="hub-resource-card glass-card">
+            <a href={href} class="hub-resource-link">
+              <span class="hub-resource-meta">{meta.join(" · ")}</span>
+              <h3>{post.title}</h3>
+            </a>
+            <div class="hub-resource-actions">
+              <a href={href} class="btn btn-sm btn-primary">
+                পড়ুন
+              </a>
+              <a href={`/download?id=${post.id}`} class="btn btn-sm btn-secondary">
+                ডাউনলোড
+              </a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  )
+}
+
+<style>
+  .hub-empty {
+    color: var(--text-secondary);
+    padding: 1.5rem 0;
+  }
+  .hub-resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .hub-resource-card {
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .hub-resource-link {
+    text-decoration: none;
+    color: inherit;
+    display: grid;
+    gap: 0.45rem;
+  }
+  .hub-resource-meta {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+  .hub-resource-link h3 {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    color: var(--text-primary);
+  }
+  .hub-resource-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+  }
+</style>

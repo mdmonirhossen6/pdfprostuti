@@ -1,0 +1,401 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import TrackingScript from "../components/TrackingScript.astro";
+import { getDbCredentials } from "../utils/db";
+import { buildAppCtaUrl } from "../utils/cta";
+
+const runtime = (Astro.locals as { runtime?: { env?: Record<string, string> } })
+  .runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+const { searchParams } = Astro.url;
+const fileId = searchParams.get("id");
+
+let fileInfo = null;
+
+try {
+  const res = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${fileId}`, {
+    headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },
+  });
+  if (res.ok) {
+    const data = await res.json();
+    fileInfo = data[0];
+  }
+} catch (e) {
+  console.error("Error querying download file details:", e);
+}
+
+if (!fileInfo && fileId && fileId.startsWith("mock-")) {
+  fileInfo = {
+    id: fileId,
+    title: "পদার্থবিজ্ঞান ১ম পত্র ১০০% কমন সাজেশন্স",
+    exam: "HSC",
+    subject: "physics",
+    chapter: "",
+    slug: "physics-1st-paper-suggestion",
+    file_url: "https://t.me/yourchannel",
+    drive_url: "https://drive.google.com/open?id=mock",
+    show_app_opener: true,
+    app_link: null,
+  };
+}
+
+if (!fileInfo) {
+  return Astro.redirect("/");
+}
+
+const getLinkDetails = (url: string | null) => {
+  if (!url) return null;
+  const isTelegram = url.includes("t.me") || url.includes("telegram.org");
+  const isDrive =
+    url.includes("drive.google.com") || url.includes("docs.google.com");
+  const isDirectPdf = url.endsWith(".pdf");
+  return {
+    url,
+    isTelegram,
+    isDrive,
+    isDirectPdf,
+    label: isTelegram
+      ? "💬 টেলিগ্রাম থেকে ডাউনলোড করুন"
+      : isDrive
+        ? "📂 গুগল ড্রাইভ থেকে ডাউনলোড করুন"
+        : isDirectPdf
+          ? "📥 সরাসরি পিডিএফ ডাউনলোড করুন"
+          : "🔗 এক্সটার্নাল ডাউনলোড লিংক",
+  };
+};
+
+const primaryLink = getLinkDetails(fileInfo.file_url);
+const secondaryLink = getLinkDetails(fileInfo.drive_url);
+const showAppOpener = fileInfo.show_app_opener !== false;
+const appLinkUrl = buildAppCtaUrl({
+  exam: fileInfo.exam,
+  subject: fileInfo.subject,
+  chapter: fileInfo.chapter,
+  slug: fileInfo.slug,
+  resourceId: fileInfo.id,
+  customAppLink: fileInfo.app_link,
+  contentPlacement: "download",
+  medium: "download",
+});
+
+const trackBase = {
+  resourceId: fileInfo.id,
+  exam: fileInfo.exam || "",
+  subject: fileInfo.subject || "",
+  chapter: fileInfo.chapter || "",
+  slug: fileInfo.slug || "",
+};
+---
+
+<BaseLayout
+  title={`${fileInfo?.title || "ফাইল"} ডাউনলোড - Prostuti BD`}
+  description="বিরতিহীন ও দ্রুত ডাউনলোড লিংক। PDF, সাজেশন ও নোট সংগ্রহ করুন."
+>
+  <TrackingScript />
+  <Navbar showSearch={false} showBackLink={true} />
+  <main class="download-container">
+    <div class="glass-card download-card">
+      <header class="header">
+        <span class="file-icon">📄</span>
+        <h2 class="title">আপনার ফাইলটি প্রস্তুত হচ্ছে...</h2>
+        <p class="timer-desc">
+          অনুগ্রহ করে <span id="countdown">5</span> সেকেন্ড অপেক্ষা করুন।
+        </p>
+      </header>
+
+      <div class="timer-circle-container">
+        <svg class="timer-svg" viewBox="0 0 100 100">
+          <circle class="timer-bg-circle" cx="50" cy="50" r="45"></circle>
+          <circle
+            class="timer-progress-circle"
+            id="timer-progress"
+            cx="50"
+            cy="50"
+            r="45"></circle>
+        </svg>
+        <span class="timer-text" id="countdown-text">5</span>
+      </div>
+
+      {
+        showAppOpener && (
+          <div class="app-advertisement">
+            <h4>⚡ প্রস্তুতি অ্যাপেও আপনি পাচ্ছেন</h4>
+            <ul class="features-list">
+              <li>
+                <span class="check-icon">✓</span>
+                <span>অধ্যায়ভিত্তিক মক টেস্ট</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span>ভুল উত্তর ব্যাখ্যা ও বিশ্লেষণ</span>
+              </li>
+              <li>
+                <span class="check-icon">✓</span>
+                <span>প্রস্তুতির অগ্রগতি ট্র্যাকিং</span>
+              </li>
+            </ul>
+            <a
+              href={appLinkUrl}
+              class="btn btn-app-link pulse-animation"
+              target="_blank"
+              rel="noopener"
+              data-track="cta"
+              data-resource-id={trackBase.resourceId}
+              data-exam={trackBase.exam}
+              data-subject={trackBase.subject}
+              data-chapter={trackBase.chapter}
+              data-slug={trackBase.slug}
+              data-placement="download"
+            >
+              🚀 অ্যাপ খুলুন
+            </a>
+          </div>
+        )
+      }
+
+      <div id="download-actions" class="hidden">
+        {
+          primaryLink && (
+            <a
+              href={primaryLink.url}
+              class={`btn btn-main ${primaryLink.isTelegram ? "tg-theme" : primaryLink.isDirectPdf ? "direct-theme" : "generic-theme"}`}
+              id="primary-download-link"
+              data-track="download"
+              data-link-kind="primary"
+              data-resource-id={trackBase.resourceId}
+              data-exam={trackBase.exam}
+              data-subject={trackBase.subject}
+              data-chapter={trackBase.chapter}
+              data-slug={trackBase.slug}
+            >
+              {primaryLink.label}
+            </a>
+          )
+        }
+        {
+          secondaryLink && (
+            <a
+              href={secondaryLink.url}
+              class="btn btn-sub"
+              id="secondary-download-link"
+              target="_blank"
+              rel="noopener"
+              data-track="download"
+              data-link-kind="secondary"
+              data-resource-id={trackBase.resourceId}
+              data-exam={trackBase.exam}
+              data-subject={trackBase.subject}
+              data-chapter={trackBase.chapter}
+              data-slug={trackBase.slug}
+            >
+              {secondaryLink.label}
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<script define:vars={{ trackBase }}>
+  let seconds = 5;
+  const countdownEl = document.getElementById("countdown");
+  const countdownTextEl = document.getElementById("countdown-text");
+  const actionDiv = document.getElementById("download-actions");
+  const progressCircle = document.getElementById("timer-progress");
+  const circumference = 282.74;
+  let autoTracked = false;
+
+  if (progressCircle) {
+    progressCircle.style.strokeDasharray = circumference.toString();
+    progressCircle.style.strokeDashoffset = "0";
+  }
+
+  async function trackDownload(linkKind, destinationUrl) {
+    if (typeof window.__prostutiTrack !== "function") return;
+    await window.__prostutiTrack("download", {
+      resource_id: trackBase.resourceId,
+      exam: trackBase.exam,
+      subject: trackBase.subject,
+      chapter: trackBase.chapter,
+      slug: trackBase.slug,
+      link_kind: linkKind,
+      destination_url: destinationUrl,
+    });
+  }
+
+  const timer = setInterval(async () => {
+    seconds -= 1;
+    if (countdownEl) countdownEl.innerText = seconds.toString();
+    if (countdownTextEl) countdownTextEl.innerText = seconds.toString();
+    if (progressCircle) {
+      const offset = circumference - (seconds / 5) * circumference;
+      progressCircle.style.strokeDashoffset = offset.toString();
+    }
+    if (seconds <= 0) {
+      clearInterval(timer);
+      if (actionDiv) {
+        actionDiv.classList.remove("hidden");
+        actionDiv.classList.add("fade-in");
+      }
+      const primary = document.getElementById("primary-download-link");
+      if (primary?.href && !autoTracked) {
+        autoTracked = true;
+        await trackDownload("auto", primary.href);
+        window.location.href = primary.href;
+      }
+    }
+  }, 1000);
+</script>
+
+<style>
+  .download-container {
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+  }
+  .download-card {
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    padding: 2rem;
+  }
+  .header {
+    margin-bottom: 1.4rem;
+  }
+  .file-icon {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 0.7rem;
+  }
+  .title {
+    font-size: 1.45rem;
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+  }
+  .timer-desc {
+    color: var(--text-secondary);
+  }
+  #countdown {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  .timer-circle-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.4rem;
+  }
+  .timer-svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+  .timer-bg-circle {
+    fill: none;
+    stroke: var(--border-soft);
+    stroke-width: 8;
+  }
+  .timer-progress-circle {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .app-advertisement {
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 1rem;
+    text-align: left;
+    margin-bottom: 1rem;
+    background: var(--surface-muted);
+  }
+  .app-advertisement h4 {
+    margin-bottom: 0.65rem;
+    color: var(--text-primary);
+  }
+  .features-list {
+    list-style: none;
+    display: grid;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .features-list li {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .check-icon {
+    color: var(--color-success);
+    font-weight: 700;
+  }
+  .btn-app-link {
+    width: 100%;
+    background: linear-gradient(
+      135deg,
+      var(--color-primary),
+      var(--color-accent)
+    );
+    color: white;
+  }
+  .hidden {
+    display: none !important;
+  }
+  .fade-in {
+    animation: fadeIn 0.35s ease-out;
+  }
+  .btn-main {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0.7rem;
+    color: white;
+  }
+  .tg-theme {
+    background: var(--color-telegram);
+  }
+  .direct-theme {
+    background: var(--color-direct);
+  }
+  .generic-theme {
+    background: var(--color-success);
+  }
+  .btn-sub {
+    display: flex;
+    width: 100%;
+    background: var(--surface-muted);
+    color: var(--text-primary);
+    border: 1px solid var(--border-soft);
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @media (max-width: 480px) {
+    .download-card {
+      padding: 1.4rem;
+    }
+    .title {
+      font-size: 1.3rem;
+    }
+  }
+</style>

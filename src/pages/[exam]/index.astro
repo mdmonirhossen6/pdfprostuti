@@ -1,0 +1,146 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import ResourceList from "../../components/ResourceList.astro";
+import TrackingScript from "../../components/TrackingScript.astro";
+import { getDbCredentials } from "../../utils/db";
+import {
+  resolveExam,
+  fetchPublishedPosts,
+  groupBySubject,
+  subjectPath,
+  SITE_ORIGIN,
+  displayLabel,
+} from "../../utils/hubs";
+
+const { exam: examParam } = Astro.params;
+const examMeta = resolveExam(examParam);
+
+if (!examMeta) {
+  return new Response(null, { status: 404, statusText: "Not Found" });
+}
+
+const runtime = (Astro.locals as { runtime?: { env?: Record<string, string> } }).runtime;
+const { dbUrl, dbReadKey } = getDbCredentials(runtime);
+
+let posts = [];
+try {
+  posts = await fetchPublishedPosts(dbUrl, dbReadKey, { exam: examMeta.key });
+} catch (e) {
+  console.error("Category hub fetch failed:", e);
+}
+
+const subjects = groupBySubject(posts);
+const canonicalPath = `/${examMeta.key.toLowerCase()}`;
+const pageTitle = `${examMeta.headline} | Prostuti BD`;
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: examMeta.headline,
+  description: examMeta.description,
+  url: `${SITE_ORIGIN}${canonicalPath}`,
+  isPartOf: { "@type": "WebSite", name: "Prostuti BD", url: SITE_ORIGIN },
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: posts.length,
+    itemListElement: subjects.slice(0, 50).map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: displayLabel(item.subject),
+      url: `${SITE_ORIGIN}${subjectPath(examMeta.key, item.subject)}`,
+    })),
+  },
+};
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+);
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={examMeta.description}
+  exam={examMeta.key}
+  keywords={`${examMeta.key}, pdf, suggestion, notes, download, ${examMeta.labelBn}`}
+  seoTitle={pageTitle}
+  metaDescription={examMeta.description}
+  canonicalPath={canonicalPath}
+  pageType="collection"
+  extraSchemas={[collectionSchema]}
+>
+  <TrackingScript />
+  <Navbar showSearch={true} />
+  <main class="container hub-page">
+    <nav class="hub-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">প্রচ্ছদ</a>
+      <span>/</span>
+      <span aria-current="page">{examMeta.key}</span>
+    </nav>
+
+    <header class="hub-hero glass-card">
+      <p class="hub-eyebrow">{examMeta.labelBn} ক্যাটাগরি</p>
+      <h1>{examMeta.headline}</h1>
+      <p>{examMeta.description}</p>
+      <p class="hub-count">{posts.length}টি PDF রিসোর্স · {subjects.length}টি বিষয়</p>
+    </header>
+
+    <section class="hub-section">
+      <h2>বিষয় অনুযায়ী ব্রাউজ করুন</h2>
+      {
+        subjects.length === 0 ? (
+          <p class="hub-empty">এই ক্যাটাগরিতে এখনো পাবলিশড PDF নেই।</p>
+        ) : (
+          <div class="hub-chip-grid">
+            {subjects.map((item) => (
+              <a class="hub-chip glass-card" href={subjectPath(examMeta.key, item.subject)}>
+                <strong>{displayLabel(item.subject)}</strong>
+                <span>{item.count}টি PDF</span>
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </section>
+
+    <section class="hub-section">
+      <h2>সাম্প্রতিক PDF</h2>
+      <ResourceList posts={posts.slice(0, 12)} />
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .hub-page { padding-bottom: 3rem; }
+  .hub-breadcrumb {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    color: var(--text-muted); font-size: 0.9rem; margin: 1.25rem 0 1rem;
+  }
+  .hub-breadcrumb a { color: var(--text-secondary); text-decoration: none; }
+  .hub-breadcrumb a:hover { color: var(--text-primary); }
+  .hub-hero {
+    padding: 1.6rem 1.4rem; margin-bottom: 2rem;
+    background:
+      linear-gradient(135deg, rgba(79, 119, 255, 0.12), transparent 55%),
+      var(--surface);
+  }
+  .hub-eyebrow { color: var(--color-primary); font-weight: 600; margin-bottom: 0.4rem; }
+  .hub-hero h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 0.6rem; }
+  .hub-hero p { color: var(--text-secondary); max-width: 46rem; }
+  .hub-count { margin-top: 0.9rem; color: var(--text-muted); font-size: 0.92rem; }
+  .hub-section { margin-bottom: 2.25rem; }
+  .hub-section h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+  .hub-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+  }
+  .hub-chip {
+    padding: 1rem; text-decoration: none; color: inherit;
+    display: grid; gap: 0.35rem;
+  }
+  .hub-chip span { color: var(--text-muted); font-size: 0.85rem; }
+  .hub-empty { color: var(--text-secondary); }
+</style>

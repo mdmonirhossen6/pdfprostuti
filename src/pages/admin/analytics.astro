@@ -1,0 +1,273 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { verifyAuth, getAdminCredentials } from '../../utils/auth';
+import { countBy } from '../../utils/tracking';
+
+const runtime = Astro.locals.runtime;
+const isAuthed = await verifyAuth(Astro.cookies, runtime);
+
+if (!isAuthed) {
+  return Astro.redirect('/admin/login');
+}
+
+const { dbUrl, dbWriteKey } = getAdminCredentials(runtime);
+const days = Math.min(90, Math.max(1, Number(Astro.url.searchParams.get('days') || 7)));
+const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+
+let downloads = [];
+let ctas = [];
+let errorMessage = '';
+
+try {
+  const headers = {
+    apikey: dbWriteKey,
+    Authorization: `Bearer ${dbWriteKey}`,
+  };
+  const [downloadRes, ctaRes] = await Promise.all([
+    fetch(
+      `${dbUrl}/rest/v1/download_events?select=*&created_at=gte.${since}&order=created_at.desc&limit=5000`,
+      { headers },
+    ),
+    fetch(
+      `${dbUrl}/rest/v1/cta_events?select=*&created_at=gte.${since}&order=created_at.desc&limit=5000`,
+      { headers },
+    ),
+  ]);
+
+  if (downloadRes.ok) downloads = await downloadRes.json();
+  else errorMessage = 'download_events লোড করা যায়নি — migration চালানো হয়েছে কি?';
+
+  if (ctaRes.ok) ctas = await ctaRes.json();
+  else errorMessage = (errorMessage ? errorMessage + ' ' : '') + 'cta_events লোড ব্যর্থ।';
+} catch (e) {
+  errorMessage = 'অ্যানালিটিক্স ডাটা লোড করতে সমস্যা হয়েছে।';
+}
+
+const downloadCount = downloads.length;
+const ctaCount = ctas.length;
+const ctr = downloadCount > 0 ? ((ctaCount / downloadCount) * 100).toFixed(1) : '0.0';
+
+const byExamDownloads = countBy(downloads, (r) => r.exam || 'unknown');
+const byExamCtas = countBy(ctas, (r) => r.exam || 'unknown');
+const byDeviceDownloads = countBy(downloads, (r) => r.device || 'unknown');
+const byDeviceCtas = countBy(ctas, (r) => r.device || 'unknown');
+const byPlacement = countBy(ctas, (r) => r.placement || 'unknown');
+const topResources = countBy(downloads, (r) => r.slug || r.resource_id || 'unknown').slice(0, 10);
+const topReferrers = countBy(
+  [...downloads, ...ctas],
+  (r) => r.referrer_host || '(direct)',
+).slice(0, 8);
+const topDestinations = countBy(ctas, (r) => {
+  try {
+    return new URL(r.destination_url).pathname;
+  } catch {
+    return r.destination_url || 'unknown';
+  }
+}).slice(0, 8);
+
+const recentDownloads = downloads.slice(0, 12);
+const recentCtas = ctas.slice(0, 12);
+---
+
+<BaseLayout title="কনভার্শন অ্যানালিটিক্স - এডমিন">
+  <nav class="admin-nav">
+    <div class="nav-container">
+      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Analytics</span></a>
+      <div class="nav-actions">
+        <a href="/admin" class="back-link">← ড্যাশবোর্ড</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container analytics-page">
+    <header class="page-header">
+      <div>
+        <h2>কনভার্শন ড্যাশবোর্ড</h2>
+        <p>ডাউনলোড ও অ্যাপ CTA ইভেন্ট — শেষ {days} দিন</p>
+      </div>
+      <div class="range-links">
+        <a class={days === 7 ? 'active' : ''} href="/admin/analytics?days=7">৭ দিন</a>
+        <a class={days === 30 ? 'active' : ''} href="/admin/analytics?days=30">৩০ দিন</a>
+        <a class={days === 90 ? 'active' : ''} href="/admin/analytics?days=90">৯০ দিন</a>
+      </div>
+    </header>
+
+    {errorMessage && <div class="alert">{errorMessage}</div>}
+
+    <section class="metric-grid">
+      <div class="metric-card"><span>ডাউনলোড</span><strong>{downloadCount}</strong><small>download_events</small></div>
+      <div class="metric-card"><span>CTA ক্লিক</span><strong>{ctaCount}</strong><small>cta_events</small></div>
+      <div class="metric-card"><span>CTA / Download</span><strong>{ctr}%</strong><small>rough CTR</small></div>
+      <div class="metric-card"><span>মোবাইল ডাউনলোড</span><strong>{byDeviceDownloads.find((d) => d.key === 'mobile')?.count || 0}</strong><small>device mix</small></div>
+    </section>
+
+    <section class="panels">
+      <article class="glass-card panel">
+        <h3>ক্যাটাগরি অনুযায়ী ডাউনলোড</h3>
+        <ul>
+          {byExamDownloads.length === 0 && <li class="muted">কোনো ডাটা নেই</li>}
+          {byExamDownloads.map((item) => (
+            <li><span>{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+      <article class="glass-card panel">
+        <h3>ক্যাটাগরি অনুযায়ী CTA</h3>
+        <ul>
+          {byExamCtas.length === 0 && <li class="muted">কোনো ডাটা নেই</li>}
+          {byExamCtas.map((item) => (
+            <li><span>{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+      <article class="glass-card panel">
+        <h3>ডিভাইস (Download)</h3>
+        <ul>
+          {byDeviceDownloads.map((item) => (
+            <li><span>{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+      <article class="glass-card panel">
+        <h3>CTA placement</h3>
+        <ul>
+          {byPlacement.map((item) => (
+            <li><span>{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+      <article class="glass-card panel">
+        <h3>টপ রিসোর্স (download)</h3>
+        <ul>
+          {topResources.map((item) => (
+            <li><span class="truncate">{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+      <article class="glass-card panel">
+        <h3>রেফারার হোস্ট</h3>
+        <ul>
+          {topReferrers.map((item) => (
+            <li><span class="truncate">{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+      <article class="glass-card panel wide">
+        <h3>অ্যাপ destination path (CTA)</h3>
+        <ul>
+          {topDestinations.length === 0 && <li class="muted">কোনো CTA নেই</li>}
+          {topDestinations.map((item) => (
+            <li><span class="truncate">{item.key}</span><strong>{item.count}</strong></li>
+          ))}
+        </ul>
+      </article>
+    </section>
+
+    <section class="tables">
+      <article class="glass-card table-card">
+        <h3>সাম্প্রতিক ডাউনলোড</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>সময়</th>
+                <th>রিসোর্স</th>
+                <th>ক্যাটাগরি</th>
+                <th>ডিভাইস</th>
+                <th>লিংক</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentDownloads.length === 0 && (
+                <tr><td colspan="5" class="muted">এখনো কোনো ইভেন্ট নেই</td></tr>
+              )}
+              {recentDownloads.map((row) => (
+                <tr>
+                  <td>{new Date(row.created_at).toLocaleString('bn-BD')}</td>
+                  <td class="truncate">{row.slug || row.resource_id}</td>
+                  <td>{row.exam}</td>
+                  <td>{row.device}</td>
+                  <td>{row.link_kind}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="glass-card table-card">
+        <h3>সাম্প্রতিক CTA</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>সময়</th>
+                <th>placement</th>
+                <th>exam</th>
+                <th>UTM</th>
+                <th>destination</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentCtas.length === 0 && (
+                <tr><td colspan="5" class="muted">এখনো কোনো ইভেন্ট নেই</td></tr>
+              )}
+              {recentCtas.map((row) => (
+                <tr>
+                  <td>{new Date(row.created_at).toLocaleString('bn-BD')}</td>
+                  <td>{row.placement}</td>
+                  <td>{row.exam}</td>
+                  <td class="truncate">{[row.utm_medium, row.utm_campaign, row.utm_content].filter(Boolean).join(' · ')}</td>
+                  <td class="truncate">{row.destination_url}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .admin-nav { background: rgba(11, 15, 25, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: sticky; top: 0; z-index: 100; }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+  .admin-logo { font-weight: 800; font-size: 1.15rem; text-decoration: none; color: white; display: flex; align-items: center; gap: 0.5rem; }
+  .badge-admin { font-size: 0.7rem; background: var(--color-primary); padding: 0.2rem 0.5rem; border-radius: 4px; }
+  .back-link { color: var(--text-secondary); text-decoration: none; }
+  .analytics-page { padding: 1.5rem 0 3rem; }
+  .page-header { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .page-header h2 { font-size: 1.5rem; }
+  .page-header p { color: var(--text-secondary); }
+  .range-links { display: flex; gap: 0.5rem; }
+  .range-links a {
+    text-decoration: none; color: var(--text-secondary);
+    border: 1px solid var(--border-soft); padding: 0.4rem 0.75rem; border-radius: 999px; font-size: 0.85rem;
+  }
+  .range-links a.active, .range-links a:hover { color: white; border-color: var(--color-primary); background: rgba(79, 119, 255, 0.15); }
+  .alert { padding: 0.9rem 1rem; border-radius: 10px; margin-bottom: 1rem; background: rgba(244, 63, 94, 0.12); border: 1px solid #f43f5e; color: #fecdd3; }
+  .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin-bottom: 1.25rem; }
+  .metric-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 14px; padding: 1rem; display: grid; gap: 0.25rem; }
+  .metric-card span, .metric-card small { color: var(--text-muted); font-size: 0.85rem; }
+  .metric-card strong { font-size: 1.6rem; }
+  .panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; margin-bottom: 1.25rem; }
+  .panel { padding: 1rem; }
+  .panel.wide { grid-column: 1 / -1; }
+  .panel h3, .table-card h3 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .panel ul { list-style: none; display: grid; gap: 0.45rem; }
+  .panel li { display: flex; justify-content: space-between; gap: 1rem; color: var(--text-secondary); font-size: 0.92rem; }
+  .tables { display: grid; gap: 1rem; }
+  .table-card { padding: 1rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+  th { color: var(--text-muted); font-weight: 600; }
+  .truncate { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+  .muted { color: var(--text-muted); }
+  @media (max-width: 900px) {
+    .metric-grid, .panels { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .metric-grid, .panels { grid-template-columns: 1fr; }
+  }
+</style>
