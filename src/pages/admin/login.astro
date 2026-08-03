@@ -38,7 +38,7 @@ if (Astro.request.method === 'POST') {
   <main class="login-container">
     <div class="glass-card login-card">
       <header class="login-header">
-        <span class="lock-icon">🔒</span>
+        <span class="lock-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
         <h2>এডমিন প্যানেল লগইন</h2>
         <p>প্রস্তুতি BD ওয়েবসাইটে কনটেন্ট পরিচালনা করতে লগইন করুন</p>
       </header>
@@ -64,16 +64,16 @@ if (Astro.request.method === 'POST') {
 
 <style>
   .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-  .login-card { max-width: 420px; width: 100%; padding: 2.5rem; border-radius: 16px; }
+  .login-card { max-width: 420px; width: 100%; padding: 2.5rem; border-radius: var(--radius); }
   .login-header { text-align: center; margin-bottom: 2rem; }
   .lock-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
   .login-header h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
   .login-header p { font-size: 0.9rem; color: var(--text-secondary); }
-  .error-banner { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center; }
+  .error-banner { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; padding: 0.75rem; border-radius: var(--radius); font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center; }
   .login-form { display: flex; flex-direction: column; gap: 1.25rem; }
   .input-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
   .input-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
-  .input-group input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: 8px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .input-group input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
   .input-group input:focus { border-color: var(--color-primary); }
-  .btn-login { background: linear-gradient(135deg, var(--color-primary), var(--color-secondary)); color: white; font-weight: 700; margin-top: 0.5rem; padding: 0.85rem; border-radius: 8px; cursor: pointer; border: none; }
+  .btn-login { background: linear-gradient(135deg, var(--color-primary), var(--accent-primary)); color: white; font-weight: 700; margin-top: 0.5rem; padding: 0.85rem; border-radius: var(--radius); cursor: pointer; border: none; }
 </style>

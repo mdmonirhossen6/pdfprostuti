@@ -72,7 +72,7 @@ const recentCtas = ctas.slice(0, 12);
 <BaseLayout title="কনভার্শন অ্যানালিটিক্স - এডমিন">
   <nav class="admin-nav">
     <div class="nav-container">
-      <a href="/admin" class="admin-logo">🎯 প্রস্তুতি BD <span class="badge-admin">Analytics</span></a>
+      <a href="/admin" class="admin-logo"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> প্রস্তুতি BD <span class="badge-admin">Analytics</span></a>
       <div class="nav-actions">
         <a href="/admin" class="back-link">← ড্যাশবোর্ড</a>
       </div>
@@ -244,10 +244,10 @@ const recentCtas = ctas.slice(0, 12);
     text-decoration: none; color: var(--text-secondary);
     border: 1px solid var(--border-soft); padding: 0.4rem 0.75rem; border-radius: 999px; font-size: 0.85rem;
   }
-  .range-links a.active, .range-links a:hover { color: white; border-color: var(--color-primary); background: rgba(79, 119, 255, 0.15); }
-  .alert { padding: 0.9rem 1rem; border-radius: 10px; margin-bottom: 1rem; background: rgba(244, 63, 94, 0.12); border: 1px solid #f43f5e; color: #fecdd3; }
+  .range-links a.active, .range-links a:hover { color: white; border-color: var(--color-primary); background: rgba(16, 185, 129, 0.15); }
+  .alert { padding: 0.9rem 1rem; border-radius: var(--radius); margin-bottom: 1rem; background: rgba(244, 63, 94, 0.12); border: 1px solid #f43f5e; color: #fecdd3; }
   .metric-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; margin-bottom: 1.25rem; }
-  .metric-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: 14px; padding: 1rem; display: grid; gap: 0.25rem; }
+  .metric-card { background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 1rem; display: grid; gap: 0.25rem; }
   .metric-card span, .metric-card small { color: var(--text-muted); font-size: 0.85rem; }
   .metric-card strong { font-size: 1.6rem; }
   .panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; margin-bottom: 1.25rem; }

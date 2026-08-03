@@ -15,20 +15,20 @@
   --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
   /* ---- Canonical color tokens (dark) ---- */
-  --bg-base: #0B0E14;            /* near-black, cool */
-  --bg-surface: #131822;          /* card / panel */
-  --bg-surface-raised: #1A2130;   /* hover / active surface */
-  --border-hairline: #2A3242;     /* 1px hairlines */
+  --bg-base: #0A0F0D;            /* near-black, green-tinted */
+  --bg-surface: #111916;          /* card / panel */
+  --bg-surface-raised: #182420;   /* hover / active surface */
+  --border-hairline: #243330;     /* 1px hairlines */
   --text-primary: #F2F4F8;
   --text-secondary: #B9C2D2;      /* derived: between primary and muted */
   --text-muted: #8B93A7;
-  --accent-primary: #3B82F6;      /* blue — actions, links */
-  --accent-secondary: #22C08C;    /* teal — download / success */
-  --accent-highlight: #F5B942;    /* amber — featured/new/trending tags only */
-  --accent-danger: #EF5350;       /* sparingly — countdown, urgent */
-  --accent-primary-soft: rgba(59, 130, 246, 0.14);
-  --accent-secondary-soft: rgba(34, 192, 140, 0.14);
-  --accent-highlight-soft: rgba(245, 185, 66, 0.14);
+  --accent-primary: #10B981;      /* emerald-500 — actions, links */
+  --accent-secondary: #34D399;    /* emerald-400 — badges, tags, secondary actions */
+  --accent-highlight: #059669;    /* emerald-600 — featured/new/trending, hover/active */
+  --accent-danger: #EF4444;       /* sparingly — countdown, urgent */
+  --accent-primary-soft: rgba(16, 185, 129, 0.12);
+  --accent-secondary-soft: rgba(52, 211, 153, 0.12);
+  --accent-highlight-soft: rgba(5, 150, 105, 0.10);
 
   /* ---- Layout primitives ---- */
   --radius: 4px;
@@ -47,14 +47,14 @@
   --surface-muted: rgba(255, 255, 255, 0.035);
 
   --border-soft: var(--border-hairline);
-  --border-strong: #3A455A;
+  --border-strong: #2D4A3E;
 
   --color-primary: var(--accent-primary);
-  --color-primary-strong: #2F6FE0;
+  --color-primary-strong: #059669;
   --color-accent: var(--accent-secondary);
   --color-accent-soft: var(--accent-secondary-soft);
   --color-success: var(--accent-secondary);
-  --color-success-strong: #1AA978;
+  --color-success-strong: #047857;
   --color-telegram: #2A9FDA;
   --color-direct: var(--accent-highlight);
 
@@ -69,33 +69,33 @@
 [data-theme='light'] {
   color-scheme: light;
 
-  --bg-base: #F3F4F7;
+  --bg-base: #F0F5F2;
   --bg-surface: #FFFFFF;
-  --bg-surface-raised: #FAFBFD;
-  --border-hairline: #DCDFE6;
+  --bg-surface-raised: #F7FBF9;
+  --border-hairline: #D1DDD8;
   --text-primary: #111827;
   --text-secondary: #475063;
   --text-muted: #6B7280;
-  --accent-primary: #2563EB;
-  --accent-secondary: #0E9F6E;
-  --accent-highlight: #C6820A;
+  --accent-primary: #059669;
+  --accent-secondary: #10B981;
+  --accent-highlight: #047857;
   --accent-danger: #DC2626;
-  --accent-primary-soft: rgba(37, 99, 235, 0.10);
-  --accent-secondary-soft: rgba(14, 159, 110, 0.10);
-  --accent-highlight-soft: rgba(198, 130, 10, 0.12);
+  --accent-primary-soft: rgba(5, 150, 105, 0.10);
+  --accent-secondary-soft: rgba(16, 185, 129, 0.10);
+  --accent-highlight-soft: rgba(4, 120, 87, 0.08);
 
-  --surface-muted: rgba(15, 23, 42, 0.035);
-  --border-strong: #B7BCC8;
+  --surface-muted: rgba(5, 150, 105, 0.035);
+  --border-strong: #A3C4B3;
 
   --color-primary: var(--accent-primary);
-  --color-primary-strong: #1D4ED8;
+  --color-primary-strong: #047857;
   --color-accent: var(--accent-secondary);
   --color-accent-soft: var(--accent-secondary-soft);
   --color-success: var(--accent-secondary);
-  --color-success-strong: #0B7A52;
+  --color-success-strong: #065F46;
 
   --shadow-soft: none;
-  --shadow-card: 0 1px 0 rgba(15, 23, 42, 0.06);
+  --shadow-card: 0 1px 0 rgba(5, 150, 105, 0.06);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -243,13 +243,13 @@ select option { background: var(--bg-surface); color: var(--text-primary); }
 
 /* Shared button variants used across hub / download / resource pages */
 .btn-accent {
-  background: var(--accent-secondary);
-  color: #052015;
-  border-color: var(--accent-secondary);
+  background: var(--accent-primary);
+  color: #111916;
+  border-color: var(--accent-primary);
 }
 .btn-accent:hover {
-  background: var(--color-success-strong);
-  border-color: var(--color-success-strong);
+  background: var(--accent-highlight);
+  border-color: var(--accent-highlight);
 }
 .btn-block { display: flex; width: 100%; }
 .btn-app-link {
