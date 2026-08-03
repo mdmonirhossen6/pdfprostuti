@@ -191,8 +191,8 @@ const actionUrl = hasDownloadUrl
   : "";
 const mainButtonLabel =
   post.link_type === "direct"
-    ? '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> সরাসরি ফাইল লিংকে যান'
-    : '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> ফাইলটি ডাউনলোড করুন';
+    ? "ফাইল লিংকে যান →"
+    : "ফাইল লিংকে যান →";
 const typeLabel = resourceTypeLabel(post.resource_type);
 const metaPills = [
   post.exam,
@@ -349,7 +349,7 @@ Astro.response.headers.set(
 
       <aside class="side-panel">
         <div class="glass-card side-card">
-          <h2>সরাসরি কাজ</h2>
+          <h2>ফাইল লিংক</h2>
           {
             hasDownloadUrl && (
               <a

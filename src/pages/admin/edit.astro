@@ -283,9 +283,9 @@ try {
     <header class="form-header">
       <div class="header-text-group">
         <h2>{editId ? "পোস্ট সম্পাদনা করুন" : "নতুন পোস্ট যুক্ত করুন"}</h2>
-        <p>সাজেশন্স, নোটস ও কন্টেন্ট তৈরি করুন। পাশ্ববর্তী প্যানেল থেকে SEO এবং Schema ম্যানেজ করুন।</p>
+        <p>শিরোনাম, ক্যাটাগরি ও ফাইল লিংক দিন, তারপর সংরক্ষণ করুন।</p>
       </div>
-      <button type="button" id="btn-open-import" class="btn-import"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> JSON ইমপোর্ট</button>
+      <button type="button" id="btn-open-import" class="btn-import">JSON ইমপোর্ট</button>
     </header>
 
     {successMessage && <div class="alert alert-success">{successMessage}</div>}
@@ -296,7 +296,7 @@ try {
       <!-- LEFT COLUMN: Main Content Area -->
       <div class="editor-main-col">
         <div class="glass-card section-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> মূল কন্টেন্ট</h3>
+          <h3 class="section-heading">মূল কন্টেন্ট</h3>
           
           <div class="form-group full-width">
             <label for="title">পোস্ট শিরোনাম *</label>
@@ -330,8 +330,10 @@ try {
           </div>
         </div>
 
-        <div class="glass-card section-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> ছবি ও মিডিয়া সেটিংস (Image SEO)</h3>
+        <details class="section-details">
+          <summary>ছবি ও মিডিয়া</summary>
+          <div class="glass-card section-card">
+          <h3 class="section-heading">ছবি ও মিডিয়া সেটিংস (Image SEO)</h3>
           <div class="form-grid">
             <div class="form-group">
               <label for="image_url">কভার ইমেজ URL</label>
@@ -349,9 +351,12 @@ try {
             </div>
           </div>
         </div>
+        </details>
 
-        <div class="glass-card section-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> টেলিগ্রাম প্রমোশন সেটিংস</h3>
+        <details class="section-details">
+          <summary>টেলিগ্রাম প্রমোশন</summary>
+          <div class="glass-card section-card">
+          <h3 class="section-heading">টেলিগ্রাম প্রমোশন সেটিংস</h3>
           <div class="telegram-promo-grid">
             <div class="form-grid">
               <div class="form-group">
@@ -375,9 +380,10 @@ try {
             </div>
           </div>
         </div>
+        </details>
 
         <div class="glass-card section-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> ডাউনলোড লিংকসমূহ</h3>
+          <h3 class="section-heading">ফাইল লিংকসমূহ</h3>
           <div class="form-grid">
             <div class="form-group full-width upload-dropzone">
               <label for="pdf_file">PDF আপলোড করুন</label>
@@ -385,18 +391,20 @@ try {
               <small class="helper-text">PDF আপলোড করলে সেটি নিরাপদে আপনার Supabase Storage-এ রাখা হবে এবং প্রাইমারি ডাউনলোড লিংক স্বয়ংক্রিয়ভাবে তৈরি হবে।</small>
             </div>
             <div class="form-group">
-              <label for="file_url">ডাউনলোড লিংক ১ (প্রাইমারি লিংক)</label>
+              <label for="file_url">ফাইল লিংক ১ (প্রাইমারি)</label>
               <input type="url" id="file_url" name="file_url" value={postData.file_url || ''} placeholder="টেলিগ্রাম বা পিডিএফ CDN লিংক" />
             </div>
             <div class="form-group">
-              <label for="drive_url">ডাউনলোড লিংক ২ (সেকেন্ডারি লিংক)</label>
+              <label for="drive_url">ফাইল লিংক ২ (সেকেন্ডারি)</label>
               <input type="url" id="drive_url" name="drive_url" value={postData.drive_url || ''} placeholder="গুগল ড্রাইভ লিংক" />
             </div>
           </div>
         </div>
 
-        <div class="glass-card section-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg> অ্যাপ ব্যানার সেটিংস</h3>
+        <details class="section-details">
+          <summary>অ্যাপ ব্যানার সেটিংস</summary>
+          <div class="glass-card section-card">
+          <h3 class="section-heading">অ্যাপ ব্যানার সেটিংস</h3>
           <div class="app-settings-grid">
             <label class="toggle-option">
               <input type="hidden" name="show_app_opener" value="false" />
@@ -438,6 +446,7 @@ try {
             </div>
           </div>
         </div>
+        </details>
       </div>
 
       <!-- RIGHT COLUMN: SEO Settings & Meta Information -->
@@ -503,26 +512,28 @@ try {
           </div>
 
           <div class="form-group">
-            <label>ডাউনলোড বাটনের কার্যকারিতা</label>
+            <label>লিংক বাটনের ধরন</label>
             <div class="radio-group">
               <label class="radio-option">
                 <input type="radio" name="link_type" id="link_type_download" value="download" checked={postData.link_type === 'download'} />
                 <div class="option-content">
-                  <strong><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ৫ সেঃ টাইমার পেজ</strong>
+                  <strong>টাইমার পেজ (৫ সেকেন্ড)</strong>
                 </div>
               </label>
               <label class="radio-option">
                 <input type="radio" name="link_type" id="link_type_direct" value="direct" checked={postData.link_type === 'direct'} />
                 <div class="option-content">
-                  <strong><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> সরাসরি লিংক</strong>
+                  <strong>সরাসরি লিংক</strong>
                 </div>
               </label>
             </div>
           </div>
         </div>
 
-        <div class="glass-card sidebar-card seo-card-container">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> সার্চ ইঞ্জিন অপ্টিমাইজেশন (SEO)</h3>
+        <details class="section-details">
+          <summary>সার্চ ইঞ্জিন অপ্টিমাইজেশন (SEO)</summary>
+          <div class="glass-card sidebar-card seo-card-container">
+          <h3 class="section-heading">সার্চ ইঞ্জিন অপ্টিমাইজেশন (SEO)</h3>
           
           <div class="form-group">
             <label for="slug">স্লাগ URL (Slug) *</label>
@@ -558,11 +569,14 @@ try {
             </div>
           </div>
         </div>
+        </details>
 
         <!-- Google Snippet Live Preview -->
-        <div class="glass-card sidebar-card google-preview-card">
+        <details class="section-details">
+          <summary>গুগল সার্চ প্রিভিউ</summary>
+          <div class="glass-card sidebar-card google-preview-card">
           <div class="preview-header-row">
-            <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg> গুগল সার্চ প্রিভিউ</h3>
+            <h3 class="section-heading">গুগল সার্চ প্রিভিউ</h3>
             <div class="toggle-buttons">
               <button type="button" id="preview-desktop-btn" class="active-toggle-btn">ডেস্কটপ</button>
               <button type="button" id="preview-mobile-btn">মোবাইল</button>
@@ -577,10 +591,13 @@ try {
             <p class="google-snippet-desc" id="preview-desc">মেটা ডেসক্রিপশন এখানে প্রদর্শিত হবে। আপনার ডেসক্রিপশন অনুযায়ী এটি অটোমেটিক পরিবর্তন হবে...</p>
           </div>
         </div>
+        </details>
 
         <!-- Real-time SEO Checklist -->
-        <div class="glass-card sidebar-card checklist-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> SEO চেকলিস্ট</h3>
+        <details class="section-details">
+          <summary>SEO চেকলিস্ট</summary>
+          <div class="glass-card sidebar-card checklist-card">
+          <h3 class="section-heading">SEO চেকলিস্ট</h3>
           <ul class="checklist-list">
             <li id="chk-title"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> কিওয়ার্ডটি SEO টাইটেলে আছে?</li>
             <li id="chk-slug"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> কিওয়ার্ডটি URL স্লাগে রয়েছে?</li>
@@ -589,10 +606,13 @@ try {
             <li id="chk-alt"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> ইমেজ অল্টার টেক্সটে কিওয়ার্ড আছে?</li>
           </ul>
         </div>
+        </details>
 
         <!-- Schema Markup Generator -->
-        <div class="glass-card sidebar-card schema-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> স্কিমা সেটআপ (Schema.org)</h3>
+        <details class="section-details">
+          <summary>স্কিমা সেটআপ (Schema.org)</summary>
+          <div class="glass-card sidebar-card schema-card">
+          <h3 class="section-heading">স্কিমা সেটআপ (Schema.org)</h3>
           <div class="form-group">
             <label for="schema_type">স্কিমা টাইপ</label>
             <select id="schema_type" name="schema_type" class="theme-select">
@@ -610,6 +630,7 @@ try {
             <button type="button" id="btn-add-faq" class="btn-add-faq-field">+ নতুন FAQ যোগ করুন</button>
           </div>
         </div>
+        </details>
       </div>
 
       <div class="form-actions full-width">
@@ -1280,7 +1301,17 @@ try {
   .alert-danger { background: rgba(179, 38, 30, 0.1); border: 1px solid var(--accent-danger); color: var(--accent-danger); }
 
   /* Grid Editor Layout setup (Ensuring reliable side-by-side on viewport width > 1024px) */
-  .editor-grid { display: grid; grid-template-columns: 1fr 400px; gap: 2rem; align-items: start; }
+  .editor-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+
+  .section-heading svg, .btn-import svg, .option-content svg, .chk-status svg, .faq-sub-label svg { display: none; }
+
+  .section-details { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: var(--radius); }
+  .section-details > summary { list-style: none; cursor: pointer; padding: 1rem 1.25rem; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
+  .section-details > summary::-webkit-details-marker { display: none; }
+  .section-details > summary::before { content: '+'; font-family: var(--font-mono); color: var(--accent-primary); font-weight: 700; }
+  .section-details[open] > summary::before { content: '−'; }
+  .section-details > summary:hover { background: var(--bg-surface-raised); }
+  .section-details > .glass-card { border: none; border-top: 1px solid var(--border-hairline); }
   .editor-main-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
   .editor-sidebar-col { display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; padding-right: 0.25rem; min-width: 0; }
   

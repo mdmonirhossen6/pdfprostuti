@@ -72,31 +72,19 @@ const draftCount = posts.length - publishedCount - archivedCount;
   <main class="container admin-container">
     <header class="dashboard-header">
       <div>
-        <h2>পোস্ট ও কনটেন্ট ম্যানেজমেন্ট</h2>
-        <p>মোট পোস্ট সংখ্যা: {posts.length}টি</p>
+        <h2>পোস্ট ম্যানেজমেন্ট</h2>
+        <p>মোট পোস্ট: {posts.length}টি · পাবলিশড: {publishedCount}টি · ড্রাফট: {draftCount}টি</p>
       </div>
       <div class="header-actions">
-        <a href="/admin/uploads" class="btn btn-library">PDF লাইব্রেরি</a>
-        <a href="/admin/analytics" class="btn btn-settings"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> অ্যানালিটিক্স</a>
-        <a href="/admin/settings" class="btn btn-settings"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> সেটিংস</a>
-        <a href="/admin/edit" class="btn btn-add">+ নতুন পোস্ট লিখুন</a>
+        <a href="/admin/uploads" class="btn btn-secondary btn-sm">PDF লাইব্রেরি</a>
+        <a href="/admin/analytics" class="btn btn-secondary btn-sm">অ্যানালিটিক্স</a>
+        <a href="/admin/settings" class="btn btn-secondary btn-sm">সেটিংস</a>
+        <a href="/admin/edit" class="btn btn-primary btn-sm">+ নতুন পোস্ট</a>
       </div>
     </header>
 
     {successMessage && <div class="alert alert-success">{successMessage}</div>}
     {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
-
-    <section class="metric-grid" aria-label="Content summary">
-      <div class="metric-card"><span>মোট কনটেন্ট</span><strong>{posts.length}</strong><small>পোস্ট ও রিসোর্স</small></div>
-      <div class="metric-card"><span>পাবলিশড</span><strong>{publishedCount}</strong><small>সাইটে দৃশ্যমান</small></div>
-      <div class="metric-card"><span>ড্রাফট</span><strong>{draftCount}</strong><small>প্রকাশের অপেক্ষায়</small></div>
-      <a href="/admin/edit" class="metric-card create-card"><span>দ্রুত শুরু</span><strong>+</strong><small>নতুন ব্লগ বা PDF পোস্ট</small></a>
-    </section>
-
-    <section class="workflow-grid">
-      <a href="/admin/edit" class="workflow-card"><span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></span><div><strong>ব্লগ পোস্ট তৈরি করুন</strong><p>কনটেন্ট, SEO, FAQ এবং ড্রাফট একসাথে পরিচালনা করুন।</p></div><b>→</b></a>
-      <a href="/admin/uploads" class="workflow-card"><span><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></span><div><strong>PDF আপলোড করুন</strong><p>ফাইল আপলোড করে তাৎক্ষণিক শেয়ারযোগ্য লিংক তৈরি করুন।</p></div><b>→</b></a>
-    </section>
 
     <div class="glass-card table-card">
       {posts.length === 0 ? (
@@ -107,9 +95,8 @@ const draftCount = posts.length - publishedCount - archivedCount;
             <thead>
               <tr>
                 <th>শিরোনাম</th>
-                <th>ক্যাটাগরি</th>
-                <th>বিষয়</th>
-                <th>টাইপ</th>
+                <th>পরীক্ষা</th>
+                <th>বিষয়</th>
                 <th>স্ট্যাটাস</th>
                 <th>তারিখ</th>
                 <th>অ্যাকশন</th>
@@ -123,13 +110,12 @@ const draftCount = posts.length - publishedCount - archivedCount;
                 return (
                 <tr>
                   <td class="post-title-col">{post.title}</td>
-                  <td><span class="badge-exam">{post.exam}</span></td>
+                  <td><span class="badge-exam mono">{post.exam}</span></td>
                   <td>{post.subject}{post.chapter ? ` / ${post.chapter}` : ''}</td>
-                  <td>{post.resource_type || '—'}</td>
                   <td>
                     <span class={statusClass}>{statusLabel}</span>
                   </td>
-                  <td>{new Date(post.created_at).toLocaleDateString('bn-BD')}</td>
+                  <td class="mono">{new Date(post.created_at).toLocaleDateString('bn-BD')}</td>
                   <td class="action-buttons-cell">
                     <a href={`/admin/edit?id=${post.id}`} class="action-btn edit-btn">সম্পাদনা</a>
                     <form method="POST" class="delete-form" onsubmit="return confirm('আপনি কি নিশ্চিত যে এই পোস্টটি ডিলিট করতে চান?');">
@@ -150,88 +136,18 @@ const draftCount = posts.length - publishedCount - archivedCount;
 
 <style>
   .admin-container { max-width: 1200px; margin-top: 2rem; }
-  .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
   .dashboard-header h2 { font-size: 1.75rem; font-weight: 700; }
   .dashboard-header p { color: var(--text-secondary); }
   .header-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-  .btn-library, .btn-settings, .btn-add {
-    text-decoration: none;
-    padding: 0.65rem 1.1rem;
-    border-radius: var(--radius);
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: all 0.2s;
-  }
-  .btn-library, .btn-settings {
-    background: var(--accent-secondary-soft);
-    border: 1px solid var(--accent-primary-soft);
-    color: var(--accent-secondary);
-  }
-  .btn-library:hover, .btn-settings:hover {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-    color: #F7F3EA;
-  }
-  .btn-add {
-    background: var(--accent-primary);
-    color: #F7F3EA;
-    border: 1px solid var(--accent-primary);
-  }
-  .btn-add:hover { background: var(--accent-highlight); border-color: var(--accent-highlight); color: #F7F3EA; }
   .alert { padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
   .alert-success { background: var(--accent-secondary-soft); border: 1px solid var(--accent-secondary); color: var(--text-primary); }
   .alert-danger { background: rgba(179, 38, 30, 0.1); border: 1px solid var(--accent-danger); color: var(--accent-danger); }
   .table-card { padding: 0; overflow: hidden; }
-  .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
-  .metric-card {
-    min-height: 130px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1.15rem;
-    border-radius: var(--radius);
-    border: 1px solid var(--border-hairline);
-    border-top: 3px solid var(--border-strong);
-    background: var(--bg-surface);
-    text-decoration: none;
-    color: var(--text-primary);
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .metric-card:hover { border-top-color: var(--accent-primary); background: var(--bg-surface-raised); }
-  .metric-card span, .metric-card small { color: var(--text-muted); font-size: .82rem; }
-  .metric-card strong { font-size: 2rem; line-height: 1.15; margin: .25rem 0; }
-  .create-card { border-top-color: var(--accent-primary); background: var(--accent-primary-soft); }
-  .create-card strong { color: var(--accent-primary); }
-  .workflow-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
-  .workflow-card {
-    display: flex; align-items: center; gap: .9rem;
-    padding: 1.1rem 1.2rem;
-    border: 1px solid var(--border-hairline);
-    border-top: 3px solid var(--border-strong);
-    border-radius: var(--radius);
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .workflow-card:hover { border-top-color: var(--accent-primary); background: var(--bg-surface-raised); }
-  .workflow-card > span {
-    display: grid; place-items: center;
-    width: 38px; height: 38px;
-    border-radius: var(--radius);
-    background: var(--accent-primary-soft);
-    color: var(--accent-primary);
-    font-size: 1.25rem;
-  }
-  .workflow-card p { margin-top: .15rem; color: var(--text-muted); font-size: .84rem; }
-  .workflow-card b { margin-left: auto; color: var(--text-muted); }
   .no-posts { padding: 3rem; text-align: center; color: var(--text-secondary); }
   .table-wrapper { overflow-x: auto; }
   .posts-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .posts-table th, .posts-table td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-hairline); font-size: 0.95rem; }
+  .posts-table th, .posts-table td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-hairline); font-size: 0.95rem; }
   .posts-table th { background: var(--bg-surface-raised); color: var(--text-secondary); font-weight: 600; }
   .post-title-col { font-weight: 600; color: var(--text-primary); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .badge-exam {
@@ -252,6 +168,6 @@ const draftCount = posts.length - publishedCount - archivedCount;
   .delete-form { display: inline; }
   .delete-btn { background: rgba(179, 38, 30, 0.1); color: var(--accent-danger); border-color: rgba(179, 38, 30, 0.3); }
   .delete-btn:hover { background: var(--accent-danger); color: #fff; }
-  @media (max-width: 800px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } .workflow-grid { grid-template-columns: 1fr; } }
-  @media (max-width: 560px) { .dashboard-header { align-items: flex-start; flex-direction: column; } .header-actions { flex-wrap: wrap; } .metric-grid { grid-template-columns: 1fr 1fr; } .posts-table th, .posts-table td { padding: .8rem; } }
+  @media (max-width: 800px) { .posts-table th, .posts-table td { padding: .8rem; } }
+  @media (max-width: 560px) { .dashboard-header { align-items: flex-start; flex-direction: column; } .header-actions { flex-wrap: wrap; } }
 </style>
