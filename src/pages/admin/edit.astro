@@ -53,7 +53,7 @@ let postData = {
   app_title: '',
   app_description: '',
   app_button_text: '',
-  telegram_url: 'https://t.me/yourchannel',
+  telegram_url: 'https://t.me/hscfreepdf',
   telegram_btn_text: 'টেলিগ্রাম চ্যানেলে জয়েন করুন →',
   seo_title: '',
   meta_description: '',
@@ -206,7 +206,7 @@ if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type'
       app_title: data.get('app_title')?.toString().trim() || '',
       app_description: data.get('app_description')?.toString().trim() || '',
       app_button_text: data.get('app_button_text')?.toString().trim() || '',
-      telegram_url: data.get('telegram_url')?.toString().trim() || 'https://t.me/yourchannel',
+      telegram_url: data.get('telegram_url')?.toString().trim() || 'https://t.me/hscfreepdf',
       telegram_btn_text: data.get('telegram_btn_text')?.toString().trim() || 'টেলিগ্রাম চ্যানেলে জয়েন করুন →',
       seo_title: data.get('seo_title')?.toString().trim() || '',
       meta_description: data.get('meta_description')?.toString().trim() || '',
@@ -361,7 +361,7 @@ try {
             <div class="form-grid">
               <div class="form-group">
                 <label for="telegram_url">টেলিগ্রাম চ্যানেল লিংক *</label>
-                <input type="url" id="telegram_url" name="telegram_url" value={postData.telegram_url || 'https://t.me/yourchannel'} required placeholder="https://t.me/yourchannel" />
+                <input type="url" id="telegram_url" name="telegram_url" value={postData.telegram_url || 'https://t.me/hscfreepdf'} required placeholder="https://t.me/hscfreepdf" />
               </div>
               <div class="form-group">
                 <label for="telegram_btn_text">টেলিগ্রাম বাটনের লেখা *</label>
@@ -666,7 +666,7 @@ try {
         <!-- Telegram inputs (hidden by default) -->
         <div class="form-group telegram-preset-field" style="display:none">
           <label for="preset-tg-url">টেলিগ্রাম চ্যানেল URL</label>
-          <input type="url" id="preset-telegram-url" placeholder="https://t.me/yourchannel" />
+          <input type="url" id="preset-telegram-url" placeholder="https://t.me/hscfreepdf" />
         </div>
         <div class="form-group telegram-preset-field" style="display:none">
           <label for="preset-telegram-btn">বাটনের টেক্সট</label>
