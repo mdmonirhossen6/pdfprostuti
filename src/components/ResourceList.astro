@@ -12,30 +12,42 @@ const { posts = [], emptyMessage = "এই মুহূর্তে কোনো
 
 {
   posts.length === 0 ? (
-    <p class="hub-empty">{emptyMessage}</p>
+    <div class="empty-stamp">
+      <span class="stamp-word">খালি</span>
+      <p>{emptyMessage}</p>
+      <span class="mono">STATUS: NO_DOCUMENTS</span>
+    </div>
   ) : (
-    <div class="hub-resource-grid">
+    <div class="ledger-grid">
       {posts.map((post) => {
         const href = resourcePath(post.exam, post.subject, post.slug);
+        const subjectCode = (post.subject || "PDF").slice(0, 4).toUpperCase();
+        const paperCode = [post.exam?.toUpperCase(), subjectCode].filter(Boolean).join(" / ");
         const meta = [
           displayLabel(post.subject),
           post.chapter ? displayLabel(post.chapter) : null,
-          post.academic_year || null,
           resourceTypeLabel(post.resource_type),
         ].filter(Boolean);
         return (
-          <article class="hub-resource-card glass-card">
-            <a href={href} class="hub-resource-link">
-              <span class="hub-resource-meta">{meta.join(" · ")}</span>
-              <h3>{post.title}</h3>
+          <article class="hub-resource-card">
+            <a href={href} class="paper-strip">
+              <span class="strip-code">{paperCode}</span>
+              <span class="muted">{post.academic_year || "PDF"}</span>
             </a>
-            <div class="hub-resource-actions">
-              <a href={href} class="btn btn-sm btn-primary">
-                পড়ুন
-              </a>
-              <a href={`/download?id=${post.id}`} class="btn btn-sm btn-secondary">
-                ডাউনলোড
-              </a>
+            <div class="hub-card-body">
+              <span class="hub-resource-meta mono">
+                <span class="omr filled" aria-hidden="true"></span>
+                <span>{meta.join(" / ")}</span>
+              </span>
+              <h3>
+                <a href={href} class="hub-resource-link">{post.title}</a>
+              </h3>
+              <div class="hub-resource-actions">
+                <a href={href} class="btn-text">পড়ুন</a>
+                <a href={`/download?id=${post.id}`} class="btn btn-primary btn-sm">
+                  ডাউনলোড ↓
+                </a>
+              </div>
             </div>
           </article>
         );
@@ -45,68 +57,42 @@ const { posts = [], emptyMessage = "এই মুহূর্তে কোনো
 }
 
 <style>
-  .hub-empty {
-    color: var(--text-secondary);
-    padding: 1.5rem 0;
-  }
-  .hub-resource-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1rem;
-  }
   .hub-resource-card {
-    padding: 1.1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
-    border-top: 3px solid var(--border-strong);
+    height: 100%;
+    background: var(--bg-surface);
+  }
+  .hub-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 1rem 1.1rem 1.1rem;
+    flex: 1;
+  }
+  .hub-resource-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
   .hub-resource-link {
     text-decoration: none;
-    color: inherit;
-    display: grid;
-    gap: 0.45rem;
-  }
-  .hub-resource-meta {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-  }
-  .hub-resource-link h3 {
+    color: var(--text-primary);
     font-size: 1.05rem;
     line-height: 1.45;
-    color: var(--text-primary);
   }
-  .hub-resource-link h3:hover { color: var(--accent-primary); }
+  .hub-resource-link:hover { color: var(--accent); }
   .hub-resource-actions {
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
     margin-top: auto;
-  }
-  .btn-sm {
-    padding: 0.5rem 0.85rem;
-    border-radius: var(--radius);
-    font-size: 0.86rem;
-  }
-  .btn-primary {
-    background: var(--accent-primary);
-    color: #F7F3EA;
-    border: 1px solid var(--accent-primary);
-    flex: 1;
-  }
-  .btn-primary:hover {
-    background: var(--accent-highlight);
-    border-color: var(--accent-highlight);
-    color: #F7F3EA;
-  }
-  .btn-secondary {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-hairline);
-    flex: 1;
-  }
-  .btn-secondary:hover {
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-    background: var(--bg-surface-raised);
+    border-top: 1px solid var(--border-hairline);
+    padding-top: 0.7rem;
   }
 </style>

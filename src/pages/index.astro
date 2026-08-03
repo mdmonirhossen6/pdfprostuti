@@ -102,10 +102,6 @@ const filteredPosts = allPosts.filter((post: any) => {
   return searchMatches && categoryMatches && subjectMatches;
 });
 
-const POSTS_PER_PAGE = 12;
-const initialPosts = filteredPosts.slice(0, POSTS_PER_PAGE);
-const remainingPosts = filteredPosts.slice(POSTS_PER_PAGE);
-const hasMore = remainingPosts.length > 0;
 const totalPosts = filteredPosts.length;
 
 const categories = ["HSC", "SSC", "BCS", "Admission"];
@@ -130,19 +126,11 @@ const lastUpdated = lastUpdatedRaw
   ? new Date(lastUpdatedRaw).toLocaleDateString("en-CA")
   : "";
 const totalResourceCount = allPosts.length;
-
-// Exam hub metadata: label + a single-weight line icon key (consistent stroke).
-const examMeta: Record<string, { label: string; icon: string }> = {
-  HSC: { label: "এইচএসসি", icon: "book" },
-  SSC: { label: "এসএসসি", icon: "doc" },
-  BCS: { label: "বিসিএস", icon: "column" },
-  Admission: { label: "ভর্তি", icon: "arch" },
-};
 ---
 
 <BaseLayout
   title="সেরা অনলাইন পরীক্ষা ও পিডিএফ সাজেশন"
-  description="বাংলাদেশের সবচেয়ে জনপ্রিয় PDF সাজেশন, নোট, মডেল টেস্ট ও পরীক্ষার রিসোর্স খুঁজুন। HSC, SSC, BCS এবং Admission-এর জন্য ফ্রি ডাউনলোড করুন."
+  description="বাংলাদেশের সবচেয়ে জনপ্রিয় PDF সাজেশন, নোট, মডেল টেস্ট ও পরীক্ষার রিসোর্স খুঁজুন। HSC, SSC, BCS এবং Admission-এর জন্য ফ্রি ডাউনলোড করুন।"
   keywords="pdf download, suggestion, notes, model test, hsc, ssc, bcs, admission"
 >
   <div class="landing-page">
@@ -151,13 +139,15 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     <header class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow">প্রস্তুতি পিডিএফ লাইব্রেরি</p>
+          <p class="hero-code mono">প্রস্তুতি BD · <em>PDF ARCHIVE</em></p>
           <h1>
-            পরীক্ষার পিডিএফ, সাজেশন ও নোট—দ্রুত খুঁজুন, পড়ুন, ডাউনলোড করুন।
+            পরীক্ষার পিডিএফ, সাজেশন ও নোট—দ্রুত খুঁজুন, পড়ুন,<br />ডাউনলোড
+            করুন।
           </h1>
           <p class="hero-subtitle">
-            এইচএসসি, এসএসসি, বিসিএস এবং ভর্তি পরীক্ষার জন্য সাজেশন, নোট, মডেল
-            টেস্ট ও অধ্যায়ভিত্তিক রিসোর্স এক জায়গায়।
+            এইচএসসি, এসএসসি, বিসিএস এবং ভর্তি পরীক্ষার সাজেশন, নোট, মডেল টেস্ট
+            ও অধ্যায়ভিত্তিক রিসোর্স এক জায়গায়। প্রতিটি ফাইল একটি প্রশ্নপত্রের
+            মতো—কোড, সাল ও নথি নম্বরসহ সাজানো।
           </p>
           <div class="hero-actions">
             <a
@@ -166,7 +156,7 @@ const examMeta: Record<string, { label: string; icon: string }> = {
               target="_blank"
               rel="noopener">অ্যাপ খুলুন</a
             >
-            <a href="#suggestions" class="btn btn-ghost">PDF ব্রাউজ করুন</a>
+            <a href="#suggestions" class="btn-text">PDF ব্রাউজ করুন ↓</a>
           </div>
         </div>
 
@@ -215,7 +205,9 @@ const examMeta: Record<string, { label: string; icon: string }> = {
                 </select>
               </label>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">ফিল্টার করুন</button>
+            <button type="submit" class="btn btn-primary btn-block">
+              ফিল্টার করুন
+            </button>
           </form>
         </div>
       </div>
@@ -223,63 +215,30 @@ const examMeta: Record<string, { label: string; icon: string }> = {
 
     <section id="categories" class="exams-section">
       <div class="section-shell">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">পরীক্ষা</p>
-            <h3>পরীক্ষা অনুযায়ী ব্রাউজ করুন</h3>
-          </div>
+        <div class="section-head">
+          <h3>পরীক্ষা অনুযায়ী</h3>
+          <span class="section-no">SEC.01 / EXAMS</span>
         </div>
 
         <div class="exam-index">
           {
-            categories.map((cat) => {
+            categories.map((cat, index) => {
               const count = categoryCount(cat);
-              const meta = examMeta[cat] || { label: cat, icon: "doc" };
               return (
-                <a href={`/${cat.toLowerCase()}`} class="exam-row">
-                  <span class="exam-row__icon" aria-hidden="true">
-                    {meta.icon === "book" ? (
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4H11v15.5H4.5A1.5 1.5 0 0 1 3 18V5.5Z" />
-                        <path d="M21 5.5A1.5 1.5 0 0 0 19.5 4H13v15.5h6.5A1.5 1.5 0 0 0 21 18V5.5Z" />
-                      </svg>
-                    ) : meta.icon === "doc" ? (
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 3h7l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-                        <path d="M13 3v5h5" />
-                        <line x1="8" y1="13" x2="15" y2="13" />
-                        <line x1="8" y1="16" x2="15" y2="16" />
-                      </svg>
-                    ) : meta.icon === "column" ? (
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 21h14" />
-                        <path d="M7 21V8" /><path d="M12 21V8" /><path d="M17 21V8" />
-                        <path d="M4 8h16" />
-                        <path d="M8 8V5h8v3" />
-                      </svg>
-                    ) : (
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 20V11a8 8 0 0 1 16 0v9" />
-                        <path d="M3 20h18" />
-                        <path d="M9 14v6" /><path d="M15 14v6" />
-                      </svg>
-                    )}
+                <a href={`/${cat.toLowerCase()}`} class="stat-box">
+                  <span class="stat-label">
+                    {String(index + 1).padStart(2, "0")} · {cat.toUpperCase()}
                   </span>
-                  <div class="exam-row__body">
-                    <h4>
-                      {cat === "BCS"
-                        ? "বিসিএস প্রিলিমিনারি"
-                        : cat === "Admission"
-                          ? "বিশ্ববিদ্যালয় ভর্তি"
-                          : `${meta.label} পরীক্ষা`}
-                    </h4>
-                    <p>গুরুত্বপূর্ণ নোট, সাজেশন ও PDF একসাথে দেখুন।</p>
-                  </div>
-                  {
-                    count > 0 && (
-                      <span class="exam-row__count num">{count} টি</span>
-                    )
-                  }
+                  <span class="stat-name">
+                    {cat === "BCS"
+                      ? "বিসিএস প্রিলিমিনারি"
+                      : cat === "Admission"
+                        ? "বিশ্ববিদ্যালয় ভর্তি"
+                        : `${cat} পরীক্ষা`}
+                  </span>
+                  <span class="stat-value">
+                    {count > 0 ? <em>{count}</em> : "০"} ফাইল
+                  </span>
                 </a>
               );
             })
@@ -290,71 +249,31 @@ const examMeta: Record<string, { label: string; icon: string }> = {
 
     <section id="suggestions" class="results-section">
       <div class="section-shell">
-        <div class="section-heading results-heading">
-          <div>
-            <p class="eyebrow">লাইব্রেরি</p>
-            <h3>
-              {
-                hasSearchOrFilter
-                  ? "ফিল্টার করা PDF ফলাফল"
-                  : "সাম্প্রতিক সাজেশন ও পড়াশোনা ফাইলসমূহ"
-              }
-            </h3>
-          </div>
-          <p class="results-copy">
+        <div class="section-head">
+          <h3>
             {
-              hasSearchOrFilter ? (
-                <>
-                  আপনার অনুসন্ধান ও ফিল্টার অনুযায়ী{" "}
-                  <span class="num">{totalPosts}</span>টি PDF পাওয়া গেছে।
-                </>
-              ) : (
-                "আপনার পরীক্ষার প্রস্তুতির জন্য গুরুত্বপূর্ণ ও সাম্প্রতিক ফাইলসমূহ একসাথে দেখুন।"
-              )
+              hasSearchOrFilter
+                ? "ফিল্টার করা ফলাফল"
+                : "সাম্প্রতিক সাজেশন ও ফাইলসমূহ"
             }
-          </p>
+          </h3>
+          <span class="section-no">
+            {hasSearchOrFilter ? `${totalPosts} hit(s)` : `RES-02 / ${totalPosts}`}
+          </span>
         </div>
 
         {
-          initialPosts.length > 0 ? (
-            <div class="results-grid" id="posts-grid">
-              {initialPosts.map((post) => (
+          filteredPosts.length > 0 ? (
+            <div class="ledger-grid posts-grid">
+              {filteredPosts.map((post) => (
                 <PostCard post={post} variant="grid" />
               ))}
             </div>
           ) : (
-            <div class="empty-state">
+            <div class="empty-stamp">
+              <span class="stamp-word">খালি</span>
               <p>এই অনুসন্ধানে কোনো PDF পাওয়া যায়নি।</p>
-              <span>অন্য কীওয়ার্ড, ক্যাটাগরি বা বিষয় ব্যবহার করে দেখুন।</span>
-            </div>
-          )
-        }
-
-        {
-          remainingPosts.length > 0 && (
-            <div
-              class="hidden-posts"
-              id="remaining-posts"
-              style="display:none;"
-            >
-              <div class="results-grid">
-                {remainingPosts.map((post) => (
-                  <PostCard post={post} variant="grid" />
-                ))}
-              </div>
-            </div>
-          )
-        }
-
-        {
-          hasMore && (
-            <div class="load-more-container">
-              <button
-                class="btn btn-load-more"
-                id="load-more-btn"
-              >
-                আরও <span class="num">{remainingPosts.length}</span>টি দেখুন ↓
-              </button>
+              <span class="mono">STATUS: NO_MATCH — অন্য কীওয়ার্ড, ক্যাটাগরি বা বিষয় ব্যবহার করুন</span>
             </div>
           )
         }
@@ -385,7 +304,7 @@ const examMeta: Record<string, { label: string; icon: string }> = {
   }
   .hero-copy h1 {
     font-size: clamp(1.8rem, 3vw, 2.7rem);
-    line-height: 1.35;
+    line-height: 1.45;
     margin-bottom: 0.9rem;
   }
   .hero-subtitle {
@@ -395,38 +314,18 @@ const examMeta: Record<string, { label: string; icon: string }> = {
   }
   .hero-actions {
     display: flex;
-    gap: 0.6rem;
+    align-items: center;
+    gap: 1.1rem;
     flex-wrap: wrap;
     margin-top: 1.4rem;
-  }
-  .btn-primary {
-    background: var(--accent-primary);
-    color: #F7F3EA;
-    border-color: var(--accent-primary);
-  }
-  .btn-primary:hover {
-    background: var(--color-primary-strong);
-    border-color: var(--color-primary-strong);
-    color: #F7F3EA;
-  }
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-hairline);
-  }
-  .btn-ghost:hover {
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-    background: var(--bg-surface-raised);
   }
 
   /* Editorial search block — ruled on top, sits on paper */
   .hero-search {
-    border-top: 3px solid var(--accent-primary);
+    border-top: 3px solid var(--border-strong);
     border-right: 1px solid var(--border-hairline);
     border-bottom: 1px solid var(--border-hairline);
     border-left: 1px solid var(--border-hairline);
-    border-radius: var(--radius);
     padding: 1.15rem;
     background: var(--bg-surface);
   }
@@ -445,21 +344,23 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     gap: 0.35rem;
   }
   .field span {
-    font-size: 0.82rem;
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--text-muted);
   }
   .field input,
   .field select {
     padding: 0.65rem 0.8rem;
-    border-radius: var(--radius);
+    border-radius: 0;
     border: 1px solid var(--border-hairline);
     background: var(--bg-base);
     color: var(--text-primary);
   }
   .field input:focus,
   .field select:focus {
-    border-color: var(--accent-primary);
+    border-color: var(--accent);
     outline: none;
   }
   .search-form .btn-primary {
@@ -474,146 +375,36 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     max-width: 1200px;
     margin: 0 auto;
   }
-  .section-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 1.25rem;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-  }
-  .section-heading h3 {
-    font-size: 1.3rem;
-  }
-
-  /* Editorial exam index — ruled rows, count on the right (like a TOC) */
   .exam-index {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 0.9rem;
-  }
-  .exam-row {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    padding: 1.1rem;
-    text-decoration: none;
-    color: inherit;
-    background: var(--bg-surface);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
     border: 1px solid var(--border-hairline);
-    border-top: 3px solid var(--border-strong);
-    border-radius: var(--radius);
-    transition: border-color 180ms ease, background 180ms ease;
+    background: var(--border-hairline);
   }
-  .exam-row:hover {
-    border-top-color: var(--accent-primary);
+  .exam-index .stat-box {
+    border: none;
+    background: var(--bg-surface);
+  }
+  .exam-index .stat-box:hover {
     background: var(--bg-surface-raised);
-  }
-  .exam-row__icon {
-    color: var(--accent-primary);
-    display: inline-flex;
-    flex-shrink: 0;
-  }
-  .exam-row__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
-  .exam-row h4 {
-    font-size: 1.02rem;
-    color: var(--text-primary);
-  }
-  .exam-row p {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    line-height: 1.6;
-  }
-  .exam-row__count {
-    margin-left: auto;
-    flex-shrink: 0;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
+    border-color: var(--bg-surface);
   }
 
-  .results-heading { align-items: flex-start; }
-  .results-copy {
-    color: var(--text-secondary);
-    max-width: 420px;
-    font-size: 0.92rem;
-    line-height: 1.7;
+  .posts-grid {
+    margin-bottom: 1.5rem;
   }
-  .results-copy .num { color: var(--text-primary); }
-
-  .results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1rem;
-  }
-  .empty-state {
-    padding: 2rem;
-    border: 1px dashed var(--border-hairline);
-    border-radius: var(--radius);
-    text-align: center;
-    color: var(--text-secondary);
-    background: var(--bg-surface);
-  }
-  .empty-state p {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-  .load-more-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5rem;
-  }
-  .btn-load-more {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-hairline);
-  }
-  .btn-load-more:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
 
   @media (max-width: 960px) {
     .hero-inner {
       grid-template-columns: 1fr;
       gap: 1.25rem;
     }
-    .section-heading {
-      flex-direction: column;
-      align-items: start;
-    }
   }
   @media (max-width: 600px) {
     .hero { padding: 1.5rem 1rem 0.8rem; }
     .exams-section, .results-section { padding-left: 1rem; padding-right: 1rem; }
     .search-row { grid-template-columns: 1fr; }
-    .results-grid { grid-template-columns: 1fr; }
-  }
-</style>
-
-<script>
-  const loadMoreBtn = document.getElementById("load-more-btn");
-  const remainingPosts = document.getElementById("remaining-posts");
-  if (loadMoreBtn && remainingPosts) {
-    loadMoreBtn.addEventListener("click", () => {
-      remainingPosts.style.display = "block";
-      remainingPosts.classList.add("fade-in");
-      loadMoreBtn.style.display = "none";
-      remainingPosts.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
-</script>
-
-<style is:global>
-  .fade-in {
-    animation: fadeInUp 0.35s ease-out;
-  }
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .ledger-grid { grid-template-columns: 1fr; }
   }
 </style>

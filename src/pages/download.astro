@@ -96,48 +96,45 @@ const trackBase = {
   <Navbar showSearch={false} showBackLink={true} />
   <main class="download-container">
     <div class="glass-card download-card">
+      <div class="paper-strip download-strip">
+        <span class="strip-code">FILE: {fileId || "—"}</span>
+        <span class="muted">PDF</span>
+      </div>
       <header class="header">
-        <span class="file-icon"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span>
-        <h2 class="title">আপনার ফাইলটি প্রস্তুত হচ্ছে...</h2>
-        <p class="timer-desc">
-          অনুগ্রহ করে <span id="countdown">5</span> সেকেন্ড অপেক্ষা করুন।
+        <h2 class="title">{fileInfo?.title || "আপনার ফাইলটি প্রস্তুত হচ্ছে..."}</h2>
+        <p class="timer-desc mono">
+          DOWNLOAD READY IN <span id="countdown">5</span> SEC
         </p>
       </header>
 
-      <div class="timer-circle-container">
-        <svg class="timer-svg" viewBox="0 0 100 100">
-          <circle class="timer-bg-circle" cx="50" cy="50" r="45"></circle>
-          <circle
-            class="timer-progress-circle"
-            id="timer-progress"
-            cx="50"
-            cy="50"
-            r="45"></circle>
-        </svg>
+      <div class="countdown-box" aria-hidden="true">
         <span class="timer-text" id="countdown-text">5</span>
+        <div class="countdown-bar">
+          <div class="countdown-bar-fill" id="timer-progress"></div>
+        </div>
       </div>
 
       {
         showAppOpener && (
           <div class="app-advertisement">
-            <h4><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> প্রস্তুতি অ্যাপেও আপনি পাচ্ছেন</h4>
+            <h4>প্রস্তুতি অ্যাপেও আপনি পাচ্ছেন</h4>
             <ul class="features-list">
               <li>
-                <span class="check-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="feature-no mono">01</span>
                 <span>অধ্যায়ভিত্তিক মক টেস্ট</span>
               </li>
               <li>
-                <span class="check-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="feature-no mono">02</span>
                 <span>ভুল উত্তর ব্যাখ্যা ও বিশ্লেষণ</span>
               </li>
               <li>
-                <span class="check-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                <span class="feature-no mono">03</span>
                 <span>প্রস্তুতির অগ্রগতি ট্র্যাকিং</span>
               </li>
             </ul>
             <a
               href={appLinkUrl}
-              class="btn btn-app-link pulse-animation"
+              class="btn btn-app-link"
               target="_blank"
               rel="noopener"
               data-track="cta"
@@ -148,7 +145,7 @@ const trackBase = {
               data-slug={trackBase.slug}
               data-placement="download"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg> অ্যাপ খুলুন
+              অ্যাপ খুলুন →
             </a>
           </div>
         )
@@ -159,7 +156,7 @@ const trackBase = {
           primaryLink && (
             <a
               href={primaryLink.url}
-              class={`btn btn-main ${primaryLink.isTelegram ? "tg-theme" : primaryLink.isDirectPdf ? "direct-theme" : "generic-theme"}`}
+              class="btn btn-main"
               id="primary-download-link"
               data-track="download"
               data-link-kind="primary"
@@ -203,14 +200,8 @@ const trackBase = {
   const countdownEl = document.getElementById("countdown");
   const countdownTextEl = document.getElementById("countdown-text");
   const actionDiv = document.getElementById("download-actions");
-  const progressCircle = document.getElementById("timer-progress");
-  const circumference = 282.74;
+  const progressBar = document.getElementById("timer-progress");
   let autoTracked = false;
-
-  if (progressCircle) {
-    progressCircle.style.strokeDasharray = circumference.toString();
-    progressCircle.style.strokeDashoffset = "0";
-  }
 
   async function trackDownload(linkKind, destinationUrl) {
     if (typeof window.__prostutiTrack !== "function") return;
@@ -229,9 +220,8 @@ const trackBase = {
     seconds -= 1;
     if (countdownEl) countdownEl.innerText = seconds.toString();
     if (countdownTextEl) countdownTextEl.innerText = seconds.toString();
-    if (progressCircle) {
-      const offset = circumference - (seconds / 5) * circumference;
-      progressCircle.style.strokeDashoffset = offset.toString();
+    if (progressBar) {
+      progressBar.style.width = `${((5 - seconds) / 5) * 100}%`;
     }
     if (seconds <= 0) {
       clearInterval(timer);
@@ -261,72 +251,77 @@ const trackBase = {
     max-width: 560px;
     width: 100%;
     text-align: center;
-    padding: 2rem;
+    padding: 0;
+    overflow: hidden;
   }
+  .download-strip { justify-content: space-between; }
   .header {
     margin-bottom: 1.4rem;
-  }
-  .file-icon {
-    display: block;
-    margin-bottom: 0.7rem;
-    color: var(--color-primary);
+    padding: 1.25rem 1.5rem 0;
+    text-align: left;
   }
   .title {
     font-size: 1.45rem;
     margin-bottom: 0.4rem;
     color: var(--text-primary);
+    line-height: 1.4;
   }
   .timer-desc {
     color: var(--text-secondary);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
   }
   #countdown {
-    color: var(--color-accent);
+    color: var(--accent);
     font-weight: 700;
   }
-  .timer-circle-container {
+  .countdown-box {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     margin: 0 auto 1.4rem;
-  }
-  .timer-svg {
-    transform: rotate(-90deg);
-    width: 100%;
-    height: 100%;
-  }
-  .timer-bg-circle {
-    fill: none;
-    stroke: var(--border-soft);
-    stroke-width: 8;
-  }
-  .timer-progress-circle {
-    fill: none;
-    stroke: var(--color-accent);
-    stroke-width: 8;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 1s linear;
-  }
-  .timer-text {
-    position: absolute;
-    inset: 0;
+    border: 2px solid var(--border-strong);
+    background: var(--bg-base);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    font-weight: 700;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .timer-text {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 500;
     color: var(--text-primary);
+    line-height: 1;
+  }
+  .countdown-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: var(--bg-surface-raised);
+  }
+  .countdown-bar-fill {
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width 1s linear;
   }
   .app-advertisement {
     border: 1px solid var(--border-soft);
-    border-radius: var(--radius);
-    padding: 1rem;
+    border-radius: 0;
+    padding: 1rem 1.25rem;
     text-align: left;
-    margin-bottom: 1rem;
+    margin: 0 1.25rem 1rem;
     background: var(--surface-muted);
+    border-top: 3px solid var(--border-strong);
   }
   .app-advertisement h4 {
     margin-bottom: 0.65rem;
     color: var(--text-primary);
+    font-size: 1rem;
   }
   .features-list {
     list-style: none;
@@ -337,22 +332,13 @@ const trackBase = {
   }
   .features-list li {
     display: flex;
-    gap: 0.5rem;
+    align-items: baseline;
+    gap: 0.6rem;
   }
-  .check-icon {
-    color: var(--color-success);
-    font-weight: 700;
-  }
-  .btn-app-link {
-    width: 100%;
-    background: var(--accent-primary);
-    color: #F7F3EA;
-    border: 1px solid var(--accent-primary);
-  }
-  .btn-app-link:hover {
-    background: var(--accent-highlight);
-    border-color: var(--accent-highlight);
-    color: #F7F3EA;
+  .feature-no {
+    color: var(--accent);
+    font-size: 0.78rem;
+    flex-shrink: 0;
   }
   .hidden {
     display: none !important;
@@ -360,28 +346,26 @@ const trackBase = {
   .fade-in {
     animation: fadeIn 0.35s ease-out;
   }
+  #download-actions {
+    padding: 0 1.25rem 1.5rem;
+  }
   .btn-main {
     display: flex;
     width: 100%;
     margin-bottom: 0.7rem;
+    background: var(--accent);
+    border: 1px solid var(--accent);
     color: #F7F3EA;
   }
-  .tg-theme {
-    background: var(--color-telegram);
-    border: 1px solid var(--color-telegram);
-  }
-  .direct-theme {
-    background: var(--color-direct);
-    border: 1px solid var(--color-direct);
-  }
-  .generic-theme {
-    background: var(--color-success);
-    border: 1px solid var(--color-success);
+  .btn-main:hover {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
+    color: #F7F3EA;
   }
   .btn-sub {
     display: flex;
     width: 100%;
-    background: var(--surface-muted);
+    background: transparent;
     color: var(--text-primary);
     border: 1px solid var(--border-soft);
   }

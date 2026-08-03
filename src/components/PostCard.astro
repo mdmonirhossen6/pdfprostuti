@@ -23,179 +23,95 @@ const { post, variant = "grid" } = Astro.props;
 
 const postUrl = `/${post.exam?.toLowerCase()}/${post.subject?.toLowerCase()}/${post.slug}`;
 const excerpt =
-  (post.content || "").slice(0, 120) +
-  ((post.content || "").length > 120 ? "..." : "");
+  (post.content || "").slice(0, 110) +
+  ((post.content || "").length > 110 ? "..." : "");
 const imageUrl = post.image_url?.trim();
 const imageAlt = post.image_alt?.trim() || post.title;
 const downloadUrl = `/download?id=${post.id}`;
-const metaBits = [post.exam, post.subject, post.academic_year].filter(Boolean);
 
 const resourceLabel = resourceTypeLabel(post.resource_type);
+
+// Exam-paper top margin: subject code + roll-style ID, mono.
+const subjectCode = (post.subject || "PDF").slice(0, 4).toUpperCase();
+const paperCode = [post.exam?.toUpperCase(), subjectCode].filter(Boolean).join(" / ");
+const paperYear = post.academic_year || "PDF";
+const rollNo = (post.id || "").replace(/[^0-9a-zA-Z]/g, "").slice(-5).toUpperCase() || "0000";
+
+const metaLine = [post.exam, post.subject, post.academic_year].filter(Boolean);
 ---
 
 {
   variant === "grid" ? (
-    <article class="resource-card glass-card">
-      <div class="card-tags">
-        {post.exam && (
-          <span class="tag tag-exam" title={post.exam}>
-            {post.exam}
-          </span>
-        )}
-        {post.subject && (
-          <span class="tag" title={post.subject}>
-            {post.subject}
-          </span>
-        )}
-      </div>
-
-      <a href={postUrl} class="card-visual" aria-label={post.title}>
-        {imageUrl ? (
-          <img src={imageUrl} alt={imageAlt} loading="lazy" />
-        ) : (
-          <div class="paper-tile">
-            <span class="tile-kicker">{post.exam || "PDF"}</span>
-            <span class="tile-title">{post.subject || post.exam}</span>
-            <span class="tile-meta">
-              {post.academic_year && <span class="num">{post.academic_year}</span>}
-              {post.academic_year && <span class="tile-dot">·</span>}
-              <span>{resourceLabel}</span>
-            </span>
-          </div>
-        )}
+    <article class="exam-card">
+      <a href={postUrl} class="paper-strip" aria-label={post.title}>
+        <span class="strip-code">{paperCode}</span>
+        <span class="muted">{paperYear}</span>
       </a>
 
       <div class="card-body">
+        <div class="card-meta mono">
+          <span class="omr filled" aria-hidden="true"></span>
+          <span>{resourceLabel}</span>
+          <span class="meta-sep">/</span>
+          <span>ROLL {rollNo}</span>
+        </div>
+
+        {imageUrl ? (
+          <img src={imageUrl} alt={imageAlt} loading="lazy" class="card-image" />
+        ) : null}
+
         <h3 class="card-title">
           <a href={postUrl}>{post.title}</a>
         </h3>
         {excerpt && <p class="card-desc">{excerpt}</p>}
+
         <div class="card-actions">
-          <a href={postUrl} class="btn btn-sm btn-ghost-card">
-            পড়ুন
-          </a>
-          <a href={downloadUrl} class="btn btn-sm btn-download">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 3v12" />
-              <path d="M7 10l5 5 5-5" />
-              <path d="M5 21h14" />
-            </svg>
-            ডাউনলোড
-          </a>
+          <a href={postUrl} class="btn-text">পড়ুন</a>
+          <a href={downloadUrl} class="btn btn-primary btn-sm">ডাউনলোড ↓</a>
         </div>
       </div>
     </article>
   ) : (
-    <a href={postUrl} class="recent-item glass-card">
-      <span class="recent-icon" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 3h7l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-          <path d="M13 3v5h5" />
-        </svg>
-      </span>
+    <a href={postUrl} class="recent-item">
+      <span class="omr filled" aria-hidden="true"></span>
       <div class="recent-info">
         <span class="recent-title">{post.title}</span>
-        <span class="recent-meta num">{metaBits.join(" · ")}</span>
+        <span class="recent-meta mono">{metaLine.join(" · ")}</span>
       </div>
     </a>
   )
 }
 
 <style>
-  .resource-card {
+  .exam-card {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    padding: 1.1rem;
-  }
-  .card-tags {
-    display: flex;
-    gap: 0.45rem;
-    flex-wrap: wrap;
-  }
-
-  /* Clean text-tag pills — exam and subject. No OMR bubbles. */
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.22rem 0.55rem;
-    border-radius: var(--radius);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    background: var(--bg-surface-raised);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-hairline);
-  }
-  .tag-exam {
-    color: var(--accent-primary);
-    background: var(--accent-primary-soft);
-    border-color: var(--accent-primary-soft);
-  }
-
-  /* Typographic tile fallback — the subject name set in serif on paper.
-     No fabricated "CODE" headers, no grid texture. */
-  .card-visual {
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    min-height: 150px;
-    border-radius: var(--radius);
-    overflow: hidden;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-hairline);
-    text-decoration: none;
-    color: var(--text-primary);
-    position: relative;
-  }
-  .card-visual img {
-    width: 100%;
     height: 100%;
-    object-fit: cover;
-    display: block;
+    background: var(--bg-surface);
   }
-  .paper-tile {
-    width: 100%;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.3rem;
-    border-top: 3px solid var(--accent-primary);
-    background:
-      linear-gradient(160deg, var(--accent-primary-soft), transparent 55%),
-      var(--bg-surface);
-  }
-  .tile-kicker {
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-  }
-  .tile-title {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--text-primary);
-    line-height: 1.3;
-    text-transform: capitalize;
-  }
-  .tile-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.78rem;
-    color: var(--text-muted);
-  }
-  .tile-meta .num { color: var(--text-secondary); }
-  .tile-dot { color: var(--text-muted); }
-
-  .card-body {
+  .exam-card .card-body {
     display: flex;
     flex-direction: column;
     gap: 0.65rem;
+    padding: 1rem 1.1rem 1.1rem;
+    flex: 1;
+  }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .card-meta .meta-sep { color: var(--border-strong); }
+  .card-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+    border: 1px solid var(--border-hairline);
   }
   .card-title {
     font-size: 1.02rem;
@@ -205,7 +121,7 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
     color: var(--text-primary);
     text-decoration: none;
   }
-  .card-title a:hover { color: var(--accent-primary); }
+  .card-title a:hover { color: var(--accent); }
   .card-desc {
     color: var(--text-secondary);
     font-size: 0.9rem;
@@ -213,65 +129,35 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
   }
   .card-actions {
     display: flex;
-    gap: 0.55rem;
-    margin-top: 0.15rem;
-  }
-  .btn-sm {
-    padding: 0.5rem 0.85rem;
-    border-radius: var(--radius);
-    font-size: 0.86rem;
-  }
-  .btn-ghost-card {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-hairline);
-    flex: 1;
-  }
-  .btn-ghost-card:hover { border-color: var(--accent-primary); background: var(--bg-surface-raised); }
-  /* Download is consistently accent across all cards */
-  .btn-download {
-    background: var(--accent-primary);
-    color: #F7F3EA;
-    border: 1px solid var(--accent-primary);
-    flex: 1;
-  }
-  .btn-download:hover {
-    background: var(--color-success-strong);
-    border-color: var(--color-success-strong);
-    color: #F7F3EA;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: auto;
+    border-top: 1px solid var(--border-hairline);
+    padding-top: 0.7rem;
   }
 
   .recent-item {
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    padding: 0.85rem 1rem;
+    padding: 0.85rem 0.4rem;
     text-decoration: none;
     color: var(--text-primary);
+    border-bottom: 1px solid var(--border-hairline);
   }
-  .recent-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: var(--radius);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-surface-raised);
-    color: var(--accent-primary);
-    flex-shrink: 0;
-  }
+  .recent-item:hover { background: var(--bg-surface-raised); }
   .recent-info {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.15rem;
     min-width: 0;
   }
-  .recent-title {
-    font-weight: 600;
-    color: var(--text-primary);
-  }
+  .recent-title { font-weight: 600; color: var(--text-primary); }
   .recent-meta {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 </style>

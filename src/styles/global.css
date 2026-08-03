@@ -1,110 +1,116 @@
 /* ============================================================
-   Prostuti BD — "Paper & Ink" design system
-   Light-first, editorial library aesthetic. PDF = paper.
-   Crisp print feel: 2px radius, hairline rules instead of
-   soft shadows/glass. Two-and-a-half-font typography:
-     display = Noto Serif Bengali (headlines, 600–800)
-     body    = Hind Siliguri (paragraphs, 400/500)
-     mono    = JetBrains Mono (real data only: years/counts/codes)
+   Prostuti BD — "Exam Paper / OMR Sheet" design system
+   Dark-first technical library. Everything is a document:
+   cards are question-paper thumbnails, metadata is mono type,
+   the accent is a single red-pen mark (fill state + primary CTA
+   only). No gradients, no pills, no soft shadows, no rounded
+   corners, no icon-in-box rows, no two-button CTA pairs.
    ============================================================ */
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 
   /* ---- Typography ---- */
   --font-display: 'Noto Serif Bengali', 'Hind Siliguri', Georgia, serif;
-  --font-sans: 'Hind Siliguri', 'Anek Bangla', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Hind Siliguri', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
-  /* ---- Canonical color tokens (paper / light) ----
-     Paper = warm cream. Ink = near-black blue-grey.
-     Accent = ink blue (official-document academic tone). */
-  --bg-base: #F7F3EA;            /* warm paper */
-  --bg-surface: #FFFDF7;         /* card / panel */
-  --bg-surface-raised: #F0EAE0;  /* hover / active surface */
-  --border-hairline: #E4DCCB;    /* 1px hairlines */
-  --text-primary: #1A1D21;
-  --text-secondary: #5A6068;
-  --text-muted: #8A8F98;
-  --accent-primary: #1E3A5F;     /* ink blue */
-  --accent-secondary: #3E6B96;   /* steel blue — badges, secondary actions */
-  --accent-highlight: #152B47;   /* hover / active */
-  --accent-danger: #B3261E;
-  --accent-primary-soft: rgba(30, 58, 95, 0.08);
-  --accent-secondary-soft: rgba(62, 107, 150, 0.10);
-  --accent-highlight-soft: rgba(21, 43, 71, 0.06);
+  /* ---- Canonical color tokens (dark / OMR sheet) ----
+     Base = near-black green-grey. Surface = one step up.
+     Accent = single red-pen mark. Everything else neutral. */
+  --bg-base: #0A0F0D;
+  --bg-surface: #101613;
+  --bg-surface-raised: #18201B;
+  --bg-paper: #EFEADD;          /* the physical exam-paper sheet */
+  --paper-ink: #17130D;         /* ink printed on that sheet */
+  --paper-muted: #6B6150;       /* faint print on the sheet */
+
+  --border-hairline: #222B26;
+  --border-strong: #39453E;
+
+  --text-primary: #E9EDE7;
+  --text-secondary: #A9B3AC;
+  --text-muted: #6C7870;
+
+  --accent: #C93A2B;            /* red pen */
+  --accent-strong: #A92D1F;     /* pressed pen */
+  --accent-soft: rgba(201, 58, 43, 0.15);
+  --accent-danger: #F2554A;
 
   /* ---- Layout primitives ---- */
-  --radius: 2px;
+  --radius: 0;
   --container-width: 1200px;
   --spacing-grid: 8px;
 
   /* ============================================================
-     Legacy aliases — keep every existing selector working so the
-     hubs/admin pages inherit the new look without rewriting them.
+     Legacy aliases — every existing selector keeps working.
+     Greens/blues are deliberately gone: success, telegram and
+     direct all resolve to the accent or a neutral tone.
      ============================================================ */
   --bg-primary: var(--bg-base);
   --bg-secondary: var(--bg-surface);
   --bg-tertiary: var(--bg-surface-raised);
   --surface: var(--bg-surface);
   --surface-elevated: var(--bg-surface-raised);
-  --surface-muted: rgba(30, 58, 95, 0.04);
+  --surface-muted: rgba(233, 237, 231, 0.04);
 
   --border-soft: var(--border-hairline);
-  --border-strong: #C9BFA6;
 
-  --color-primary: var(--accent-primary);
-  --color-primary-strong: #152B47;
-  --color-accent: var(--accent-secondary);
-  --color-accent-soft: var(--accent-secondary-soft);
-  --color-success: var(--accent-secondary);
-  --color-success-strong: #2F5276;
-  --color-telegram: #1E6FA8;
-  --color-direct: var(--accent-highlight);
+  --color-primary: var(--accent);
+  --color-primary-strong: var(--accent-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--accent);
+  --color-success-strong: var(--accent-strong);
+  --color-telegram: var(--text-secondary);
+  --color-direct: var(--accent);
+  --color-direct-strong: var(--accent-strong);
 
-  /* Hairline rules, not soft shadows */
+  --accent-primary: var(--accent);
+  --accent-primary-strong: var(--accent-strong);
+  --accent-primary-soft: var(--accent-soft);
+  --accent-secondary: var(--text-secondary);
+  --accent-secondary-soft: rgba(233, 237, 231, 0.06);
+  --accent-highlight: var(--accent-strong);
+  --accent-highlight-soft: var(--accent-soft);
+
+  /* No soft shadows — ruled hairlines only */
   --shadow-soft: none;
-  --shadow-card: 0 1px 0 rgba(30, 58, 95, 0.06);
-  --radius-lg: var(--radius);
-  --radius-md: var(--radius);
-  --radius-sm: var(--radius);
+  --shadow-card: none;
+  --radius-lg: 0;
+  --radius-md: 0;
+  --radius-sm: 0;
 
   /* Undefined legacy vars referenced by admin pages */
   --glass-border: var(--border-hairline);
   --glass-shadow: none;
 }
 
-[data-theme='dark'] {
-  color-scheme: dark;
+[data-theme='light'] {
+  color-scheme: light;
 
-  /* Warm charcoal paper-inverse */
-  --bg-base: #191B1E;
-  --bg-surface: #212428;
-  --bg-surface-raised: #2A2E33;
-  --border-hairline: #3A3F45;
-  --text-primary: #F0EDE6;
-  --text-secondary: #B9BEC6;
+  /* Paper inverse — warm cream sheets, same red-pen accent */
+  --bg-base: #F5F2EA;
+  --bg-surface: #FCFAF4;
+  --bg-surface-raised: #ECE8DC;
+  --bg-paper: #E9E3D2;
+  --paper-ink: #17130D;
+  --paper-muted: #6B614F;
+
+  --border-hairline: #DDD6C3;
+  --border-strong: #B9AF96;
+
+  --text-primary: #1A1D21;
+  --text-secondary: #5A6068;
   --text-muted: #8A8F98;
-  --accent-primary: #7FA6CE;
-  --accent-secondary: #9DBEDB;
-  --accent-highlight: #A9C7E3;
-  --accent-danger: #EF6A63;
-  --accent-primary-soft: rgba(127, 166, 206, 0.12);
-  --accent-secondary-soft: rgba(157, 190, 219, 0.12);
-  --accent-highlight-soft: rgba(169, 199, 227, 0.10);
 
-  --surface-muted: rgba(127, 166, 206, 0.05);
-  --border-strong: #555C66;
+  --accent: #C93A2B;
+  --accent-strong: #A92D1F;
+  --accent-soft: rgba(201, 58, 43, 0.12);
+  --accent-danger: #B3261E;
 
-  --color-primary: var(--accent-primary);
-  --color-primary-strong: #B6D0E8;
-  --color-accent: var(--accent-secondary);
-  --color-accent-soft: var(--accent-secondary-soft);
-  --color-success: var(--accent-secondary);
-  --color-success-strong: #C3D9EC;
-  --color-telegram: #6FB1E4;
-
-  --shadow-soft: none;
-  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.35);
+  --surface-muted: rgba(26, 29, 33, 0.04);
+  --accent-secondary-soft: rgba(26, 29, 33, 0.05);
+  --accent-highlight-soft: rgba(169, 45, 31, 0.08);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -135,30 +141,20 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-/* Real data — years, counts, dates, codes — in the mono face via .num */
-.num {
+/* All numeric/data/code content is mono — the fastest way to
+   kill the "template" feel. .num is the legacy hook, .mono the
+   direct class. */
+.num,
+.mono {
   font-family: var(--font-mono);
   font-feature-settings: 'tnum' 1;
 }
 
-/* Bangla kicker — a quiet, editorial over-line label. Not mono caps.
-   Used sparingly above section/hero headlines. */
-.eyebrow,
-.section-label {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--text-muted);
-  margin-bottom: 0.55rem;
-}
-
-::selection { background: var(--accent-primary-soft); color: var(--text-primary); }
+::selection { background: var(--accent-soft); color: var(--text-primary); }
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg-base); }
-::-webkit-scrollbar-thumb { background: var(--bg-surface-raised); border-radius: var(--radius); }
-::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+::-webkit-scrollbar-thumb { background: var(--bg-surface-raised); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 .container {
   max-width: var(--container-width);
@@ -167,7 +163,8 @@ h1, h2, h3, h4, h5, h6 {
   padding: 2.25rem 1.25rem 3.5rem;
 }
 
-/* Paper panel — hairline rule + crisp corner. No soft shadow. */
+/* Sharp ruled panel — square corners, hairline border, no shadow.
+   Name kept for legacy (admin) compatibility. */
 .glass-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-hairline);
@@ -181,6 +178,193 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--bg-surface-raised);
 }
 
+/* ============================================================
+   OMR primitives
+   ============================================================ */
+
+/* Bubble — filled = available/selected, open = empty slot */
+.omr {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.omr.filled { background: var(--accent); border-color: var(--accent); }
+
+/* The top margin of a question paper — subject code left,
+   year right, set in mono on a physical paper sheet. */
+.paper-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.85rem;
+  background: var(--bg-paper);
+  color: var(--paper-ink);
+  border-bottom: 1px solid var(--border-hairline);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.paper-strip .strip-code { overflow: hidden; text-overflow: ellipsis; }
+.paper-strip .muted { color: var(--paper-muted); flex-shrink: 0; }
+
+/* Stat box — bordered rectangle, mono label above, value below.
+   The replacement for icon-in-box metadata rows. */
+.stat-box {
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-surface);
+  padding: 1rem 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+.stat-box:hover { border-color: var(--accent); background: var(--bg-surface-raised); }
+.stat-box .stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.stat-box .stat-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+.stat-box .stat-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.stat-box .stat-value em { color: var(--accent); font-style: normal; }
+
+/* Ledger list — hairline-separated rows like an exam routine /
+   result sheet. Replaces chip/pill grids. */
+.ledger-list { border-top: 1px solid var(--border-hairline); }
+.ledger-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.9rem 0.25rem;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--border-hairline);
+  transition: background 180ms ease;
+}
+.ledger-row:hover { background: var(--bg-surface-raised); }
+.ledger-row strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+.ledger-row .ledger-sub {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+.ledger-row .count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Hairline-separated grid — cells share a 1px rule instead of
+   being separated by shadows. */
+.ledger-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border-hairline);
+  border: 1px solid var(--border-hairline);
+}
+.ledger-grid > * {
+  background: var(--bg-surface);
+  min-width: 0;
+}
+
+/* Section heading — ledger style: title + mono section number,
+   strong 2px rule underneath. Replaces eyebrow+kicker pairs. */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--border-strong);
+  padding-bottom: 0.55rem;
+}
+.section-head h2,
+.section-head h3 {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+.section-no {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* Stamped empty notice — no card, no icon, no dashed border */
+.empty-stamp {
+  padding: 1.5rem 0;
+}
+.empty-stamp .stamp-word {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.9rem;
+  color: var(--accent);
+  border: 3px double var(--accent);
+  padding: 0.1rem 0.8rem;
+  letter-spacing: 0.02em;
+}
+.empty-stamp p {
+  color: var(--text-secondary);
+  margin-top: 0.8rem;
+  max-width: 42rem;
+  line-height: 1.75;
+}
+.empty-stamp .mono {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  margin-top: 0.4rem;
+  letter-spacing: 0.06em;
+}
+
+/* Mono overline for heroes — a technical identifier line, not a
+   marketing kicker. */
+.hero-code {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.9rem;
+}
+.hero-code em { color: var(--accent); font-style: normal; }
+
+/* ============================================================
+   Buttons — one solid (accent) + one text-link. No pairs of
+   identical pills.
+   ============================================================ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -188,36 +372,87 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.5rem;
   padding: 0.7rem 1.1rem;
   border-radius: var(--radius);
-  border: 1px solid transparent;
+  border: 1px solid var(--border-hairline);
+  background: transparent;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
+  color: var(--text-primary);
   cursor: pointer;
   transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 }
-.btn:hover { background: var(--bg-surface-raised); }
-.btn:focus-visible,
-input:focus-visible,
-select:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
+.btn:hover { background: var(--bg-surface-raised); border-color: var(--border-strong); }
+
+.btn-primary,
+.btn-accent,
+.btn-app-link {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #F7F3EA;
+}
+.btn-primary:hover,
+.btn-accent:hover,
+.btn-app-link:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: #F7F3EA;
 }
 
-.category-tag {
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border-hairline);
+  color: var(--text-primary);
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-surface-raised);
+}
+
+.btn-sm { padding: 0.5rem 0.85rem; font-size: 0.86rem; }
+.btn-block { display: flex; width: 100%; }
+
+/* Text link — the quiet action, underlined. */
+.btn-text {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: var(--accent-secondary-soft);
-  border: 1px solid var(--border-hairline);
-  color: var(--accent-secondary);
-  padding: 0.3rem 0.6rem;
-  border-radius: var(--radius);
+  background: none;
+  border: none;
+  padding: 0.35rem 0;
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--border-strong);
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+.btn-text:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Mono inline code — the replacement for pill tags */
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   font-family: var(--font-mono);
   font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-hairline);
+  background: transparent;
+  padding: 0.28rem 0.55rem;
 }
 
 .breadcrumb-container { margin-bottom: 1rem; }
@@ -242,41 +477,12 @@ button:focus-visible {
 input, select, button, textarea { font: inherit; }
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6068' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23A9B3AC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.9rem center;
   padding-right: 2.6rem;
 }
 select option { background: var(--bg-surface); color: var(--text-primary); }
-
-/* Shared button variants used across hub / download / resource pages */
-.btn-accent {
-  background: var(--accent-primary);
-  color: #F7F3EA;
-  border-color: var(--accent-primary);
-}
-.btn-accent:hover {
-  background: var(--accent-highlight);
-  border-color: var(--accent-highlight);
-}
-.btn-block { display: flex; width: 100%; }
-.btn-app-link {
-  background: var(--accent-primary);
-  color: #fff;
-  border-color: var(--accent-primary);
-}
-.btn-app-link:hover {
-  background: var(--color-primary-strong);
-  border-color: var(--color-primary-strong);
-}
-
-/* Subtle attention pulse — used on the download page app CTA.
-   Neutralized for reduced-motion via the global guard below. */
-.pulse-animation { animation: pulse 2.4s infinite ease-in-out; }
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 var(--accent-primary-soft); }
-  50% { box-shadow: 0 0 0 8px transparent; }
-}
 
 /* Respect reduced-motion globally */
 @media (prefers-reduced-motion: reduce) {
