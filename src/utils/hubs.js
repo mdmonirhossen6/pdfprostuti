@@ -65,9 +65,9 @@ export async function fetchPublishedPosts(dbUrl, dbReadKey, { exam, subject, cha
     limit: '1000',
   });
 
-  if (exam) params.set('exam', `eq.${exam}`);
-  if (subject) params.set('subject', `eq.${subject}`);
-  if (chapter) params.set('chapter', `eq.${chapter}`);
+  if (exam) params.set('exam', `ilike.${exam}`);
+  if (subject) params.set('subject', `ilike.${subject}`);
+  if (chapter) params.set('chapter', `ilike.${chapter}`);
 
   const res = await fetch(`${dbUrl}/rest/v1/posts?${params.toString()}`, {
     headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },

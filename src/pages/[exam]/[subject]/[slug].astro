@@ -68,7 +68,7 @@ let post: any = null;
 
 try {
   const res = await fetch(
-    `${dbUrl}/rest/v1/posts?slug=eq.${slug}&exam=eq.${exam ? exam.toUpperCase() : ""}&subject=eq.${subject}`,
+    `${dbUrl}/rest/v1/posts?slug=eq.${slug}&exam=ilike.${exam || ""}&subject=ilike.${subject || ""}`,
     {
       headers: { apikey: dbReadKey, Authorization: `Bearer ${dbReadKey}` },
     },
