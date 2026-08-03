@@ -28,7 +28,6 @@ const uploadedFileUrl = searchParams.get('file_url') || '';
 let errorMessage = '';
 let successMessage = '';
 
-// Default structure
 let postData = {
   title: '',
   slug: '',
@@ -59,71 +58,12 @@ let postData = {
   meta_description: '',
   focus_keyword: '',
   schema_type: 'Article',
-  schema_faq: []
 };
 
 if (uploadedFileUrl) {
   postData.file_url = uploadedFileUrl;
 }
 
-// Handle preset actions (save, delete, update)
-if (Astro.request.method === 'POST' && Astro.request.headers.get('content-type')?.includes('application/json')) {
-  try {
-    const jsonBody = await Astro.request.json();
-    const { action, field_type, label, body, presetId } = jsonBody;
-
-    if (action === 'save_preset') {
-      const response = await fetch(`${dbUrl}/rest/v1/presets`, {
-        method: 'POST',
-        headers: {
-          'apikey': dbWriteKey,
-          'Authorization': `Bearer ${dbWriteKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify({ field_type, label, body })
-      });
-      if (response.ok) {
-        const added = await response.json();
-        return new Response(JSON.stringify({ success: true, preset: added[0] }), { status: 200 });
-      }
-    }
-
-    if (action === 'delete_preset') {
-      const response = await fetch(`${dbUrl}/rest/v1/presets?id=eq.${presetId}`, {
-        method: 'DELETE',
-        headers: {
-          'apikey': dbWriteKey,
-          'Authorization': `Bearer ${dbWriteKey}`
-        }
-      });
-      if (response.ok) {
-        return new Response(JSON.stringify({ success: true }), { status: 200 });
-      }
-    }
-
-    if (action === 'update_preset') {
-      const response = await fetch(`${dbUrl}/rest/v1/presets?id=eq.${presetId}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': dbWriteKey,
-          'Authorization': `Bearer ${dbWriteKey}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify({ field_type, label, body })
-      });
-      if (response.ok) {
-        const updated = await response.json();
-        return new Response(JSON.stringify({ success: true, preset: updated[0] }), { status: 200 });
-      }
-    }
-  } catch (e) {
-    return new Response(JSON.stringify({ success: false, message: 'Preset operation failed' }), { status: 500 });
-  }
-}
-
-// Fetch existing post data if in Edit mode
 if (editId) {
   try {
     const res = await fetch(`${dbUrl}/rest/v1/posts?id=eq.${editId}`, {
@@ -136,10 +76,6 @@ if (editId) {
         if (!postData.status) {
           postData.status = publishedToStatus(postData.is_published);
         }
-        // Handle parsing of JSONB Schema FAQ if stored as array/object
-        if (typeof postData.schema_faq === 'string') {
-          try { postData.schema_faq = JSON.parse(postData.schema_faq); } catch(e) { postData.schema_faq = []; }
-        }
       }
     }
   } catch (e) {
@@ -147,23 +83,9 @@ if (editId) {
   }
 }
 
-// Handle traditional Form submissions (Saving/Updating Posts)
-if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type')?.includes('application/json')) {
+if (Astro.request.method === 'POST') {
   try {
     const data = await Astro.request.formData();
-
-    // Parse Schema FAQ questions and answers
-    const faqQuestions = data.getAll('faq_question[]');
-    const faqAnswers = data.getAll('faq_answer[]');
-    const schemaFaqArray = [];
-    for (let i = 0; i < faqQuestions.length; i++) {
-      if (faqQuestions[i]?.toString().trim()) {
-        schemaFaqArray.push({
-          question: faqQuestions[i].toString().trim(),
-          answer: faqAnswers[i]?.toString().trim() || ''
-        });
-      }
-    }
 
     const uploadedCover = await uploadAsset({
       runtime,
@@ -181,11 +103,10 @@ if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type'
     const status = data.get('status')?.toString().trim() || 'draft';
     const isPublished = statusToPublished(status);
 
-    // Set fallbacks to empty strings or defaults instead of nulls to bypass strict database constraints
     const payload = {
-      title: data.get('title')?.toString().trim(),
+      title: data.get('title')?.toString().trim() || '',
       slug: slugify(data.get('slug')?.toString() || data.get('title')?.toString() || ''),
-      exam: data.get('exam')?.toString().trim(),
+      exam: data.get('exam')?.toString().trim() || 'HSC',
       subject: slugify(data.get('subject')?.toString() || ''),
       chapter: slugify(data.get('chapter')?.toString() || ''),
       resource_type: data.get('resource_type')?.toString().trim() || 'notes',
@@ -212,7 +133,6 @@ if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type'
       meta_description: data.get('meta_description')?.toString().trim() || '',
       focus_keyword: data.get('focus_keyword')?.toString().trim() || '',
       schema_type: data.get('schema_type')?.toString() || 'Article',
-      schema_faq: JSON.stringify(schemaFaqArray)
     };
 
     if (editId) {
@@ -228,11 +148,11 @@ if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type'
       });
 
       if (updateRes.ok) {
-        successMessage = 'পোস্টটি সফলভাবে আপডেট করা হয়েছে।';
-        postData = { ...payload, schema_faq: schemaFaqArray };
+        successMessage = 'পোস্টটি সফলভাবে আপডেট করা হয়েছে।';
+        postData = { ...postData, ...payload };
       } else {
         const errJson = await updateRes.json().catch(() => ({}));
-        errorMessage = `পোস্টটি আপডেট করতে ব্যর্থ হয়েছে: ${errJson.message || 'ডাটাবেজ কানেকশন সমস্যা।'}`;
+        errorMessage = `আপডেট ব্যর্থ হয়েছে: ${errJson.message || 'ডাটাবেজ সমস্যা।'}`;
       }
     } else {
       const createRes = await fetch(`${dbUrl}/rest/v1/posts`, {
@@ -250,1200 +170,273 @@ if (Astro.request.method === 'POST' && !Astro.request.headers.get('content-type'
         return Astro.redirect('/admin?success=true');
       } else {
         const errJson = await createRes.json().catch(() => ({}));
-        errorMessage = `নতুন পোস্ট সংরক্ষণ করতে ব্যর্থ হয়েছে: ${errJson.message || 'সম্ভবত এই স্ল্যাগটি (slug) ইতিমধ্যে ব্যবহার করা হয়েছে।'}`;
+        errorMessage = `সংরক্ষণ ব্যর্থ হয়েছে: ${errJson.message || 'সম্ভবত এই স্লাগ (slug) আগে ব্যবহার হয়েছে।'}`;
       }
     }
   } catch (e) {
-    errorMessage = 'পোস্টটি সেভ করার সময় একটি ইরর হয়েছে।';
+    errorMessage = 'পোস্টটি সেভ করার সময় একটি সমস্যা হয়েছে।';
   }
-}
-
-// Fetch dynamic presets from Supabase
-let databasePresets = [];
-try {
-  const presetRes = await fetch(`${dbUrl}/rest/v1/presets?order=created_at.asc`, {
-    headers: { 'apikey': dbReadKey, 'Authorization': `Bearer ${dbReadKey}` }
-  });
-  if (presetRes.ok) {
-    databasePresets = await presetRes.json();
-  }
-} catch (e) {
-  console.error("Could not fetch database presets:", e);
 }
 ---
 
-<BaseLayout title={editId ? "পোস্ট সম্পাদনা - এডমিন প্যানেল" : "নতুন পোস্ট যুক্ত করুন - এডমিন প্যানেল"}>
-  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js" is:inline></script>
+<BaseLayout title="এডমিন এডিটর - প্রস্তুতি BD">
+  <AdminNav />
 
-  <AdminNav badge="Editor" backTo="/admin" backLabel="← ড্যাশবোর্ডে ফিরুন" />
-
-  <!-- Modified from container to admin-editor-container to bypass layout width constraint -->
-  <main class="admin-editor-container">
-    <header class="form-header">
-      <div class="header-text-group">
-        <h2>{editId ? "পোস্ট সম্পাদনা করুন" : "নতুন পোস্ট যুক্ত করুন"}</h2>
-        <p>শিরোনাম, ক্যাটাগরি ও ফাইল লিংক দিন, তারপর সংরক্ষণ করুন।</p>
+  <main class="container editor-wrap">
+    <header class="page-head">
+      <div>
+        <h1>{editId ? "পোস্ট সম্পাদনা" : "নতুন পোস্ট"}</h1>
+        <p>শিরোনাম, ক্যাটাগরি আর ফাইল লিংক দিন। বাকিটা ছোট করা যায়।</p>
       </div>
-      <button type="button" id="btn-open-import" class="btn-import">JSON ইমপোর্ট</button>
+      <div class="head-actions">
+        <a href="/admin" class="btn btn-text">বাতিল</a>
+        <button type="submit" form="main-editor-form" class="btn btn-primary">সংরক্ষণ করুন</button>
+      </div>
     </header>
 
-    {successMessage && <div class="alert alert-success">{successMessage}</div>}
-    {errorMessage && <div class="alert alert-danger">{errorMessage}</div>}
+    {successMessage && <div class="alert alert-ok">{successMessage}</div>}
+    {errorMessage && <div class="alert alert-bad">{errorMessage}</div>}
 
-    <form method="POST" enctype="multipart/form-data" id="main-editor-form" class="editor-grid">
-      
-      <!-- LEFT COLUMN: Main Content Area -->
-      <div class="editor-main-col">
-        <div class="glass-card section-card">
-          <h3 class="section-heading">মূল কন্টেন্ট</h3>
-          
-          <div class="form-group full-width">
-            <label for="title">পোস্ট শিরোনাম *</label>
-            <input type="text" id="title" name="title" value={postData.title} required placeholder="উদাঃ HSC 2026 পদার্থবিজ্ঞান প্রথম পত্র সাজেশন্স" />
-          </div>
-
-          <div class="form-group full-width">
-            <div class="field-header-row">
-              <label>বিস্তারিত কন্টেন্ট ও সিলেবাস বিবরণ</label>
-              <div class="preset-controls-wrapper">
-                <div class="preset-chips" id="content-presets-container"></div>
-                <button type="button" class="btn-create-preset" data-field="content">+ নতুন প্রিসেট</button>
-              </div>
-            </div>
-            <!-- WYSIWYG Quill Container -->
-            <div class="wysiwyg-wrapper">
-              <div id="editor-container">{postData.content}</div>
-            </div>
-            <textarea id="content" name="content" style="display:none;">{postData.content}</textarea>
-          </div>
-
-          <div class="form-group full-width">
-            <div class="field-header-row">
-              <label for="ad_text">বিজ্ঞাপন টেক্সট</label>
-              <div class="preset-controls-wrapper">
-                <div class="preset-chips" id="ad_text-presets-container"></div>
-                <button type="button" class="btn-create-preset" data-field="ad_text">+ নতুন প্রিসেট</button>
-              </div>
-            </div>
-            <textarea id="ad_text" name="ad_text" rows="3" placeholder="বিজ্ঞাপন টেক্সট...">{postData.ad_text}</textarea>
-          </div>
+    <form method="POST" enctype="multipart/form-data" id="main-editor-form" class="stack">
+      <section class="panel">
+        <div class="field">
+          <label for="title">শিরোনাম *</label>
+          <input type="text" id="title" name="title" value={postData.title} required placeholder="যেমন: HSC 2026 পদার্থবিজ্ঞান সাজেশন" />
         </div>
 
-        <details class="section-details">
-          <summary>ছবি ও মিডিয়া</summary>
-          <div class="glass-card section-card">
-          <h3 class="section-heading">ছবি ও মিডিয়া সেটিংস (Image SEO)</h3>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="image_url">কভার ইমেজ URL</label>
-              <input type="url" id="image_url" name="image_url" value={postData.image_url || ''} placeholder="https://example.com/cover.jpg" />
-            </div>
-            <div class="form-group">
-              <label for="cover_image">অথবা কভার ইমেজ আপলোড করুন</label>
-              <input type="file" id="cover_image" name="cover_image" accept="image/png,image/jpeg,image/webp" />
-              <small class="helper-text">JPG, PNG বা WebP — সর্বোচ্চ 25 MB। আপলোড করলে URL-এর জায়গায় এটি ব্যবহার হবে।</small>
-            </div>
-            <div class="form-group">
-              <label for="image_alt">ইমেজ অল্টার টেক্সট (Alt Text) *</label>
-              <input type="text" id="image_alt" name="image_alt" value={postData.image_alt || ''} placeholder="উদাঃ এইচএসসি ২০২৬ পদার্থবিজ্ঞান ১ম পত্র সমাধান গাইড" />
-              <small class="helper-text">সার্চ ইঞ্জিনের জন্য একটি ডেসক্রিপটিভ অল্টার ট্যাগ দিন।</small>
-            </div>
-          </div>
-        </div>
-        </details>
-
-        <details class="section-details">
-          <summary>টেলিগ্রাম প্রমোশন</summary>
-          <div class="glass-card section-card">
-          <h3 class="section-heading">টেলিগ্রাম প্রমোশন সেটিংস</h3>
-          <div class="telegram-promo-grid">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="telegram_url">টেলিগ্রাম চ্যানেল লিংক *</label>
-                <input type="url" id="telegram_url" name="telegram_url" value={postData.telegram_url || 'https://t.me/hscfreepdf'} required placeholder="https://t.me/hscfreepdf" />
-              </div>
-              <div class="form-group">
-                <label for="telegram_btn_text">টেলিগ্রাম বাটনের লেখা *</label>
-                <input type="text" id="telegram_btn_text" name="telegram_btn_text" value={postData.telegram_btn_text || 'টেলিগ্রাম চ্যানেলে জয়েন করুন →'} required placeholder="টেলিগ্রাম চ্যানেলে জয়েন করুন →" />
-              </div>
-            </div>
-
-            <div class="form-group" style="margin-top: 1rem;">
-              <div class="field-header-row">
-                <label><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> টেলিগ্রাম বাটন প্রিসেট</label>
-                <div class="preset-controls-wrapper">
-                  <div class="preset-chips" id="telegram_promo-presets-container"></div>
-                  <button type="button" class="btn-create-preset" data-field="telegram_promo">+ নতুন প্রিসেট</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        </details>
-
-        <div class="glass-card section-card">
-          <h3 class="section-heading">ফাইল লিংকসমূহ</h3>
-          <div class="form-grid">
-            <div class="form-group full-width upload-dropzone">
-              <label for="pdf_file">PDF আপলোড করুন</label>
-              <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf,.pdf" />
-              <small class="helper-text">PDF আপলোড করলে সেটি নিরাপদে আপনার Supabase Storage-এ রাখা হবে এবং প্রাইমারি ডাউনলোড লিংক স্বয়ংক্রিয়ভাবে তৈরি হবে।</small>
-            </div>
-            <div class="form-group">
-              <label for="file_url">ফাইল লিংক ১ (প্রাইমারি)</label>
-              <input type="url" id="file_url" name="file_url" value={postData.file_url || ''} placeholder="টেলিগ্রাম বা পিডিএফ CDN লিংক" />
-            </div>
-            <div class="form-group">
-              <label for="drive_url">ফাইল লিংক ২ (সেকেন্ডারি)</label>
-              <input type="url" id="drive_url" name="drive_url" value={postData.drive_url || ''} placeholder="গুগল ড্রাইভ লিংক" />
-            </div>
-          </div>
+        <div class="field">
+          <label for="content">বিস্তারিত লিখুন</label>
+          <textarea id="content" name="content" rows="10" placeholder="সাজেশন, নোট বা বিবরণ এখানে লিখুন।">{postData.content}</textarea>
         </div>
 
-        <details class="section-details">
-          <summary>অ্যাপ ব্যানার সেটিংস</summary>
-          <div class="glass-card section-card">
-          <h3 class="section-heading">অ্যাপ ব্যানার সেটিংস</h3>
-          <div class="app-settings-grid">
-            <label class="toggle-option">
-              <input type="hidden" name="show_app_opener" value="false" />
-              <input type="checkbox" name="show_app_opener" value="true" checked={postData.show_app_opener !== false} />
-              <div class="toggle-content">
-                <strong>অ্যাপ ব্যানার দেখান</strong>
-                <span>পোস্ট ও ডাউনলোড পেজে অ্যাপ প্রমোশন ব্যানার দেখানো হবে</span>
-              </div>
-            </label>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="app_link">অ্যাপ লিংক (ঐচ্ছিক — খালি রাখলে স্বয়ংক্রিয় contextual CTA)</label>
-                <input type="url" id="app_link" name="app_link" value={postData.app_link || ''} placeholder={`${APP_CTA_ORIGIN}/practice/...`} />
-                <small class="helper-text">খালি রাখলে HSC→practice, Admission→model-test, BCS→question-bank + UTM যোগ হবে।</small>
-              </div>
-              <div class="form-group">
-                <label for="app_title">ব্যানার শিরোনাম</label>
-                <input type="text" id="app_title" name="app_title" value={postData.app_title || ''} placeholder=" প্রস্তুতি অ্যাপে পরীক্ষা দাও!" />
-              </div>
-              <div class="form-group">
-                <label for="app_description">ব্যানার বিবরণ</label>
-                <textarea id="app_description" name="app_description" rows="2" placeholder="মক টেস্ট দিতে আমাদের অ্যাপে প্রবেশ করো।">{postData.app_description || ''}</textarea>
-              </div>
-              <div class="form-group">
-                <label for="app_button_text">বাটনের টেক্সট</label>
-                <input type="text" id="app_button_text" name="app_button_text" value={postData.app_button_text || ''} placeholder="অ্যাপে যাও" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="field-header-row">
-                <label><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> ব্যানার প্রিসেট</label>
-                <div class="preset-controls-wrapper">
-                  <div class="preset-chips" id="app_banner-presets-container"></div>
-                  <button type="button" class="btn-create-preset" data-field="app_banner">+ নতুন প্রিসেট</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        </details>
-      </div>
-
-      <!-- RIGHT COLUMN: SEO Settings & Meta Information -->
-      <div class="editor-sidebar-col">
-        <div class="glass-card sidebar-card publish-card">
-          <h3 class="section-heading"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> পাবলিশ ও ক্যাটাগরি</h3>
-          <div class="form-group">
-            <label for="exam">পরীক্ষার ক্যাটাগরি *</label>
-            <select id="exam" name="exam" class="theme-select" required>
-              <option value="HSC" selected={postData.exam === 'HSC'}>HSC</option>
-              <option value="Admission" selected={postData.exam === 'Admission'}>Admission</option>
-              <option value="BCS" selected={postData.exam === 'BCS'}>BCS</option>
-              <option value="SSC" selected={postData.exam === 'SSC'}>SSC</option>
+        <div class="grid-3">
+          <div class="field">
+            <label for="exam">পরীক্ষা *</label>
+            <select id="exam" name="exam" required>
+              {['HSC', 'SSC', 'Admission', 'BCS'].map((exam) => (
+                <option value={exam} selected={postData.exam === exam}>{exam}</option>
+              ))}
             </select>
           </div>
-
-          <div class="form-group">
-            <label for="subject">বিষয় (Subject) *</label>
-            <input type="text" id="subject" name="subject" value={postData.subject} required placeholder="physics, chemistry, bangla" />
+          <div class="field">
+            <label for="subject">বিষয় *</label>
+            <input type="text" id="subject" name="subject" value={postData.subject} required placeholder="physics" />
           </div>
-
-          <div class="form-group">
-            <label for="chapter">অধ্যায় / টপিক</label>
-            <input type="text" id="chapter" name="chapter" value={postData.chapter || ''} placeholder="motion, algebra, bangladesh-affairs" />
-            <small class="helper-text">Hub ও contextual CTA-এর জন্য slug-friendly মান দিন।</small>
+          <div class="field">
+            <label for="chapter">অধ্যায়</label>
+            <input type="text" id="chapter" name="chapter" value={postData.chapter || ''} placeholder="motion" />
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="resource_type">PDF টাইপ *</label>
-            <select id="resource_type" name="resource_type" class="theme-select" required>
+        <div class="grid-3">
+          <div class="field">
+            <label for="resource_type">টাইপ</label>
+            <select id="resource_type" name="resource_type">
               {RESOURCE_TYPES.map((type) => (
                 <option value={type.value} selected={postData.resource_type === type.value}>{type.label}</option>
               ))}
             </select>
           </div>
-
-          <div class="form-group">
-            <label for="academic_year">একাডেমিক / পরীক্ষার বছর</label>
+          <div class="field">
+            <label for="academic_year">বছর</label>
             <input type="text" id="academic_year" name="academic_year" value={postData.academic_year || ''} placeholder="2026" />
           </div>
-
-          <div class="form-group">
-            <label for="license">লাইসেন্স / অধিকার *</label>
-            <select id="license" name="license" class="theme-select" required>
-              {LICENSE_OPTIONS.map((item) => (
-                <option value={item.value} selected={(postData.license || 'authorized') === item.value}>{item.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="source">সোর্স / অ্যাট্রিবিউশন</label>
-            <input type="text" id="source" name="source" value={postData.source || ''} placeholder="নিজস্ব / কোচিং নাম / URL" />
-          </div>
-
-          <div class="form-group">
-            <label for="status">স্ট্যাটাস *</label>
-            <select id="status" name="status" class="theme-select" required>
+          <div class="field">
+            <label for="status">স্ট্যাটাস</label>
+            <select id="status" name="status" required>
               {STATUS_OPTIONS.map((item) => (
-                <option value={item.value} selected={(postData.status || publishedToStatus(postData.is_published)) === item.value}>{item.label}</option>
+                <option value={item.value} selected={postData.status === item.value}>{item.label}</option>
               ))}
             </select>
           </div>
-
-          <div class="form-group">
-            <label>লিংক বাটনের ধরন</label>
-            <div class="radio-group">
-              <label class="radio-option">
-                <input type="radio" name="link_type" id="link_type_download" value="download" checked={postData.link_type === 'download'} />
-                <div class="option-content">
-                  <strong>টাইমার পেজ (৫ সেকেন্ড)</strong>
-                </div>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="link_type" id="link_type_direct" value="direct" checked={postData.link_type === 'direct'} />
-                <div class="option-content">
-                  <strong>সরাসরি লিংক</strong>
-                </div>
-              </label>
-            </div>
-          </div>
         </div>
 
-        <details class="section-details">
-          <summary>সার্চ ইঞ্জিন অপ্টিমাইজেশন (SEO)</summary>
-          <div class="glass-card sidebar-card seo-card-container">
-          <h3 class="section-heading">সার্চ ইঞ্জিন অপ্টিমাইজেশন (SEO)</h3>
-          
-          <div class="form-group">
-            <label for="slug">স্লাগ URL (Slug) *</label>
-            <input type="text" id="slug" name="slug" value={postData.slug} required placeholder="physics-1st-paper" />
-            <small class="helper-text">ইংরেজি এবং হাইফেন ব্যবহার করুন।</small>
-          </div>
+        <div class="field">
+          <label for="file_url">ফাইল লিংক *</label>
+          <input type="url" id="file_url" name="file_url" value={postData.file_url || ''} required placeholder="https://t.me/... বা PDF CDN লিংক" />
+        </div>
+        <div class="field">
+          <label for="drive_url">সেকেন্ডারি লিংক (ঐচ্ছিক)</label>
+          <input type="url" id="drive_url" name="drive_url" value={postData.drive_url || ''} placeholder="গুগল ড্রাইভ লিংক" />
+        </div>
 
-          <div class="form-group">
-            <label for="focus_keyword">মূল কিওয়ার্ড (Focus Keyword)</label>
-            <input type="text" id="focus_keyword" name="focus_keyword" value={postData.focus_keyword || ''} placeholder="উদাঃ HSC Physics Suggestion" />
-            <small class="helper-text">যে কিওয়ার্ড দিয়ে গুগলে র‍্যাংক করাতে চান।</small>
-          </div>
-
-          <div class="form-group">
-            <div class="seo-counter-row">
-              <label for="seo_title">SEO শিরোনাম (SEO Title)</label>
-              <span id="seo-title-counter" class="counter-badge">0 / 60</span>
-            </div>
-            <input type="text" id="seo_title" name="seo_title" value={postData.seo_title || ''} placeholder="সার্চ রেজাল্টে প্রদর্শিত শিরোনাম" />
-            <div class="progress-bar-container">
-              <div id="title-progress-bar" class="progress-bar"></div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="seo-counter-row">
-              <label for="meta_description">মেটা ডেসক্রিপশন (Meta Desc)</label>
-              <span id="meta-desc-counter" class="counter-badge">0 / 160</span>
-            </div>
-            <textarea id="meta_description" name="meta_description" rows="3" placeholder="সার্চ রেজাল্টে প্রদর্শিত বর্ণনা (১৫০-১৬০ অক্ষরের মধ্যে)">{postData.meta_description || ''}</textarea>
-            <div class="progress-bar-container">
-              <div id="desc-progress-bar" class="progress-bar"></div>
-            </div>
+        <div class="field radio-row">
+          <label>লিংক বাটন চালাবে যেভাবে</label>
+          <div class="radio-group">
+            <label class="radio">
+              <input type="radio" name="link_type" value="download" checked={postData.link_type !== 'direct'} />
+              <span>টাইমার পেজ (৫ সেকেন্ড অপেক্ষা)</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="link_type" value="direct" checked={postData.link_type === 'direct'} />
+              <span>সরাসরি লিংকে নিয়ে যাবে</span>
+            </label>
           </div>
         </div>
-        </details>
+      </section>
 
-        <!-- Google Snippet Live Preview -->
-        <details class="section-details">
-          <summary>গুগল সার্চ প্রিভিউ</summary>
-          <div class="glass-card sidebar-card google-preview-card">
-          <div class="preview-header-row">
-            <h3 class="section-heading">গুগল সার্চ প্রিভিউ</h3>
-            <div class="toggle-buttons">
-              <button type="button" id="preview-desktop-btn" class="active-toggle-btn">ডেস্কটপ</button>
-              <button type="button" id="preview-mobile-btn">মোবাইল</button>
+      <details class="adv">
+        <summary>অ্যাডভান্সড সেটিংস</summary>
+        <section class="panel">
+          <div class="grid-2">
+            <div class="field">
+              <label for="slug">Slug (URL অংশ)</label>
+              <input type="text" id="slug" name="slug" value={postData.slug || ''} placeholder="physics-suggestion-2026" />
+            </div>
+            <div class="field">
+              <label for="schema_type">Schema টাইপ</label>
+              <select id="schema_type" name="schema_type">
+                <option value="Article" selected={postData.schema_type === 'Article'}>Article</option>
+                <option value="FAQ" selected={postData.schema_type === 'FAQ'}>FAQ</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="image_url">কভার ইমেজ URL</label>
+              <input type="url" id="image_url" name="image_url" value={postData.image_url || ''} placeholder="https://example.com/cover.jpg" />
+            </div>
+            <div class="field">
+              <label for="image_alt">Image Alt Text</label>
+              <input type="text" id="image_alt" name="image_alt" value={postData.image_alt || ''} placeholder="ছবির বিবরণ" />
+            </div>
+            <div class="field">
+              <label for="telegram_url">টেলিগ্রাম চ্যানেল</label>
+              <input type="url" id="telegram_url" name="telegram_url" value={postData.telegram_url || 'https://t.me/hscfreepdf'} placeholder="https://t.me/hscfreepdf" />
+            </div>
+            <div class="field">
+              <label for="telegram_btn_text">বাটনের লেখা</label>
+              <input type="text" id="telegram_btn_text" name="telegram_btn_text" value={postData.telegram_btn_text || 'টেলিগ্রাম চ্যানেলে জয়েন করুন →'} placeholder="টেলিগ্রাম চ্যানেল" />
+            </div>
+            <div class="field">
+              <label for="seo_title">SEO শিরোনাম</label>
+              <input type="text" id="seo_title" name="seo_title" value={postData.seo_title || ''} placeholder="সার্চ রেজাল্টের শিরোনাম" />
+            </div>
+            <div class="field">
+              <label for="focus_keyword">মূল কিওয়ার্ড</label>
+              <input type="text" id="focus_keyword" name="focus_keyword" value={postData.focus_keyword || ''} placeholder="HSC Physics Suggestion" />
+            </div>
+            <div class="field">
+              <label for="license">লাইসেন্স</label>
+              <select id="license" name="license">
+                {LICENSE_OPTIONS.map((item) => (
+                  <option value={item.value} selected={postData.license === item.value}>{item.label}</option>
+                ))}
+              </select>
+            </div>
+            <div class="field">
+              <label for="source">সোর্স / ক্রেডিট</label>
+              <input type="text" id="source" name="source" value={postData.source || ''} placeholder="নিজস্ব / কোচিং / URL" />
             </div>
           </div>
-          
-          <div class="google-snippet-container desktop-view" id="google-snippet-container">
-            <div class="google-snippet-url">
-              https://prostutibd.app <span class="url-separator">›</span> <span id="preview-url-exam">hsc</span> <span class="url-separator">›</span> <span id="preview-url-subject">physics</span>
+
+          <div class="field">
+            <label>বিজ্ঞাপন টেক্সট</label>
+            <textarea id="ad_text" name="ad_text" rows="3" placeholder="পোস্টের নিচে দেখানোর বিজ্ঞাপন লেখা">{postData.ad_text}</textarea>
+          </div>
+
+          <div class="field">
+            <label>ফাইল আপলোড (ঐচ্ছিক)</label>
+            <input type="file" id="pdf_file" name="pdf_file" accept="application/pdf,.pdf" />
+            <input type="file" id="cover_image" name="cover_image" accept="image/png,image/jpeg,image/webp" />
+          </div>
+
+          <label class="toggle">
+            <input type="hidden" name="show_app_opener" value="false" />
+            <input type="checkbox" name="show_app_opener" value="true" checked={postData.show_app_opener !== false} />
+            <span>পোস্টে অ্যাপ প্রমোশন ব্যানার দেখান</span>
+          </label>
+          <div class="field">
+            <label for="app_link">অ্যাপ লিংক</label>
+            <input type="url" id="app_link" name="app_link" value={postData.app_link || ''} placeholder={`${APP_CTA_ORIGIN}/practice/...`} />
+          </div>
+          <div class="grid-3">
+            <div class="field">
+              <label for="app_title">ব্যানার শিরোনাম</label>
+              <input type="text" id="app_title" name="app_title" value={postData.app_title || ''} />
             </div>
-            <h4 class="google-snippet-title" id="preview-title">শিরোনাম এখানে প্রদর্শিত হবে</h4>
-            <p class="google-snippet-desc" id="preview-desc">মেটা ডেসক্রিপশন এখানে প্রদর্শিত হবে। আপনার ডেসক্রিপশন অনুযায়ী এটি অটোমেটিক পরিবর্তন হবে...</p>
-          </div>
-        </div>
-        </details>
-
-        <!-- Real-time SEO Checklist -->
-        <details class="section-details">
-          <summary>SEO চেকলিস্ট</summary>
-          <div class="glass-card sidebar-card checklist-card">
-          <h3 class="section-heading">SEO চেকলিস্ট</h3>
-          <ul class="checklist-list">
-            <li id="chk-title"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> কিওয়ার্ডটি SEO টাইটেলে আছে?</li>
-            <li id="chk-slug"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> কিওয়ার্ডটি URL স্লাগে রয়েছে?</li>
-            <li id="chk-desc"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> কিওয়ার্ডটি মেটা ডেসক্রিপশনে আছে?</li>
-            <li id="chk-content"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> কিওয়ার্ডটি প্রথম অনুচ্ছেদে আছে?</li>
-            <li id="chk-alt"><span class="chk-status"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> ইমেজ অল্টার টেক্সটে কিওয়ার্ড আছে?</li>
-          </ul>
-        </div>
-        </details>
-
-        <!-- Schema Markup Generator -->
-        <details class="section-details">
-          <summary>স্কিমা সেটআপ (Schema.org)</summary>
-          <div class="glass-card sidebar-card schema-card">
-          <h3 class="section-heading">স্কিমা সেটআপ (Schema.org)</h3>
-          <div class="form-group">
-            <label for="schema_type">স্কিমা টাইপ</label>
-            <select id="schema_type" name="schema_type" class="theme-select">
-              <option value="Article" selected={postData.schema_type === 'Article'}>Article (সাধারণ পোস্ট)</option>
-              <option value="FAQ" selected={postData.schema_type === 'FAQ'}>FAQ (প্রশ্ন ও উত্তর)</option>
-            </select>
-          </div>
-
-          <!-- FAQ Builder Section (Visible only when FAQ is selected) -->
-          <div id="schema-faq-section" style="display:none;">
-            <label class="faq-sub-label">FAQ প্রশ্নসমূহ ও উত্তরসমূহ</label>
-            <div id="faq-list-container" class="faq-fields-list">
-              <!-- Dynamically rendered FAQ fields will go here -->
+            <div class="field">
+              <label for="app_description">ব্যানার বিবরণ</label>
+              <input type="text" id="app_description" name="app_description" value={postData.app_description || ''} />
             </div>
-            <button type="button" id="btn-add-faq" class="btn-add-faq-field">+ নতুন FAQ যোগ করুন</button>
+            <div class="field">
+              <label for="app_button_text">বাটন লেখা</label>
+              <input type="text" id="app_button_text" name="app_button_text" value={postData.app_button_text || ''} />
+            </div>
           </div>
-        </div>
-        </details>
-      </div>
+        </section>
+      </details>
 
-      <div class="form-actions full-width">
-        <a href="/admin" class="btn-cancel">বাতিল করুন</a>
-        <button type="submit" class="btn-save">সংরক্ষণ করুন</button>
-      </div>
+      <footer class="form-foot">
+        <a href="/admin" class="btn btn-text">বাতিল</a>
+        <button type="submit" class="btn btn-primary btn-lg">সংরক্ষণ করুন</button>
+      </footer>
     </form>
   </main>
-
-  <!-- Modal window interface for dynamic Preset insertion/management -->
-  <div class="modal" id="preset-modal">
-    <div class="modal-card">
-      <h3 id="modal-title">নতুন প্রিসেট তৈরি করুন</h3>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="preset-label">প্রিসেট নাম (Label)</label>
-          <input type="text" id="preset-label" placeholder="উদাঃ সাজেশন্স বিবরণ, বাংলা অ্যাড..." />
-        </div>
-        <!-- Banner inputs -->
-        <div class="form-group banner-preset-field" style="display:none">
-          <label for="preset-app-title">ব্যানার শিরোনাম</label>
-          <input type="text" id="preset-app-title" placeholder=" প্রস্তুতি অ্যাপে পরীক্ষা দাও!" />
-        </div>
-        <div class="form-group banner-preset-field" style="display:none">
-          <label for="preset-app-desc">ব্যানার বিবরণ</label>
-          <textarea id="preset-app-desc" rows="2" placeholder="এই অধ্যায়ের গুরুত্বপূর্ণ প্রশ্নগুলোর ওপর..."></textarea>
-        </div>
-        <div class="form-group banner-preset-field" style="display:none">
-          <label for="preset-app-btn">বাটনের টেক্সট</label>
-          <input type="text" id="preset-app-btn" placeholder="অ্যাপে যাও" />
-        </div>
-
-        <!-- Telegram inputs (hidden by default) -->
-        <div class="form-group telegram-preset-field" style="display:none">
-          <label for="preset-tg-url">টেলিগ্রাম চ্যানেল URL</label>
-          <input type="url" id="preset-telegram-url" placeholder="https://t.me/hscfreepdf" />
-        </div>
-        <div class="form-group telegram-preset-field" style="display:none">
-          <label for="preset-telegram-btn">বাটনের টেক্সট</label>
-          <input type="text" id="preset-telegram-btn" placeholder="টেলিগ্রাম চ্যানেলে জয়েন করুন →" />
-        </div>
-
-        <div class="form-group text-preset-field">
-          <label for="preset-body">প্রিসেট বিবরণ (Text Body)</label>
-          <textarea id="preset-body" rows="6" placeholder="যে কন্টেন্ট বা অ্যাড লেখাটি অটোমেটিকলি বক্সে বসাতে চান..."></textarea>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button type="button" id="btn-close-modal" class="btn-cancel">বন্ধ করুন</button>
-        <button type="button" id="btn-save-modal" class="btn-save">সেভ প্রিসেট</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal window interface for raw JSON import -->
-  <div class="modal" id="import-modal">
-    <div class="modal-card">
-      <h3>JSON ডাটা ইমপোর্ট করুন</h3>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="import-json-data">পোস্টের JSON কোড পেস্ট করুন</label>
-          <textarea id="import-json-data" rows="10" placeholder='{ "title": "...", "slug": "...", "content": "..." }'></textarea>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button type="button" id="btn-close-import" class="btn-cancel">বাতিল</button>
-        <button type="button" id="btn-apply-import" class="btn-save">ইমপোর্ট করুন</button>
-      </div>
-    </div>
-  </div>
 </BaseLayout>
 
-<script is:inline define:vars={{ databasePresets, postData }}>
-  let currentPresets = databasePresets || [];
-  let editingPresetId = null;
-
-  // 1. Initialize Quill WYSIWYG Editor
-  const quill = new Quill('#editor-container', {
-    theme: 'snow',
-    placeholder: 'পরীক্ষার জন্য সাজেশনের বিবরণ ও শর্ট সিলেবাস এখানে সুন্দরভাবে সাজিয়ে লিখুন...',
-    modules: {
-      toolbar: [
-        [{ 'header': [2, 3, 4, false] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        ['link', 'clean']
-      ]
-    }
-  });
-
-  // Sync Quill HTML content to the hidden text area for database storage
-  const editorForm = document.getElementById('main-editor-form');
-  const contentInput = document.getElementById('content');
-  
-  editorForm.addEventListener('submit', () => {
-    contentInput.value = quill.getSemanticHTML();
-  });
-
-  // 2. Auto-generate URL Slugs
+<script is:inline define:vars={{ postData }}>
   const titleInput = document.getElementById('title');
   const slugInput = document.getElementById('slug');
-
-  function slugify(value) {
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
-
-  if (titleInput && slugInput) {
-    titleInput.addEventListener('input', () => {
-      if (!slugInput.value || slugInput.value === slugify(titleInput.value)) {
-        slugInput.value = slugify(titleInput.value);
-        updateLivePreview();
-      }
+  if (titleInput && slugInput && !(postData && postData.slug)) {
+    titleInput.addEventListener('blur', () => {
+      const value = titleInput.value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+      if (value && !slugInput.value.trim()) slugInput.value = value;
     });
   }
-
-  // 3. Dynamic Schema FAQ Field Builder
-  const schemaTypeSelect = document.getElementById('schema_type');
-  const faqSection = document.getElementById('schema-faq-section');
-  const faqContainer = document.getElementById('faq-list-container');
-  const btnAddFaq = document.getElementById('btn-add-faq');
-
-  function toggleSchemaFields() {
-    if (schemaTypeSelect.value === 'FAQ') {
-      faqSection.style.display = 'block';
-    } else {
-      faqSection.style.display = 'none';
-    }
-  }
-
-  function addFaqRow(question = '', answer = '') {
-    const row = document.createElement('div');
-    row.className = 'faq-row-item';
-    row.innerHTML = `
-      <div class="faq-row-header">
-        <span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> FAQ প্রশ্ন</span>
-        <button type="button" class="btn-remove-faq">× মুছুন</button>
-      </div>
-      <input type="text" name="faq_question[]" value="${question}" placeholder="প্রশ্নটি লিখুন..." class="faq-q-input" required />
-      <textarea name="faq_answer[]" placeholder="উত্তরটি লিখুন..." rows="2" class="faq-a-input" required>${answer}</textarea>
-    `;
-    
-    row.querySelector('.btn-remove-faq').addEventListener('click', () => {
-      row.remove();
-      runSEOAnalysis();
-    });
-
-    faqContainer.appendChild(row);
-  }
-
-  schemaTypeSelect.addEventListener('change', toggleSchemaFields);
-  btnAddFaq.addEventListener('click', () => addFaqRow());
-
-  // Render initial FAQ dataset if editing
-  if (postData && Array.isArray(postData.schema_faq)) {
-    postData.schema_faq.forEach(faq => {
-      addFaqRow(faq.question, faq.answer);
-    });
-  }
-  toggleSchemaFields();
-
-  // 4. Live Google Snippet Preview & Desktop/Mobile Switcher
-  const seoTitleInput = document.getElementById('seo_title');
-  const metaDescInput = document.getElementById('meta_description');
-  const examSelect = document.getElementById('exam');
-  const subjectInput = document.getElementById('subject');
-
-  const previewTitle = document.getElementById('preview-title');
-  const previewDesc = document.getElementById('preview-desc');
-  const previewExam = document.getElementById('preview-url-exam');
-  const previewSubject = document.getElementById('preview-url-subject');
-
-  const btnDesktop = document.getElementById('preview-desktop-btn');
-  const btnMobile = document.getElementById('preview-mobile-btn');
-  const snippetBox = document.getElementById('google-snippet-container');
-
-  function updateLivePreview() {
-    // Sync SEO Title preview
-    const titleVal = seoTitleInput.value.trim() || titleInput.value.trim();
-    previewTitle.innerText = titleVal || 'শিরোনাম এখানে প্রদর্শিত হবে';
-
-    // Sync Meta Description preview
-    const descVal = metaDescInput.value.trim();
-    previewDesc.innerText = descVal || 'মেটা ডেসক্রিপশন এখানে প্রদর্শিত হবে। আপনার ডেসক্রিপশন অনুযায়ী এটি অটোমেটিক পরিবর্তন হবে...';
-
-    // Sync URL structure
-    previewExam.innerText = slugify(examSelect.value || 'hsc');
-    previewSubject.innerText = slugify(subjectInput.value || 'subject');
-  }
-
-  // Bind keyup and change events for real-time changes
-  [seoTitleInput, titleInput, metaDescInput, examSelect, subjectInput, slugInput].forEach(elem => {
-    if (elem) {
-      elem.addEventListener('input', updateLivePreview);
-      elem.addEventListener('change', updateLivePreview);
-    }
-  });
-
-  btnDesktop.addEventListener('click', () => {
-    btnDesktop.classList.add('active-toggle-btn');
-    btnMobile.classList.remove('active-toggle-btn');
-    snippetBox.className = 'google-snippet-container desktop-view';
-  });
-
-  btnMobile.addEventListener('click', () => {
-    btnMobile.classList.add('active-toggle-btn');
-    btnDesktop.classList.remove('active-toggle-btn');
-    snippetBox.className = 'google-snippet-container mobile-view';
-  });
-
-  // 5. Dynamic Character Counters & Color-coded Bars
-  function updateProgressBars() {
-    const titleLen = seoTitleInput.value.length;
-    const descLen = metaDescInput.value.length;
-
-    // Title Progress
-    const titleCounter = document.getElementById('seo-title-counter');
-    const titleBar = document.getElementById('title-progress-bar');
-    titleCounter.innerText = `${titleLen} / 60`;
-    
-    let titlePercent = (titleLen / 60) * 100;
-    if (titlePercent > 100) titlePercent = 100;
-    titleBar.style.width = `${titlePercent}%`;
-
-    if (titleLen >= 40 && titleLen <= 60) {
-      titleBar.style.backgroundColor = 'var(--color-success)'; // Ideal
-    } else if (titleLen > 60) {
-      titleBar.style.backgroundColor = 'var(--color-accent)'; // Too long
-    } else {
-      titleBar.style.backgroundColor = 'var(--color-direct)'; // Too short
-    }
-
-    // Description Progress
-    const descCounter = document.getElementById('meta-desc-counter');
-    const descBar = document.getElementById('desc-progress-bar');
-    descCounter.innerText = `${descLen} / 160`;
-
-    let descPercent = (descLen / 160) * 100;
-    if (descPercent > 100) descPercent = 100;
-    descBar.style.width = `${descPercent}%`;
-
-    if (descLen >= 120 && descLen <= 160) {
-      descBar.style.backgroundColor = 'var(--color-success)'; // Ideal
-    } else if (descLen > 160) {
-      descBar.style.backgroundColor = 'var(--color-accent)'; // Too long
-    } else {
-      descBar.style.backgroundColor = 'var(--color-direct)'; // Too short
-    }
-  }
-
-  [seoTitleInput, metaDescInput].forEach(elem => {
-    elem.addEventListener('input', updateProgressBars);
-  });
-
-  // 6. Focus Keyword & SEO Checklist Analysis
-  const keywordInput = document.getElementById('focus_keyword');
-  const imageAltInput = document.getElementById('image_alt');
-
-  function updateChecklistIndicator(id, satisfied) {
-    const item = document.getElementById(id);
-    if (item) {
-      const icon = item.querySelector('.chk-status');
-      if (satisfied) {
-        icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-        item.style.color = '#0F6B3A';
-      } else {
-        icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-        item.style.color = 'var(--text-secondary)';
-      }
-    }
-  }
-
-  function runSEOAnalysis() {
-    const keyword = keywordInput.value.trim().toLowerCase();
-    
-    if (!keyword) {
-      // Reset checklists to default red
-      ['chk-title', 'chk-slug', 'chk-desc', 'chk-content', 'chk-alt'].forEach(id => {
-        updateChecklistIndicator(id, false);
-      });
-      return;
-    }
-
-    // Check SEO Title
-    const titleVal = (seoTitleInput.value || titleInput.value || '').toLowerCase();
-    updateChecklistIndicator('chk-title', titleVal.includes(keyword));
-
-    // Check Slug
-    const slugVal = (slugInput.value || '').toLowerCase().replace(/-/g, ' ');
-    updateChecklistIndicator('chk-slug', slugVal.includes(keyword));
-
-    // Check Meta Description
-    const descVal = (metaDescInput.value || '').toLowerCase();
-    updateChecklistIndicator('chk-desc', descVal.includes(keyword));
-
-    // Check WYSIWYG Content (First Paragraph)
-    const editorHtml = quill.getSemanticHTML().toLowerCase();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(editorHtml, 'text/html');
-    const firstP = doc.querySelector('p')?.textContent || '';
-    updateChecklistIndicator('chk-content', firstP.includes(keyword));
-
-    // Check Image Alt Tag
-    const altVal = (imageAltInput.value || '').toLowerCase();
-    updateChecklistIndicator('chk-alt', altVal.includes(keyword));
-  }
-
-  [keywordInput, seoTitleInput, titleInput, slugInput, metaDescInput, imageAltInput].forEach(elem => {
-    elem.addEventListener('input', runSEOAnalysis);
-  });
-  quill.on('text-change', runSEOAnalysis);
-
-  // 7. Preset Configuration Managers
-  function toggleBannerFields(fieldType) {
-    document.querySelectorAll('.banner-preset-field').forEach(el => {
-      el.style.display = fieldType === 'app_banner' ? 'block' : 'none';
-    });
-    document.querySelectorAll('.telegram-preset-field').forEach(el => {
-      el.style.display = fieldType === 'telegram_promo' ? 'block' : 'none';
-    });
-    document.querySelectorAll('.text-preset-field').forEach(el => {
-      el.style.display = (fieldType !== 'app_banner' && fieldType !== 'telegram_promo') ? 'block' : 'none';
-    });
-  }
-
-  function renderPresets() {
-    const containers = {
-      content: document.getElementById('content-presets-container'),
-      ad_text: document.getElementById('ad_text-presets-container'),
-      app_banner: document.getElementById('app_banner-presets-container'),
-      telegram_promo: document.getElementById('telegram_promo-presets-container')
-    };
-
-    Object.values(containers).forEach(c => { if (c) c.innerHTML = ''; });
-
-    currentPresets.forEach(preset => {
-      const parent = containers[preset.field_type];
-      if (parent) {
-        const chip = document.createElement('div');
-        chip.className = 'preset-chip-item';
-        
-        const labelBtn = document.createElement('button');
-        labelBtn.type = 'button';
-        labelBtn.className = 'preset-label-btn';
-        labelBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg> ${preset.label}`;
-        labelBtn.addEventListener('click', () => {
-          if (preset.field_type === 'app_banner') {
-            try {
-              const data = JSON.parse(preset.body);
-              document.getElementById('app_title').value = data.title || '';
-              document.getElementById('app_description').value = data.description || '';
-              document.getElementById('app_button_text').value = data.button_text || '';
-            } catch (e) {
-              alert('ব্যানার প্রিসেট ডাটা পড়তে সমস্যা হয়েছে।');
-            }
-          } else if (preset.field_type === 'telegram_promo') {
-            try {
-              const data = JSON.parse(preset.body);
-              document.getElementById('telegram_url').value = data.telegram_url || '';
-              document.getElementById('telegram_btn_text').value = data.telegram_btn_text || '';
-            } catch (e) {
-              alert('টেলিগ্রাম প্রিসেট ডাটা পড়তে সমস্যা হয়েছে।');
-            }
-          } else if (preset.field_type === 'content') {
-            quill.setHTML(preset.body);
-          } else {
-            const field = document.getElementById(preset.field_type);
-            if (field) field.value = preset.body;
-          }
-        });
-
-        const editBtn = document.createElement('button');
-        editBtn.type = 'button';
-        editBtn.className = 'preset-edit-btn';
-        editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
-        editBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          editingPresetId = preset.id;
-          targetFieldType = preset.field_type;
-          document.getElementById('preset-label').value = preset.label;
-          
-          if (preset.field_type === 'app_banner') {
-            toggleBannerFields('app_banner');
-            try {
-              const data = JSON.parse(preset.body);
-              document.getElementById('preset-app-title').value = data.title || '';
-              document.getElementById('preset-app-desc').value = data.description || '';
-              document.getElementById('preset-app-btn').value = data.button_text || '';
-            } catch (e) {}
-            document.getElementById('preset-body').value = '';
-          } else if (preset.field_type === 'telegram_promo') {
-            toggleBannerFields('telegram_promo');
-            try {
-              const data = JSON.parse(preset.body);
-              document.getElementById('preset-telegram-url').value = data.telegram_url || '';
-              document.getElementById('preset-telegram-btn').value = data.telegram_btn_text || '';
-            } catch (e) {}
-            document.getElementById('preset-body').value = '';
-          } else {
-            toggleBannerFields('text');
-            document.getElementById('preset-body').value = preset.body;
-          }
-          
-          document.getElementById('modal-title').innerText = `"${preset.label}" সম্পাদনা করুন`;
-          modal.classList.add('open');
-        });
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'preset-delete-btn';
-        deleteBtn.innerHTML = '×';
-        deleteBtn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          if (confirm(`আপনি কি "${preset.label}" প্রিসেটটি ডিলিট করতে চান?`)) {
-            const res = await fetch(window.location.href, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ action: 'delete_preset', presetId: preset.id })
-            });
-            const data = await res.json();
-            if (data.success) {
-              currentPresets = currentPresets.filter(p => p.id !== preset.id);
-              renderPresets();
-            }
-          }
-        });
-
-        chip.appendChild(labelBtn);
-        chip.appendChild(editBtn);
-        chip.appendChild(deleteBtn);
-        parent.appendChild(chip);
-      }
-    });
-  }
-
-  const modal = document.getElementById('preset-modal');
-  const btnCreatePreset = document.querySelectorAll('.btn-create-preset');
-  const btnCloseModal = document.getElementById('btn-close-modal');
-  const btnSaveModal = document.getElementById('btn-save-modal');
-  let targetFieldType = 'content';
-
-  function getFieldTypeLabel(type) {
-    const labels = { content: 'ডিটেইলস কন্টেন্ট', ad_text: 'অ্যাড টেক্সট', app_banner: 'অ্যাপ ব্যানার', telegram_promo: 'টেলিগ্রাম প্রমোশন' };
-    return labels[type] || type;
-  }
-
-  btnCreatePreset.forEach(btn => {
-    btn.addEventListener('click', () => {
-      editingPresetId = null;
-      targetFieldType = btn.getAttribute('data-field') || 'content';
-      document.getElementById('modal-title').innerText = `${getFieldTypeLabel(targetFieldType)} এর জন্য নতুন প্রিসেট`;
-      document.getElementById('preset-label').value = '';
-      document.getElementById('preset-body').value = '';
-      document.getElementById('preset-app-title').value = '';
-      document.getElementById('preset-app-desc').value = '';
-      document.getElementById('preset-app-btn').value = '';
-      document.getElementById('preset-telegram-url').value = '';
-      document.getElementById('preset-telegram-btn').value = '';
-      
-      toggleBannerFields(targetFieldType);
-      modal.classList.add('open');
-    });
-  });
-
-  if (btnCloseModal) {
-    btnCloseModal.addEventListener('click', () => {
-      modal.classList.remove('open');
-      editingPresetId = null;
-    });
-  }
-
-  if (btnSaveModal) {
-    btnSaveModal.addEventListener('click', async () => {
-      const label = document.getElementById('preset-label').value.trim();
-      let body;
-      
-      if (targetFieldType === 'app_banner') {
-        const title = document.getElementById('preset-app-title').value.trim();
-        const description = document.getElementById('preset-app-desc').value.trim();
-        const button_text = document.getElementById('preset-app-btn').value.trim();
-        if (!label) {
-          alert('দয়া করে প্রিসেটের নাম লিখুন।');
-          return;
-        }
-        body = JSON.stringify({ title, description, button_text });
-      } else if (targetFieldType === 'telegram_promo') {
-        const telegram_url = document.getElementById('preset-telegram-url').value.trim();
-        const telegram_btn_text = document.getElementById('preset-telegram-btn').value.trim();
-        if (!label) {
-          alert('দয়া করে প্রিসেটের নাম লিখুন।');
-          return;
-        }
-        body = JSON.stringify({ telegram_url, telegram_btn_text });
-      } else {
-        body = document.getElementById('preset-body').value;
-        if (!label || !body) {
-          alert('দয়া করে প্রিসেটের নাম ও কন্টেন্ট পূরণ করুন।');
-          return;
-        }
-      }
-
-      const action = editingPresetId ? 'update_preset' : 'save_preset';
-      const payload = { action, field_type: targetFieldType, label, body };
-      if (editingPresetId) payload.presetId = editingPresetId;
-
-      const res = await fetch(window.location.href, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        if (editingPresetId) {
-          const idx = currentPresets.findIndex(p => p.id === editingPresetId);
-          if (idx !== -1) currentPresets[idx] = data.preset;
-        } else {
-          currentPresets.push(data.preset);
-        }
-        renderPresets();
-        modal.classList.remove('open');
-        editingPresetId = null;
-      } else {
-        alert('প্রিসেট সংরক্ষণ করতে সমস্যা হয়েছে।');
-      }
-    });
-  }
-
-  // 8. JSON Importer logic
-  const importModal = document.getElementById('import-modal');
-  const btnOpenImport = document.getElementById('btn-open-import');
-  const btnCloseImport = document.getElementById('btn-close-import');
-  const btnApplyImport = document.getElementById('btn-apply-import');
-  const importTextarea = document.getElementById('import-json-data');
-
-  if (btnOpenImport) {
-    btnOpenImport.addEventListener('click', () => {
-      importTextarea.value = '';
-      importModal.classList.add('open');
-    });
-  }
-
-  if (btnCloseImport) {
-    btnCloseImport.addEventListener('click', () => {
-      importModal.classList.remove('open');
-    });
-  }
-
-  if (btnApplyImport) {
-    btnApplyImport.addEventListener('click', () => {
-      try {
-        const rawData = importTextarea.value.trim();
-        if (!rawData) {
-          alert('দয়া করে কিছু JSON টেক্সট পেস্ট করুন।');
-          return;
-        }
-
-        const parsed = JSON.parse(rawData);
-
-        // Populate fields
-        if (parsed.title !== undefined) document.getElementById('title').value = parsed.title;
-        if (parsed.slug !== undefined) document.getElementById('slug').value = parsed.slug;
-        
-        if (parsed.exam !== undefined) {
-          const examSelect = document.getElementById('exam');
-          if (examSelect) examSelect.value = parsed.exam;
-        }
-
-        if (parsed.subject !== undefined) document.getElementById('subject').value = parsed.subject;
-        if (parsed.chapter !== undefined) document.getElementById('chapter').value = parsed.chapter || '';
-        if (parsed.resource_type !== undefined) {
-          const typeSelect = document.getElementById('resource_type');
-          if (typeSelect) typeSelect.value = parsed.resource_type;
-        }
-        if (parsed.academic_year !== undefined) document.getElementById('academic_year').value = parsed.academic_year || '';
-        if (parsed.license !== undefined) {
-          const licenseSelect = document.getElementById('license');
-          if (licenseSelect) licenseSelect.value = parsed.license;
-        }
-        if (parsed.source !== undefined) document.getElementById('source').value = parsed.source || '';
-
-        if (parsed.status !== undefined) {
-          const statusSelect = document.getElementById('status');
-          if (statusSelect) statusSelect.value = parsed.status;
-        } else if (parsed.is_published !== undefined) {
-          const statusSelect = document.getElementById('status');
-          if (statusSelect) statusSelect.value = parsed.is_published ? 'published' : 'draft';
-        }
-
-        if (parsed.show_app_opener !== undefined) {
-          const checkOpener = document.querySelector('input[name="show_app_opener"][type="checkbox"]');
-          if (checkOpener) checkOpener.checked = Boolean(parsed.show_app_opener);
-        }
-
-        if (parsed.app_link !== undefined) document.getElementById('app_link').value = parsed.app_link || '';
-        if (parsed.app_title !== undefined) document.getElementById('app_title').value = parsed.app_title || '';
-        if (parsed.app_description !== undefined) document.getElementById('app_description').value = parsed.app_description || '';
-        if (parsed.app_button_text !== undefined) document.getElementById('app_button_text').value = parsed.app_button_text || '';
-
-        if (parsed.telegram_url !== undefined) document.getElementById('telegram_url').value = parsed.telegram_url || '';
-        if (parsed.telegram_btn_text !== undefined) document.getElementById('telegram_btn_text').value = parsed.telegram_btn_text || '';
-
-        if (parsed.link_type !== undefined) {
-          const targetRadio = document.querySelector(`input[name="link_type"][value="${parsed.link_type}"]`);
-          if (targetRadio) targetRadio.checked = true;
-        }
-
-        if (parsed.content !== undefined) quill.setHTML(parsed.content || '');
-        if (parsed.ad_text !== undefined) document.getElementById('ad_text').value = parsed.ad_text || '';
-        if (parsed.image_url !== undefined) document.getElementById('image_url').value = parsed.image_url || '';
-        if (parsed.image_alt !== undefined) document.getElementById('image_alt').value = parsed.image_alt || '';
-        if (parsed.file_url !== undefined) document.getElementById('file_url').value = parsed.file_url || '';
-        if (parsed.drive_url !== undefined) document.getElementById('drive_url').value = parsed.drive_url || '';
-        
-        if (parsed.focus_keyword !== undefined) document.getElementById('focus_keyword').value = parsed.focus_keyword || '';
-        if (parsed.seo_title !== undefined) document.getElementById('seo_title').value = parsed.seo_title || '';
-        if (parsed.meta_description !== undefined) document.getElementById('meta_description').value = parsed.meta_description || '';
-        
-        if (parsed.schema_type !== undefined) {
-          schemaTypeSelect.value = parsed.schema_type;
-          toggleSchemaFields();
-        }
-
-        if (parsed.schema_faq !== undefined && Array.isArray(parsed.schema_faq)) {
-          faqContainer.innerHTML = '';
-          parsed.schema_faq.forEach(faq => addFaqRow(faq.question, faq.answer));
-        }
-
-        importModal.classList.remove('open');
-        updateLivePreview();
-        updateProgressBars();
-        runSEOAnalysis();
-        alert('JSON ডাটা সফলভাবে ফর্মে ইমপোর্ট করা হয়েছে।');
-      } catch (e) {
-        alert('ত্রুটি: ভুল JSON ডাটা ফরম্যাট। দয়া করে সঠিক কোড ব্যবহার করুন।\n\n' + e.message);
-      }
-    });
-  }
-
-  // Initialize display metrics
-  renderPresets();
-  updateLivePreview();
-  updateProgressBars();
-  runSEOAnalysis();
 </script>
 
 <style>
-  /* Custom wide editor container to override the restrictive global container max-width */
-  .admin-editor-container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; }
-  
-  /* Form Header layout styles */
-  .form-header { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; text-align: left; }
-  .header-text-group { flex: 1; min-width: 280px; }
-  .form-header h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
-  .form-header p { color: var(--text-secondary); }
+  .editor-wrap { max-width: 860px; margin-top: 2rem; padding-bottom: 5rem; }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .page-head h1 { font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
+  .page-head p { color: var(--text-secondary); margin-top: 0.35rem; }
+  .head-actions, .form-foot { display: flex; align-items: center; gap: 1rem; }
+  .stack, .form-all { display: flex; flex-direction: column; gap: 1rem; }
 
-  /* Import buttons */
-  .btn-import { background: var(--accent-secondary-soft); border: 1px solid var(--accent-primary-soft); color: var(--accent-secondary); padding: 0.65rem 1.25rem; border-radius: var(--radius); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
-  .btn-import:hover { background: var(--accent-primary); color: #F7F3EA; border-color: var(--accent-primary); }
-
-  .alert { padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.95rem; text-align: left; }
-  .alert-success { background: var(--accent-secondary-soft); border: 1px solid var(--accent-secondary); color: var(--text-primary); }
-  .alert-danger { background: rgba(179, 38, 30, 0.1); border: 1px solid var(--accent-danger); color: var(--accent-danger); }
-
-  /* Grid Editor Layout setup (Ensuring reliable side-by-side on viewport width > 1024px) */
-  .editor-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
-
-  .section-heading svg, .btn-import svg, .option-content svg, .chk-status svg, .faq-sub-label svg { display: none; }
-
-  .section-details { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: var(--radius); }
-  .section-details > summary { list-style: none; cursor: pointer; padding: 1rem 1.25rem; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
-  .section-details > summary::-webkit-details-marker { display: none; }
-  .section-details > summary::before { content: '+'; font-family: var(--font-mono); color: var(--accent-primary); font-weight: 700; }
-  .section-details[open] > summary::before { content: '−'; }
-  .section-details > summary:hover { background: var(--bg-surface-raised); }
-  .section-details > .glass-card { border: none; border-top: 1px solid var(--border-hairline); }
-  .editor-main-col { display: flex; flex-direction: column; gap: 1.5rem; min-width: 0; }
-  .editor-sidebar-col { display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 100px; max-height: calc(100vh - 120px); overflow-y: auto; padding-right: 0.25rem; min-width: 0; }
-  
-  /* Custom Scrollbar for SEO Sidebar */
-  .editor-sidebar-col::-webkit-scrollbar { width: 6px; }
-  .editor-sidebar-col::-webkit-scrollbar-thumb { background: var(--border-hairline); border-radius: var(--radius); }
-  
-  /* Paper Cards */
-  .section-card { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; border-top: 3px solid var(--border-strong); }
-  .sidebar-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; border-top: 3px solid var(--border-strong); }
-  .section-heading { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.75rem; margin-bottom: 0.5rem; text-align: left; }
-
-  /* Inputs & Fields */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-  .form-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
-  .full-width { grid-column: span 2; }
-  .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
-  .form-group input, .form-group select, .form-group textarea { background: var(--bg-base); border: 1px solid var(--border-hairline); color: var(--text-primary); padding: 0.75rem; border-radius: var(--radius); font-size: 0.9rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--accent-primary-soft); }
-  .helper-text { font-size: 0.75rem; color: var(--text-muted); margin-top: -0.25rem; }
-
-  /* WYSIWYG Specific configuration override styles */
-  .wysiwyg-wrapper { background: var(--bg-base); border: 1px solid var(--border-hairline); border-radius: var(--radius); overflow: hidden; }
-  :global(.ql-toolbar) { background: var(--bg-surface-raised) !important; border: none !important; border-bottom: 1px solid var(--border-hairline) !important; }
-  :global(.ql-container) { border: none !important; min-height: 250px; font-size: 0.95rem; font-family: var(--font-sans); color: var(--text-primary) !important; }
-  :global(.ql-editor) { min-height: 250px; color: var(--text-primary) !important; }
-  :global(.ql-toolbar .ql-stroke) { stroke: var(--text-secondary); }
-  :global(.ql-toolbar .ql-fill) { fill: var(--text-secondary); }
-  :global(.ql-toolbar button:hover .ql-stroke) { stroke: var(--accent-primary); }
-  :global(.ql-toolbar button:hover .ql-fill) { fill: var(--accent-primary); }
-
-  /* Character counters and indicator progress bars */
-  .seo-counter-row { display: flex; justify-content: space-between; align-items: center; }
-  .counter-badge { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); background: var(--bg-surface-raised); padding: 0.15rem 0.4rem; border-radius: var(--radius); }
-  .progress-bar-container { background: var(--bg-surface-raised); border-radius: var(--radius); height: 4px; overflow: hidden; margin-top: -0.15rem; }
-  .progress-bar { height: 100%; width: 0%; transition: width 0.3s ease, background-color 0.3s ease; }
-
-  /* Google Search Snippet visual layout design */
-  .google-preview-card { text-align: left; }
-  .preview-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.5rem; }
-  .preview-header-row .section-heading { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .toggle-buttons { display: flex; background: var(--bg-surface-raised); border-radius: var(--radius); padding: 0.2rem; }
-  .toggle-buttons button { background: none; border: none; color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; cursor: pointer; border-radius: var(--radius); }
-  .toggle-buttons button.active-toggle-btn { background: var(--accent-primary); color: #F7F3EA; }
-
-  .google-snippet-container { background: white; border-radius: var(--radius); padding: 1rem; color: #1a0dab; text-align: left; transition: all 0.2s ease; border: 1px solid #dadce0; }
-  .google-snippet-url { font-size: 0.8rem; color: #202124; margin-bottom: 0.25rem; font-family: arial, sans-serif; }
-  .google-snippet-url .url-separator { color: #5f6368; margin: 0 0.15rem; }
-  .google-snippet-title { font-size: 1.25rem; line-height: 1.3; font-weight: normal; margin-bottom: 0.25rem; font-family: arial, sans-serif; cursor: pointer; word-wrap: break-word; }
-  .google-snippet-container:hover .google-snippet-title { text-decoration: underline; }
-  .google-snippet-desc { font-size: 0.85rem; color: #4d5156; line-height: 1.58; font-family: arial, sans-serif; margin: 0; word-wrap: break-word; }
-  
-  .mobile-view { max-width: 360px; margin: 0 auto; }
-  .mobile-view .google-snippet-title { font-size: 1.15rem; color: #1558d6; }
-
-  /* SEO Checklist display */
-  .checklist-card { text-align: left; }
-  .checklist-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
-  .checklist-list li { font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); transition: color 0.2s; }
-  .checklist-list li .chk-status { font-size: 0.9rem; flex-shrink: 0; }
-
-  /* FAQ Schema Field Builder markup layout style */
-  .schema-card { text-align: left; }
-  .faq-sub-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--accent-primary); margin-top: 1rem; margin-bottom: 0.5rem; }
-  .faq-fields-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem; }
-  .faq-row-item { background: var(--bg-surface-raised); border: 1px solid var(--border-hairline); padding: 0.75rem; border-radius: var(--radius); display: flex; flex-direction: column; gap: 0.5rem; }
-  .faq-row-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); }
-  .btn-remove-faq { background: none; border: none; color: var(--accent-danger); cursor: pointer; font-size: 0.75rem; font-weight: 700; }
-  .btn-remove-faq:hover { color: var(--accent-danger); }
-  .faq-q-input { font-size: 0.85rem !important; padding: 0.5rem !important; }
-  .faq-a-input { font-size: 0.85rem !important; padding: 0.5rem !important; }
-  .btn-add-faq-field { background: var(--accent-primary-soft); border: 1px dashed var(--accent-primary); color: var(--accent-primary); padding: 0.5rem; border-radius: var(--radius); width: 100%; font-size: 0.8rem; font-weight: 700; cursor: pointer; text-align: center; transition: all 0.2s; }
-  .btn-add-faq-field:hover { background: var(--accent-secondary-soft); border-color: var(--accent-secondary); }
-
-  /* Segmented Action Link Card components */
-  .action-link-type-card { background: var(--bg-surface-raised); padding: 1.25rem; border-radius: var(--radius); border: 1px dashed var(--accent-primary-soft); }
-  .app-settings-card { background: var(--accent-primary-soft); padding: 1.25rem; border-radius: var(--radius); border: 1px dashed var(--accent-primary-soft); }
-  .app-settings-grid { display: flex; flex-direction: column; gap: 1rem; }
-  .toggle-option { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; border-radius: var(--radius); background: var(--bg-surface-raised); border: 1px solid var(--border-hairline); cursor: pointer; transition: all 0.2s; }
-  .toggle-option:hover { border-color: var(--accent-primary-soft); }
-  .toggle-option input[type="checkbox"] { width: 1.1rem; height: 1.1rem; margin-top: 0.2rem; cursor: pointer; accent-color: var(--accent-primary); }
-  .toggle-content { display: flex; flex-direction: column; }
-  .toggle-content strong { font-size: 0.9rem; color: var(--text-primary); }
-  .toggle-content span { font-size: 0.8rem; color: var(--text-secondary); }
-  .section-sub-label { display: block; margin-bottom: 0.75rem !important; color: var(--accent-primary) !important; }
-  .radio-group { display: flex; flex-direction: column; gap: 0.5rem; }
-  .radio-option { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.5rem; border-radius: var(--radius); background: var(--bg-surface-raised); border: 1px solid var(--border-hairline); cursor: pointer; transition: all 0.2s; }
-  .radio-option:hover { border-color: var(--accent-primary-soft); background: var(--accent-primary-soft); }
-  .radio-option input { width: auto; margin-top: 0.15rem; cursor: pointer; accent-color: var(--accent-primary); }
-  .option-content { display: flex; flex-direction: column; }
-  .option-content strong { font-size: 0.8rem; color: var(--text-primary); }
-
-  /* Preset design layout */
-  .field-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
-  .preset-controls-wrapper { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-  .preset-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .preset-chip-item { display: inline-flex; align-items: center; background: var(--accent-primary-soft); border: 1px solid var(--accent-primary-soft); border-radius: var(--radius); overflow: hidden; }
-  .preset-label-btn { background: none; border: none; color: var(--accent-primary); padding: 0.2rem 0.5rem; font-size: 0.75rem; cursor: pointer; font-weight: 500; transition: background 0.2s; }
-  .preset-label-btn:hover { background: var(--accent-secondary-soft); color: var(--accent-primary); }
-  .preset-delete-btn { background: rgba(179, 38, 30, 0.1); border: none; border-left: 1px solid var(--accent-primary-soft); color: var(--accent-danger); padding: 0.2rem 0.4rem; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
-  .preset-delete-btn:hover { background: var(--accent-danger); color: #fff; }
-  .preset-edit-btn { background: var(--accent-primary-soft); border: none; border-left: 1px solid var(--accent-primary-soft); color: var(--accent-primary); padding: 0.2rem 0.4rem; font-size: 0.7rem; cursor: pointer; transition: background 0.2s; }
-  .preset-edit-btn:hover { background: var(--accent-secondary-soft); }
-  .btn-create-preset { background: var(--accent-primary-soft); border: 1px solid var(--accent-primary-soft); color: var(--accent-primary); padding: 0.2rem 0.6rem; border-radius: var(--radius); font-size: 0.75rem; cursor: pointer; transition: all 0.2s; font-weight: 600; }
-  .btn-create-preset:hover { background: var(--accent-primary); color: #F7F3EA; border-color: var(--accent-primary); }
-
-  .theme-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A6068' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1.25em;
-    padding-right: 2.5rem !important;
+  .panel { background: var(--bg-surface); border: 1px solid var(--border-hairline); padding: 1.5rem; margin-bottom: 1.25rem; }
+  .field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+  .field label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); font-family: var(--font-mono); }
+  .field input, .field select, .field textarea {
+    background: var(--bg-base); border: 1px solid var(--border-hairline); color: var(--text-primary);
+    padding: 0.7rem 0.85rem; font-size: 0.95rem; width: 100%; outline: none; border-radius: 0;
   }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 1.25rem; }
 
-  .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid var(--border-hairline); padding-top: 1.5rem; }
-  .btn-cancel { background: none; border: 1px solid var(--border-hairline); color: var(--text-secondary); padding: 0.75rem 1.5rem; border-radius: var(--radius); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: all 0.2s; }
-  .btn-cancel:hover { background: var(--bg-surface-raised); color: var(--text-primary); }
-  .btn-save { background: var(--accent-primary); color: #F7F3EA; padding: 0.75rem 2rem; border-radius: var(--radius); font-weight: 700; font-size: 0.95rem; border: 1px solid var(--accent-primary); cursor: pointer; transition: background 0.2s; }
-  .btn-save:hover { background: var(--accent-highlight); border-color: var(--accent-highlight); color: #F7F3EA; }
+  .radio-row { margin-top: 0.25rem; }
+  .radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; padding-top: 0.25rem; }
+  .radio { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-primary); cursor: pointer; }
+  .radio input { width: auto; accent-color: var(--accent); }
+  .toggle { display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 1rem; cursor: pointer; }
+  .toggle input { width: auto; accent-color: var(--accent); }
 
-  /* Modal setup */
-  .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 29, 33, 0.6); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 999; }
-  .modal.open { display: flex; }
-  .modal-card { background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: var(--radius); border-top: 4px solid var(--accent-primary); max-width: 480px; width: 100%; padding: 2rem; box-shadow: none; }
-  .modal-card h3 { font-size: 1.25rem; margin-bottom: 1.5rem; color: var(--text-primary); border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.5rem; }
-  .modal-body { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
+  .adv { background: var(--bg-surface); border: 1px solid var(--border-hairline); margin-bottom: 1.25rem; }
+  .adv > summary { list-style: none; cursor: pointer; padding: 1rem 1.25rem; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+  .adv > summary::-webkit-details-marker { display: none; }
+  .adv > summary::before { content: '+'; font-family: var(--font-mono); color: var(--accent); font-weight: 700; }
+  .adv[open] > summary::before { content: '−'; }
+  .adv[open] > .panel { border: none; border-top: 1px solid var(--border-hairline); margin: 0; }
 
-  @media (max-width: 1024px) {
-    .editor-grid { grid-template-columns: 1fr; }
-    .editor-sidebar-col { position: static; max-height: none; overflow-y: visible; }
+  .form-foot { border-top: 1px solid var(--border-hairline); padding-top: 1.5rem; display: flex; justify-content: flex-end; }
+  .btn { display: inline-flex; align-items: center; gap: 0.4rem; border-radius: 0; border: 1px solid var(--border-hairline); background: none; color: var(--text-primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 0.65rem 1.25rem; cursor: pointer; }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-strong); }
+  .btn-text { border-color: transparent; color: var(--text-secondary); }
+  .btn-text:hover { color: var(--text-primary); text-decoration: underline; }
+  .btn-lg { font-size: 1rem; padding: 0.8rem 1.75rem; }
+
+  .alert { padding: 0.9rem 1.1rem; border: 1px solid var(--border-hairline); margin-bottom: 1.25rem; font-size: 0.95rem; }
+  .alert-ok { border-color: var(--accent); color: var(--accent); }
+  .alert-bad { border-color: var(--accent-danger); color: var(--accent-danger); }
+
+  @media (max-width: 640px) {
+    .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    .page-head { flex-direction: column; }
   }
-  @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
 </style>
