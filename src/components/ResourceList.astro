@@ -59,6 +59,7 @@ const { posts = [], emptyMessage = "এই মুহূর্তে কোনো
     display: flex;
     flex-direction: column;
     gap: 0.9rem;
+    border-top: 3px solid var(--border-strong);
   }
   .hub-resource-link {
     text-decoration: none;
@@ -75,9 +76,37 @@ const { posts = [], emptyMessage = "এই মুহূর্তে কোনো
     line-height: 1.45;
     color: var(--text-primary);
   }
+  .hub-resource-link h3:hover { color: var(--accent-primary); }
   .hub-resource-actions {
     display: flex;
     gap: 0.5rem;
     margin-top: auto;
+  }
+  .btn-sm {
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius);
+    font-size: 0.86rem;
+  }
+  .btn-primary {
+    background: var(--accent-primary);
+    color: #F7F3EA;
+    border: 1px solid var(--accent-primary);
+    flex: 1;
+  }
+  .btn-primary:hover {
+    background: var(--accent-highlight);
+    border-color: var(--accent-highlight);
+    color: #F7F3EA;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-hairline);
+    flex: 1;
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: var(--bg-surface-raised);
   }
 </style>

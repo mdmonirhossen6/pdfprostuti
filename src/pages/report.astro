@@ -93,6 +93,17 @@ if (Astro.request.method === "POST") {
   .legal-card h1 { font-size: clamp(1.5rem, 3vw, 2rem); }
   .legal-card p { color: var(--text-secondary); line-height: 1.75; }
   .legal-card a { color: var(--color-primary); }
+  .btn-primary {
+    background: var(--accent-primary);
+    color: #F7F3EA;
+    border-color: var(--accent-primary);
+    justify-self: start;
+  }
+  .btn-primary:hover {
+    background: var(--accent-highlight);
+    border-color: var(--accent-highlight);
+    color: #F7F3EA;
+  }
   .report-form { display: grid; gap: 1rem; }
   .report-form label { display: grid; gap: 0.4rem; font-weight: 600; font-size: 0.92rem; }
   .report-form input,

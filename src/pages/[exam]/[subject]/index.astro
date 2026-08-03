@@ -97,8 +97,8 @@ Astro.response.headers.set(
       <span aria-current="page">{subjectLabel}</span>
     </nav>
 
-    <header class="hub-hero glass-card">
-      <p class="hub-eyebrow">{examMeta.labelBn} · বিষয় হাব</p>
+    <header class="hub-hero">
+      <p class="hub-eyebrow">{examMeta.labelBn} · {subjectLabel}</p>
       <h1>{examMeta.key} {subjectLabel} PDF</h1>
       <p>{pageDescription}</p>
       <div class="hub-hero-actions">
@@ -112,7 +112,7 @@ Astro.response.headers.set(
           data-subject={subject}
           data-placement="subject-hub"
         >অ্যাপে প্র্যাকটিস করুন</a>
-        <a class="btn btn-secondary" href={examPath(examMeta.key)}>সব বিষয় দেখুন</a>
+        <a class="btn btn-secondary" href={examPath(examMeta.key)}>সব বিষয় দেখুন</a>
       </div>
     </header>
 
@@ -155,17 +155,17 @@ Astro.response.headers.set(
   .hub-breadcrumb a { color: var(--text-secondary); text-decoration: none; }
   .hub-breadcrumb a:hover { color: var(--text-primary); }
   .hub-hero {
-    padding: 1.6rem 1.4rem; margin-bottom: 2rem;
-    background:
-      linear-gradient(135deg, rgba(16, 185, 129, 0.14), transparent 55%),
-      var(--surface);
+    padding: 1.6rem 0;
+    margin-bottom: 2rem;
+    border-top: 4px solid var(--accent-primary);
+    border-bottom: 1px solid var(--border-hairline);
   }
-  .hub-eyebrow { color: var(--color-accent); font-weight: 600; margin-bottom: 0.4rem; }
+  .hub-eyebrow { color: var(--accent-primary); font-weight: 600; margin-bottom: 0.4rem; }
   .hub-hero h1 { font-size: clamp(1.55rem, 3vw, 2.1rem); margin-bottom: 0.6rem; }
   .hub-hero p { color: var(--text-secondary); max-width: 46rem; }
   .hub-hero-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1rem; }
   .hub-section { margin-bottom: 2.25rem; }
-  .hub-section h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+  .hub-section h2 { font-size: 1.25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-hairline); padding-bottom: 0.6rem; }
   .hub-chip-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -174,6 +174,27 @@ Astro.response.headers.set(
   .hub-chip {
     padding: 1rem; text-decoration: none; color: inherit;
     display: grid; gap: 0.35rem;
+    border-top: 3px solid var(--border-strong);
   }
+  .hub-chip:hover { border-top-color: var(--accent-primary); }
   .hub-chip span { color: var(--text-muted); font-size: 0.85rem; }
+  .btn-primary {
+    background: var(--accent-primary);
+    color: #F7F3EA;
+    border-color: var(--accent-primary);
+  }
+  .btn-primary:hover {
+    background: var(--accent-highlight);
+    border-color: var(--accent-highlight);
+    color: #F7F3EA;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-hairline);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
 </style>

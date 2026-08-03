@@ -467,8 +467,8 @@ Astro.response.headers.set(
     margin-bottom: 0.9rem;
   }
   .btn-download-inline {
-    background: var(--color-accent);
-    color: white;
+    background: var(--accent-primary);
+    color: #F7F3EA;
     padding: 0.6rem 0.9rem;
     border-radius: var(--radius);
   }
@@ -546,6 +546,25 @@ Astro.response.headers.set(
   }
   .btn-block {
     width: 100%;
+  }
+  .btn-primary {
+    background: var(--accent-primary);
+    color: #F7F3EA;
+    border-color: var(--accent-primary);
+  }
+  .btn-primary:hover {
+    background: var(--accent-highlight);
+    border-color: var(--accent-highlight);
+    color: #F7F3EA;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-hairline);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
   }
   .telegram-card {
     border-left: 3px solid var(--color-telegram);

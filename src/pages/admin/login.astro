@@ -64,16 +64,17 @@ if (Astro.request.method === 'POST') {
 
 <style>
   .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
-  .login-card { max-width: 420px; width: 100%; padding: 2.5rem; border-radius: var(--radius); }
+  .login-card { max-width: 420px; width: 100%; padding: 2.5rem; border-radius: var(--radius); border-top: 4px solid var(--accent-primary); }
   .login-header { text-align: center; margin-bottom: 2rem; }
-  .lock-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
+  .lock-icon { color: var(--accent-primary); display: block; margin-bottom: 0.5rem; }
   .login-header h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
   .login-header p { font-size: 0.9rem; color: var(--text-secondary); }
-  .error-banner { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--color-accent); color: #fca5a5; padding: 0.75rem; border-radius: var(--radius); font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center; }
+  .error-banner { background: rgba(179, 38, 30, 0.1); border: 1px solid var(--accent-danger); color: var(--accent-danger); padding: 0.75rem; border-radius: var(--radius); font-size: 0.9rem; margin-bottom: 1.5rem; text-align: center; }
   .login-form { display: flex; flex-direction: column; gap: 1.25rem; }
   .input-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
   .input-group label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
-  .input-group input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
-  .input-group input:focus { border-color: var(--color-primary); }
-  .btn-login { background: linear-gradient(135deg, var(--color-primary), var(--accent-primary)); color: white; font-weight: 700; margin-top: 0.5rem; padding: 0.85rem; border-radius: var(--radius); cursor: pointer; border: none; }
+  .input-group input { background: var(--bg-base); border: 1px solid var(--border-hairline); color: var(--text-primary); padding: 0.75rem; border-radius: var(--radius); font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: var(--accent-primary); }
+  .btn-login { background: var(--accent-primary); color: #F7F3EA; font-weight: 700; margin-top: 0.5rem; padding: 0.85rem; border-radius: var(--radius); cursor: pointer; border: 1px solid var(--accent-primary); }
+  .btn-login:hover { background: var(--accent-highlight); border-color: var(--accent-highlight); color: #F7F3EA; }
 </style>

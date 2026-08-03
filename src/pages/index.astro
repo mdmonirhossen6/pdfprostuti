@@ -119,7 +119,6 @@ const categoryCount = (cat: string) =>
   allPosts.filter(
     (p: any) => (p.exam || "").toLowerCase() === cat.toLowerCase(),
   ).length;
-const quickSubjects = subjectOptions.slice(0, 8);
 
 // Real metadata for the footer line — only shown when data exists.
 const lastUpdatedRaw = allPosts
@@ -150,9 +149,9 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     <Navbar appUrl={appUrl} searchQuery={searchQuery} />
 
     <header class="hero">
-      <div class="hero-card glass-card">
+      <div class="hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow">Academic library · Bangladesh</p>
+          <p class="eyebrow">প্রস্তুতি পিডিএফ লাইব্রেরি</p>
           <h1>
             পরীক্ষার পিডিএফ, সাজেশন ও নোট—দ্রুত খুঁজুন, পড়ুন, ডাউনলোড করুন।
           </h1>
@@ -172,7 +171,6 @@ const examMeta: Record<string, { label: string; icon: string }> = {
         </div>
 
         <div class="hero-search">
-          <p class="section-label">Quick search</p>
           <form class="search-form" method="GET" action="/">
             <label class="field">
               <span>শিরোনাম / বিষয়</span>
@@ -183,39 +181,41 @@ const examMeta: Record<string, { label: string; icon: string }> = {
                 placeholder="পিডিএফ শিরোনাম বা বিষয় লিখুন"
               />
             </label>
-            <label class="field">
-              <span>ক্যাটাগরি</span>
-              <select name="category" aria-label="Filter by category">
-                <option value="">সব ক্যাটাগরি</option>
-                {
-                  categories.map((cat) => (
-                    <option
-                      value={cat.toLowerCase()}
-                      selected={selectedCategory === cat.toLowerCase()}
-                    >
-                      {cat}
-                    </option>
-                  ))
-                }
-              </select>
-            </label>
-            <label class="field">
-              <span>বিষয়</span>
-              <select name="subject" aria-label="Filter by subject">
-                <option value="">সব বিষয়</option>
-                {
-                  subjectOptions.map((subject: string) => (
-                    <option
-                      value={subject}
-                      selected={selectedSubject === subject}
-                    >
-                      {subject}
-                    </option>
-                  ))
-                }
-              </select>
-            </label>
-            <button type="submit" class="btn btn-primary">ফিল্টার</button>
+            <div class="search-row">
+              <label class="field">
+                <span>ক্যাটাগরি</span>
+                <select name="category" aria-label="Filter by category">
+                  <option value="">সব ক্যাটাগরি</option>
+                  {
+                    categories.map((cat) => (
+                      <option
+                        value={cat.toLowerCase()}
+                        selected={selectedCategory === cat.toLowerCase()}
+                      >
+                        {cat}
+                      </option>
+                    ))
+                  }
+                </select>
+              </label>
+              <label class="field">
+                <span>বিষয়</span>
+                <select name="subject" aria-label="Filter by subject">
+                  <option value="">সব বিষয়</option>
+                  {
+                    subjectOptions.map((subject: string) => (
+                      <option
+                        value={subject}
+                        selected={selectedSubject === subject}
+                      >
+                        {subject}
+                      </option>
+                    ))
+                  }
+                </select>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">ফিল্টার করুন</button>
           </form>
         </div>
       </div>
@@ -225,34 +225,19 @@ const examMeta: Record<string, { label: string; icon: string }> = {
       <div class="section-shell">
         <div class="section-heading">
           <div>
-            <p class="section-label">Exams</p>
+            <p class="eyebrow">পরীক্ষা</p>
             <h3>পরীক্ষা অনুযায়ী ব্রাউজ করুন</h3>
           </div>
-          {
-            quickSubjects.length > 0 && (
-              <div class="subject-bubbles">
-                {quickSubjects.map((subject: string) => (
-                  <a
-                    href={`/?subject=${encodeURIComponent(subject)}`}
-                    class="omr-bubble outline"
-                  >
-                    <span class="bubble-mark" aria-hidden="true" />
-                    <span class="bubble-label">{subject}</span>
-                  </a>
-                ))}
-              </div>
-            )
-          }
         </div>
 
-        <div class="exam-cards">
+        <div class="exam-index">
           {
             categories.map((cat) => {
               const count = categoryCount(cat);
               const meta = examMeta[cat] || { label: cat, icon: "doc" };
               return (
-                <a href={`/${cat.toLowerCase()}`} class="exam-card glass-card">
-                  <span class="exam-card__icon" aria-hidden="true">
+                <a href={`/${cat.toLowerCase()}`} class="exam-row">
+                  <span class="exam-row__icon" aria-hidden="true">
                     {meta.icon === "book" ? (
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 5.5A1.5 1.5 0 0 1 4.5 4H11v15.5H4.5A1.5 1.5 0 0 1 3 18V5.5Z" />
@@ -280,11 +265,8 @@ const examMeta: Record<string, { label: string; icon: string }> = {
                       </svg>
                     )}
                   </span>
-                  <div class="exam-card__body">
+                  <div class="exam-row__body">
                     <h4>
-                      <span class="omr-bubble filled inline" aria-hidden="true">
-                        <span class="bubble-mark" />
-                      </span>
                       {cat === "BCS"
                         ? "বিসিএস প্রিলিমিনারি"
                         : cat === "Admission"
@@ -295,7 +277,7 @@ const examMeta: Record<string, { label: string; icon: string }> = {
                   </div>
                   {
                     count > 0 && (
-                      <span class="exam-card__count num">{count} টি</span>
+                      <span class="exam-row__count num">{count} টি</span>
                     )
                   }
                 </a>
@@ -310,7 +292,7 @@ const examMeta: Record<string, { label: string; icon: string }> = {
       <div class="section-shell">
         <div class="section-heading results-heading">
           <div>
-            <p class="section-label">Library results</p>
+            <p class="eyebrow">লাইব্রেরি</p>
             <h3>
               {
                 hasSearchOrFilter
@@ -391,19 +373,20 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     min-height: 100vh;
   }
   .hero {
-    padding: 1.75rem 1.25rem 1.25rem;
+    padding: 2.5rem 1.25rem 1.25rem;
   }
-  .hero-card {
+  .hero-inner {
+    max-width: 1200px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: 1.15fr 1fr;
-    gap: 1.75rem;
-    padding: 1.75rem;
-    align-items: center;
+    gap: 2rem;
+    align-items: start;
   }
   .hero-copy h1 {
-    font-size: clamp(1.7rem, 2.8vw, 2.5rem);
-    line-height: 1.4;
-    margin-bottom: 0.85rem;
+    font-size: clamp(1.8rem, 3vw, 2.7rem);
+    line-height: 1.35;
+    margin-bottom: 0.9rem;
   }
   .hero-subtitle {
     color: var(--text-secondary);
@@ -414,16 +397,17 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     display: flex;
     gap: 0.6rem;
     flex-wrap: wrap;
-    margin-top: 1.25rem;
+    margin-top: 1.4rem;
   }
   .btn-primary {
     background: var(--accent-primary);
-    color: #fff;
+    color: #F7F3EA;
     border-color: var(--accent-primary);
   }
   .btn-primary:hover {
     background: var(--color-primary-strong);
     border-color: var(--color-primary-strong);
+    color: #F7F3EA;
   }
   .btn-ghost {
     background: transparent;
@@ -432,18 +416,27 @@ const examMeta: Record<string, { label: string; icon: string }> = {
   }
   .btn-ghost:hover {
     border-color: var(--accent-primary);
+    color: var(--accent-primary);
     background: var(--bg-surface-raised);
   }
 
-  /* Live quick-search lives inside the hero as the visual anchor */
+  /* Editorial search block — ruled on top, sits on paper */
   .hero-search {
-    border: 1px solid var(--border-hairline);
+    border-top: 3px solid var(--accent-primary);
+    border-right: 1px solid var(--border-hairline);
+    border-bottom: 1px solid var(--border-hairline);
+    border-left: 1px solid var(--border-hairline);
     border-radius: var(--radius);
-    padding: 1rem;
-    background: var(--bg-surface-raised);
+    padding: 1.15rem;
+    background: var(--bg-surface);
   }
   .search-form {
     display: grid;
+    gap: 0.85rem;
+  }
+  .search-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
   }
   .field {
@@ -452,9 +445,8 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     gap: 0.35rem;
   }
   .field span {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    font-size: 0.82rem;
+    font-weight: 600;
     color: var(--text-muted);
   }
   .field input,
@@ -471,12 +463,12 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     outline: none;
   }
   .search-form .btn-primary {
-    justify-self: start;
+    justify-self: stretch;
   }
 
   .exams-section,
   .results-section {
-    padding: 0 1.25rem 1.25rem;
+    padding: 1.5rem 1.25rem 1.25rem;
   }
   .section-shell {
     max-width: 1200px;
@@ -491,87 +483,50 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     flex-wrap: wrap;
   }
   .section-heading h3 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
-  /* OMR bubble markers — the signature motif. Used here for subjects (outline)
-     and inside exam cards for the exam-type (filled). */
-  .subject-bubbles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: flex-end;
-    max-width: 60%;
-  }
-  .omr-bubble {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.7rem;
-    border-radius: var(--radius);
-    color: var(--text-secondary);
-    text-decoration: none;
-    border: 1px solid var(--border-hairline);
-    background: var(--bg-surface);
-    font-size: 0.85rem;
-  }
-  .omr-bubble:hover {
-    border-color: var(--accent-primary);
-    color: var(--text-primary);
-  }
-  .bubble-mark {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    border: 1.5px solid var(--text-muted);
-    flex-shrink: 0;
-  }
-  .omr-bubble.outline .bubble-mark { background: transparent; }
-  .omr-bubble.filled .bubble-mark {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-  }
-  .omr-bubble.filled.inline {
-    padding: 0;
-    border: none;
-    background: none;
-  }
-
-  .exam-cards {
+  /* Editorial exam index — ruled rows, count on the right (like a TOC) */
+  .exam-index {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.9rem;
   }
-  .exam-card {
+  .exam-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem;
     text-decoration: none;
     color: inherit;
-    padding: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    position: relative;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-top: 3px solid var(--border-strong);
+    border-radius: var(--radius);
+    transition: border-color 180ms ease, background 180ms ease;
   }
-  .exam-card__icon {
+  .exam-row:hover {
+    border-top-color: var(--accent-primary);
+    background: var(--bg-surface-raised);
+  }
+  .exam-row__icon {
     color: var(--accent-primary);
     display: inline-flex;
+    flex-shrink: 0;
   }
-  .exam-card__body { display: flex; flex-direction: column; gap: 0.35rem; }
-  .exam-card h4 {
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+  .exam-row__body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
+  .exam-row h4 {
+    font-size: 1.02rem;
+    color: var(--text-primary);
   }
-  .exam-card p {
+  .exam-row p {
     color: var(--text-secondary);
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     line-height: 1.6;
   }
-  .exam-card__count {
-    position: absolute;
-    top: 0.9rem;
-    right: 0.9rem;
+  .exam-row__count {
+    margin-left: auto;
+    flex-shrink: 0;
     font-size: 11px;
     letter-spacing: 0.04em;
     color: var(--text-muted);
@@ -614,10 +569,10 @@ const examMeta: Record<string, { label: string; icon: string }> = {
     color: var(--text-primary);
     border: 1px solid var(--border-hairline);
   }
-  .btn-load-more:hover { border-color: var(--accent-primary); }
+  .btn-load-more:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
 
   @media (max-width: 960px) {
-    .hero-card {
+    .hero-inner {
       grid-template-columns: 1fr;
       gap: 1.25rem;
     }
@@ -625,10 +580,11 @@ const examMeta: Record<string, { label: string; icon: string }> = {
       flex-direction: column;
       align-items: start;
     }
-    .subject-bubbles { max-width: 100%; justify-content: flex-start; }
   }
   @media (max-width: 600px) {
-    .hero { padding: 1rem 1rem 0.8rem; }
+    .hero { padding: 1.5rem 1rem 0.8rem; }
+    .exams-section, .results-section { padding-left: 1rem; padding-right: 1rem; }
+    .search-row { grid-template-columns: 1fr; }
     .results-grid { grid-template-columns: 1fr; }
   }
 </style>

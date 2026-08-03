@@ -1,0 +1,113 @@
+---
+interface Props {
+  badge?: string;
+  backTo?: string;
+  backLabel?: string;
+}
+
+const {
+  badge = "Admin",
+  backTo,
+  backLabel = "← ড্যাশবোর্ড",
+} = Astro.props;
+---
+
+<nav class="admin-nav">
+  <div class="nav-container">
+    <a href="/admin" class="admin-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+      প্রস্তুতি BD <span class="badge-admin">{badge}</span>
+    </a>
+    <div class="nav-actions">
+      <a href="/" target="_blank" class="view-site-link">ভিউ সাইট ↗</a>
+      {
+        backTo && (
+          <a href={backTo} class="back-link">{backLabel}</a>
+        )
+      }
+      {
+        !backTo && (
+          <form method="POST" style="display: inline;">
+            <input type="hidden" name="action" value="logout" />
+            <button type="submit" class="logout-btn">লগআউট</button>
+          </form>
+        )
+      }
+    </div>
+  </div>
+</nav>
+
+<style>
+  .admin-nav {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-hairline);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .admin-logo {
+    font-weight: 800;
+    font-size: 1.15rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .admin-logo svg { color: var(--accent-primary); }
+  .badge-admin {
+    font-size: 0.7rem;
+    background: var(--accent-primary-soft);
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary-soft);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius);
+    font-weight: 700;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .view-site-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .view-site-link:hover { color: var(--text-primary); }
+  .back-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent-primary); }
+  .logout-btn {
+    background: none;
+    border: 1px solid var(--border-hairline);
+    color: var(--text-secondary);
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .logout-btn:hover {
+    background: var(--accent-danger);
+    border-color: var(--accent-danger);
+    color: #fff;
+  }
+  @media (max-width: 560px) {
+    .nav-container { align-items: flex-start; flex-direction: column; gap: 0.75rem; }
+    .nav-actions { flex-wrap: wrap; }
+  }
+</style>

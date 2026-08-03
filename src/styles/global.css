@@ -1,37 +1,40 @@
 /* ============================================================
-   Prostuti BD — design system
-   Dark-first. Hairline borders (no soft shadows) for elevation.
-   4px radius across the board. Three-font typography:
-     display = Anek Bangla (headlines, 600–700)
+   Prostuti BD — "Paper & Ink" design system
+   Light-first, editorial library aesthetic. PDF = paper.
+   Crisp print feel: 2px radius, hairline rules instead of
+   soft shadows/glass. Two-and-a-half-font typography:
+     display = Noto Serif Bengali (headlines, 600–800)
      body    = Hind Siliguri (paragraphs, 400/500)
-     mono    = JetBrains Mono (all numbers / eyebrow / codes)
+     mono    = JetBrains Mono (real data only: years/counts/codes)
    ============================================================ */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 
   /* ---- Typography ---- */
-  --font-display: 'Anek Bangla', 'Hind Siliguri', system-ui, sans-serif;
+  --font-display: 'Noto Serif Bengali', 'Hind Siliguri', Georgia, serif;
   --font-sans: 'Hind Siliguri', 'Anek Bangla', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 
-  /* ---- Canonical color tokens (dark) ---- */
-  --bg-base: #0A0F0D;            /* near-black, green-tinted */
-  --bg-surface: #111916;          /* card / panel */
-  --bg-surface-raised: #182420;   /* hover / active surface */
-  --border-hairline: #243330;     /* 1px hairlines */
-  --text-primary: #F2F4F8;
-  --text-secondary: #B9C2D2;      /* derived: between primary and muted */
-  --text-muted: #8B93A7;
-  --accent-primary: #10B981;      /* emerald-500 — actions, links */
-  --accent-secondary: #34D399;    /* emerald-400 — badges, tags, secondary actions */
-  --accent-highlight: #059669;    /* emerald-600 — featured/new/trending, hover/active */
-  --accent-danger: #EF4444;       /* sparingly — countdown, urgent */
-  --accent-primary-soft: rgba(16, 185, 129, 0.12);
-  --accent-secondary-soft: rgba(52, 211, 153, 0.12);
-  --accent-highlight-soft: rgba(5, 150, 105, 0.10);
+  /* ---- Canonical color tokens (paper / light) ----
+     Paper = warm cream. Ink = near-black blue-grey.
+     Accent = ink blue (official-document academic tone). */
+  --bg-base: #F7F3EA;            /* warm paper */
+  --bg-surface: #FFFDF7;         /* card / panel */
+  --bg-surface-raised: #F0EAE0;  /* hover / active surface */
+  --border-hairline: #E4DCCB;    /* 1px hairlines */
+  --text-primary: #1A1D21;
+  --text-secondary: #5A6068;
+  --text-muted: #8A8F98;
+  --accent-primary: #1E3A5F;     /* ink blue */
+  --accent-secondary: #3E6B96;   /* steel blue — badges, secondary actions */
+  --accent-highlight: #152B47;   /* hover / active */
+  --accent-danger: #B3261E;
+  --accent-primary-soft: rgba(30, 58, 95, 0.08);
+  --accent-secondary-soft: rgba(62, 107, 150, 0.10);
+  --accent-highlight-soft: rgba(21, 43, 71, 0.06);
 
   /* ---- Layout primitives ---- */
-  --radius: 4px;
+  --radius: 2px;
   --container-width: 1200px;
   --spacing-grid: 8px;
 
@@ -44,58 +47,64 @@
   --bg-tertiary: var(--bg-surface-raised);
   --surface: var(--bg-surface);
   --surface-elevated: var(--bg-surface-raised);
-  --surface-muted: rgba(255, 255, 255, 0.035);
+  --surface-muted: rgba(30, 58, 95, 0.04);
 
   --border-soft: var(--border-hairline);
-  --border-strong: #2D4A3E;
+  --border-strong: #C9BFA6;
 
   --color-primary: var(--accent-primary);
-  --color-primary-strong: #059669;
+  --color-primary-strong: #152B47;
   --color-accent: var(--accent-secondary);
   --color-accent-soft: var(--accent-secondary-soft);
   --color-success: var(--accent-secondary);
-  --color-success-strong: #047857;
-  --color-telegram: #2A9FDA;
+  --color-success-strong: #2F5276;
+  --color-telegram: #1E6FA8;
   --color-direct: var(--accent-highlight);
 
-  /* Hairline borders, not soft shadows */
+  /* Hairline rules, not soft shadows */
   --shadow-soft: none;
-  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 0 rgba(30, 58, 95, 0.06);
   --radius-lg: var(--radius);
   --radius-md: var(--radius);
   --radius-sm: var(--radius);
+
+  /* Undefined legacy vars referenced by admin pages */
+  --glass-border: var(--border-hairline);
+  --glass-shadow: none;
 }
 
-[data-theme='light'] {
-  color-scheme: light;
+[data-theme='dark'] {
+  color-scheme: dark;
 
-  --bg-base: #F0F5F2;
-  --bg-surface: #FFFFFF;
-  --bg-surface-raised: #F7FBF9;
-  --border-hairline: #D1DDD8;
-  --text-primary: #111827;
-  --text-secondary: #475063;
-  --text-muted: #6B7280;
-  --accent-primary: #059669;
-  --accent-secondary: #10B981;
-  --accent-highlight: #047857;
-  --accent-danger: #DC2626;
-  --accent-primary-soft: rgba(5, 150, 105, 0.10);
-  --accent-secondary-soft: rgba(16, 185, 129, 0.10);
-  --accent-highlight-soft: rgba(4, 120, 87, 0.08);
+  /* Warm charcoal paper-inverse */
+  --bg-base: #191B1E;
+  --bg-surface: #212428;
+  --bg-surface-raised: #2A2E33;
+  --border-hairline: #3A3F45;
+  --text-primary: #F0EDE6;
+  --text-secondary: #B9BEC6;
+  --text-muted: #8A8F98;
+  --accent-primary: #7FA6CE;
+  --accent-secondary: #9DBEDB;
+  --accent-highlight: #A9C7E3;
+  --accent-danger: #EF6A63;
+  --accent-primary-soft: rgba(127, 166, 206, 0.12);
+  --accent-secondary-soft: rgba(157, 190, 219, 0.12);
+  --accent-highlight-soft: rgba(169, 199, 227, 0.10);
 
-  --surface-muted: rgba(5, 150, 105, 0.035);
-  --border-strong: #A3C4B3;
+  --surface-muted: rgba(127, 166, 206, 0.05);
+  --border-strong: #555C66;
 
   --color-primary: var(--accent-primary);
-  --color-primary-strong: #047857;
+  --color-primary-strong: #B6D0E8;
   --color-accent: var(--accent-secondary);
   --color-accent-soft: var(--accent-secondary-soft);
   --color-success: var(--accent-secondary);
-  --color-success-strong: #065F46;
+  --color-success-strong: #C3D9EC;
+  --color-telegram: #6FB1E4;
 
   --shadow-soft: none;
-  --shadow-card: 0 1px 0 rgba(5, 150, 105, 0.06);
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.35);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -104,7 +113,7 @@ html {
   font-family: var(--font-sans);
   background: var(--bg-base);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.65;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -126,24 +135,23 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-/* ALL numbers render in the mono face, never in display/body.
-   Applied to stats, years, counts, codes via .num and re-used below. */
+/* Real data — years, counts, dates, codes — in the mono face via .num */
 .num {
   font-family: var(--font-mono);
   font-feature-settings: 'tnum' 1;
 }
 
-/* Mono eyebrow label — applied to every section header */
+/* Bangla kicker — a quiet, editorial over-line label. Not mono caps.
+   Used sparingly above section/hero headlines. */
 .eyebrow,
 .section-label {
   display: inline-block;
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--text-muted);
-  font-weight: 500;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.55rem;
 }
 
 ::selection { background: var(--accent-primary-soft); color: var(--text-primary); }
@@ -159,7 +167,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 2.25rem 1.25rem 3.5rem;
 }
 
-/* Hairline elevation instead of drop shadow + hover lift */
+/* Paper panel — hairline rule + crisp corner. No soft shadow. */
 .glass-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-hairline);
@@ -234,7 +242,7 @@ button:focus-visible {
 input, select, button, textarea { font: inherit; }
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238B93A7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235A6068' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.9rem center;
   padding-right: 2.6rem;
@@ -244,7 +252,7 @@ select option { background: var(--bg-surface); color: var(--text-primary); }
 /* Shared button variants used across hub / download / resource pages */
 .btn-accent {
   background: var(--accent-primary);
-  color: #111916;
+  color: #F7F3EA;
   border-color: var(--accent-primary);
 }
 .btn-accent:hover {

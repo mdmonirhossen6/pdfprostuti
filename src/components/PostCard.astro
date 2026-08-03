@@ -30,12 +30,6 @@ const imageAlt = post.image_alt?.trim() || post.title;
 const downloadUrl = `/download?id=${post.id}`;
 const metaBits = [post.exam, post.subject, post.academic_year].filter(Boolean);
 
-// A short, human subject code for the mock paper header — real field only.
-const subjectCode = (post.subject || "")
-  .replace(/[^a-z0-9]/gi, "")
-  .slice(0, 4)
-  .toUpperCase()
-  .padEnd(4, "0");
 const resourceLabel = resourceTypeLabel(post.resource_type);
 ---
 
@@ -44,15 +38,13 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
     <article class="resource-card glass-card">
       <div class="card-tags">
         {post.exam && (
-          <span class="omr-bubble filled" title={post.exam}>
-            <span class="bubble-mark" />
-            <span class="bubble-label">{post.exam}</span>
+          <span class="tag tag-exam" title={post.exam}>
+            {post.exam}
           </span>
         )}
         {post.subject && (
-          <span class="omr-bubble outline" title={post.subject}>
-            <span class="bubble-mark" />
-            <span class="bubble-label">{post.subject}</span>
+          <span class="tag" title={post.subject}>
+            {post.subject}
           </span>
         )}
       </div>
@@ -61,17 +53,14 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
         {imageUrl ? (
           <img src={imageUrl} alt={imageAlt} loading="lazy" />
         ) : (
-          <div class="paper-header">
-            <div class="paper-code">
-              <span class="paper-code__label">CODE</span>
-              <span class="paper-code__value num">{subjectCode}</span>
-            </div>
-            <div class="paper-title">{post.subject || post.exam}</div>
-            <div class="paper-meta">
+          <div class="paper-tile">
+            <span class="tile-kicker">{post.exam || "PDF"}</span>
+            <span class="tile-title">{post.subject || post.exam}</span>
+            <span class="tile-meta">
               {post.academic_year && <span class="num">{post.academic_year}</span>}
-              {post.academic_year && <span class="paper-dot">·</span>}
-              <span class="paper-type">{resourceLabel}</span>
-            </div>
+              {post.academic_year && <span class="tile-dot">·</span>}
+              <span>{resourceLabel}</span>
+            </span>
           </div>
         )}
       </a>
@@ -125,40 +114,28 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
     flex-wrap: wrap;
   }
 
-  /* OMR bubble markers — exam = filled ●, subject = outline ○ */
-  .omr-bubble {
+  /* Clean text-tag pills — exam and subject. No OMR bubbles. */
+  .tag {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.55rem;
+    padding: 0.22rem 0.55rem;
     border-radius: var(--radius);
     font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.03em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     background: var(--bg-surface-raised);
     color: var(--text-secondary);
     border: 1px solid var(--border-hairline);
   }
-  .omr-bubble .bubble-mark {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 1.5px solid var(--text-muted);
-    flex-shrink: 0;
-  }
-  .omr-bubble.filled {
+  .tag-exam {
     color: var(--accent-primary);
+    background: var(--accent-primary-soft);
     border-color: var(--accent-primary-soft);
   }
-  .omr-bubble.filled .bubble-mark {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-  }
-  .omr-bubble.outline .bubble-mark { background: transparent; }
 
-  /* Mock exam-paper-header thumbnail replacing the blank "PDF" box.
-     Real fields only — no fabricated page/question counts. */
+  /* Typographic tile fallback — the subject name set in serif on paper.
+     No fabricated "CODE" headers, no grid texture. */
   .card-visual {
     display: flex;
     align-items: stretch;
@@ -166,22 +143,11 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
     min-height: 150px;
     border-radius: var(--radius);
     overflow: hidden;
-    background: var(--bg-base);
+    background: var(--bg-surface);
     border: 1px solid var(--border-hairline);
     text-decoration: none;
     color: var(--text-primary);
     position: relative;
-  }
-  /* subtle grid-paper texture, felt not seen */
-  .card-visual::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-    background-size: 14px 14px;
-    pointer-events: none;
   }
   .card-visual img {
     width: 100%;
@@ -189,50 +155,42 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
     object-fit: cover;
     display: block;
   }
-  .paper-header {
+  .paper-tile {
     width: 100%;
-    padding: 0.75rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
     justify-content: center;
-    position: relative;
-    z-index: 1;
+    gap: 0.3rem;
+    border-top: 3px solid var(--accent-primary);
+    background:
+      linear-gradient(160deg, var(--accent-primary-soft), transparent 55%),
+      var(--bg-surface);
   }
-  .paper-code {
-    display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
-  }
-  .paper-code__label {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-  }
-  .paper-code__value {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--accent-primary);
-  }
-  .paper-title {
-    font-family: var(--font-display);
+  .tile-kicker {
+    font-size: 0.72rem;
     font-weight: 600;
-    font-size: 0.95rem;
-    text-transform: capitalize;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .tile-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
     color: var(--text-primary);
     line-height: 1.3;
+    text-transform: capitalize;
   }
-  .paper-meta {
+  .tile-meta {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
   }
-  .paper-meta .num { color: var(--text-secondary); }
-  .paper-dot { color: var(--text-muted); }
-  .paper-type { text-transform: capitalize; }
+  .tile-meta .num { color: var(--text-secondary); }
+  .tile-dot { color: var(--text-muted); }
 
   .card-body {
     display: flex;
@@ -270,17 +228,17 @@ const resourceLabel = resourceTypeLabel(post.resource_type);
     flex: 1;
   }
   .btn-ghost-card:hover { border-color: var(--accent-primary); background: var(--bg-surface-raised); }
-  /* Download is consistently teal across all cards */
+  /* Download is consistently accent across all cards */
   .btn-download {
-    background: var(--accent-secondary);
-    color: #052015;
-    border: 1px solid var(--accent-secondary);
+    background: var(--accent-primary);
+    color: #F7F3EA;
+    border: 1px solid var(--accent-primary);
     flex: 1;
   }
   .btn-download:hover {
     background: var(--color-success-strong);
     border-color: var(--color-success-strong);
-    color: #052015;
+    color: #F7F3EA;
   }
 
   .recent-item {

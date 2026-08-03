@@ -345,12 +345,14 @@ const trackBase = {
   }
   .btn-app-link {
     width: 100%;
-    background: linear-gradient(
-      135deg,
-      var(--color-primary),
-      var(--color-accent)
-    );
-    color: white;
+    background: var(--accent-primary);
+    color: #F7F3EA;
+    border: 1px solid var(--accent-primary);
+  }
+  .btn-app-link:hover {
+    background: var(--accent-highlight);
+    border-color: var(--accent-highlight);
+    color: #F7F3EA;
   }
   .hidden {
     display: none !important;
@@ -362,16 +364,19 @@ const trackBase = {
     display: flex;
     width: 100%;
     margin-bottom: 0.7rem;
-    color: white;
+    color: #F7F3EA;
   }
   .tg-theme {
     background: var(--color-telegram);
+    border: 1px solid var(--color-telegram);
   }
   .direct-theme {
     background: var(--color-direct);
+    border: 1px solid var(--color-direct);
   }
   .generic-theme {
     background: var(--color-success);
+    border: 1px solid var(--color-success);
   }
   .btn-sub {
     display: flex;
