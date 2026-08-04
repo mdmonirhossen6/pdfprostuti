@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar.astro";
 import PostCard from "../components/PostCard.astro";
 import Footer from "../components/Footer.astro";
 import ScrollToTop from "../components/ScrollToTop.astro";
+import DotField from "../components/DotField.jsx";
 import { getDbCredentials } from "../utils/db";
 import { APP_CTA_ORIGIN } from "../utils/cta";
 
@@ -136,7 +137,16 @@ const totalResourceCount = allPosts.length;
   <div class="landing-page">
     <Navbar appUrl={appUrl} searchQuery={searchQuery} />
 
-    <header class="hero">
+    <div class="hero-wrap">
+      <DotField
+        client:load
+        dotRadius={1.5}
+        dotSpacing={16}
+        bulgeStrength={50}
+        glowRadius={180}
+      />
+      <div class="hero-content">
+        <header class="hero">
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="hero-code mono">প্রস্তুতি BD · <em>PDF ARCHIVE</em></p>
@@ -211,7 +221,9 @@ const totalResourceCount = allPosts.length;
           </form>
         </div>
       </div>
-    </header>
+        </header>
+      </div>
+    </div>
 
     <section id="categories" class="exams-section">
       <div class="section-shell">
@@ -290,6 +302,18 @@ const totalResourceCount = allPosts.length;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+  }
+  .hero-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+  .hero-wrap .dot-field-container {
+    position: absolute;
+    inset: 0;
   }
   .hero {
     padding: 2.5rem 1.25rem 1.25rem;
